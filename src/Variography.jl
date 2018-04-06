@@ -32,7 +32,7 @@ export
   EmpiricalVariogram,
 
   # theoretical variograms
-  AbstractVariogram,
+  Variogram,
   GaussianVariogram,
   ExponentialVariogram,
   MaternVariogram,

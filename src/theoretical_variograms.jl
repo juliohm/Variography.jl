@@ -4,18 +4,18 @@
 # ------------------------------------------------------------------
 
 """
-    AbstractVariogram
+    Variogram
 
 A variogram model (e.g. Gaussian variogram).
 """
-abstract type AbstractVariogram end
+abstract type Variogram end
 
 """
     isstationary(γ)
 
 Check if variogram `γ` possesses the 2nd-order stationary property.
 """
-isstationary(::AbstractVariogram) = false
+isstationary(::Variogram) = false
 
 """
     pairwise(γ, X)
@@ -23,7 +23,7 @@ isstationary(::AbstractVariogram) = false
 Evaluate variogram `γ` between all n² pairs of columns in a
 m-by-n matrix `X` efficiently.
 """
-function pairwise(γ::AbstractVariogram, X::AbstractMatrix)
+function pairwise(γ::Variogram, X::AbstractMatrix)
   m, n = size(X)
   Γ = Array{Float64}(n, n)
   for j=1:n
@@ -50,10 +50,10 @@ end
 A Gaussian variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct GaussianVariogram{D<:Metric} <: AbstractVariogram
-  range::Float64  = 1.
-  sill::Float64   = 1.
-  nugget::Float64 = 0.
+@with_kw struct GaussianVariogram{T<:Real,D<:Metric} <: Variogram
+  range::T  = 1.
+  sill::T   = 1.
+  nugget::T = 0.
   distance::D = Euclidean()
 end
 (γ::GaussianVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp.(-3(h/γ.range).^2)) + γ.nugget
@@ -66,10 +66,10 @@ isstationary(::GaussianVariogram) = true
 An exponential variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct ExponentialVariogram{D<:Metric} <: AbstractVariogram
-  range::Float64  = 1.
-  sill::Float64   = 1.
-  nugget::Float64 = 0.
+@with_kw struct ExponentialVariogram{T<:Real,D<:Metric} <: Variogram
+  range::T  = 1.
+  sill::T   = 1.
+  nugget::T = 0.
   distance::D = Euclidean()
 end
 (γ::ExponentialVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp.(-3(h/γ.range))) + γ.nugget
@@ -82,11 +82,11 @@ isstationary(::ExponentialVariogram) = true
 A Matérn variogram with sill `s`, range `r` and nugget `n`. The parameter
 ν is the order of the Bessel function. Optionally, use a custom distance `d`.
 """
-@with_kw struct MaternVariogram{D<:Metric} <: AbstractVariogram
-  range::Float64  = 1.
-  sill::Float64   = 1.
-  nugget::Float64 = 0.
-  order::Float64  = 1.
+@with_kw struct MaternVariogram{T<:Real,D<:Metric} <: Variogram
+  range::T  = 1.
+  sill::T   = 1.
+  nugget::T = 0.
+  order::T  = 1.
   distance::D = Euclidean()
 end
 (γ::MaternVariogram)(h) = begin
@@ -111,10 +111,10 @@ isstationary(::MaternVariogram) = true
 A spherical variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct SphericalVariogram{D<:Metric} <: AbstractVariogram
-  range::Float64  = 1.
-  sill::Float64   = 1.
-  nugget::Float64 = 0.
+@with_kw struct SphericalVariogram{T<:Real,D<:Metric} <: Variogram
+  range::T  = 1.
+  sill::T   = 1.
+  nugget::T = 0.
   distance::D = Euclidean()
 end
 (γ::SphericalVariogram)(h) = begin
@@ -133,10 +133,10 @@ isstationary(::SphericalVariogram) = true
 A cubic variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct CubicVariogram{D<:Metric} <: AbstractVariogram
-  range::Float64  = 1.
-  sill::Float64   = 1.
-  nugget::Float64 = 0.
+@with_kw struct CubicVariogram{T<:Real,D<:Metric} <: Variogram
+  range::T  = 1.
+  sill::T   = 1.
+  nugget::T = 0.
   distance::D = Euclidean()
 end
 (γ::CubicVariogram)(h) = begin
@@ -156,10 +156,10 @@ isstationary(::CubicVariogram) = true
 A pentaspherical variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct PentasphericalVariogram{D<:Metric} <: AbstractVariogram
-  range::Float64  = 1.
-  sill::Float64   = 1.
-  nugget::Float64 = 0.
+@with_kw struct PentasphericalVariogram{T<:Real,D<:Metric} <: Variogram
+  range::T  = 1.
+  sill::T   = 1.
+  nugget::T = 0.
   distance::D = Euclidean()
 end
 (γ::PentasphericalVariogram)(h) = begin
@@ -179,10 +179,10 @@ isstationary(::PentasphericalVariogram) = true
 A power variogram with scaling `s`, exponent `a` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct PowerVariogram{D<:Metric} <: AbstractVariogram
-  scaling::Float64  = 1.
-  nugget::Float64   = 0.
-  exponent::Float64 = 1.
+@with_kw struct PowerVariogram{T<:Real,D<:Metric} <: Variogram
+  scaling::T  = 1.
+  nugget::T   = 0.
+  exponent::T = 1.
   distance::D = Euclidean()
 end
 (γ::PowerVariogram)(h) = γ.scaling*h.^γ.exponent + γ.nugget
@@ -194,10 +194,10 @@ end
 A sine hole variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct SineHoleVariogram{D<:Metric} <: AbstractVariogram
-  range::Float64  = 1.
-  sill::Float64   = 1.
-  nugget::Float64 = 0.
+@with_kw struct SineHoleVariogram{T<:Real,D<:Metric} <: Variogram
+  range::T  = 1.
+  sill::T   = 1.
+  nugget::T = 0.
   distance::D = Euclidean()
 end
 (γ::SineHoleVariogram)(h) = begin
@@ -219,8 +219,8 @@ isstationary(::SineHoleVariogram) = true
 
 A composite (additive) model of variograms γ(h) = γ₁(h) + γ₂(h) + ⋯ + γₙ(h).
 """
-struct CompositeVariogram <: AbstractVariogram
-  γs::Vector{AbstractVariogram}
+struct CompositeVariogram <: Variogram
+  γs::Vector{Variogram}
   CompositeVariogram(g, gs...) = new([g, gs...])
 end
 (c::CompositeVariogram)(h) = sum(γ(h) for γ in c.γs)

@@ -3,7 +3,7 @@
 # Licensed under the ISC License. See LICENCE in the project root.
 # ------------------------------------------------------------------
 
-@recipe function f(γ::AbstractVariogram; maxlag=3.)
+@recipe function f(γ::Variogram; maxlag=3.)
   # discretize
   h = linspace(0, maxlag, 100)
 
