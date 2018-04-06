@@ -16,8 +16,8 @@ using RecipesBase
 # won't be neeeded in Julia v0.7
 using Parameters
 
-# extend pairwise for theoretical variograms
-import Distances: pairwise
+# extend result_type and pairwise for theoretical variograms
+import Distances: result_type, pairwise
 
 # variogram models
 include("empirical_variograms.jl")
