@@ -23,7 +23,8 @@ data2D = readtable(fname2D, delim='\t', coordnames=[:x,:y])
 # list of tests
 testfiles = [
   "empirical_variograms.jl",
-  "theoretical_variograms.jl"
+  "theoretical_variograms.jl",
+  "pairwise.jl"
 ]
 
 @testset "Variography.jl" begin
