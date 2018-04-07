@@ -32,30 +32,6 @@ Return result type of γ(x₁, x₂).
 result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) =
   promote_type(param_type(γ), result_type(γ.distance, x₁, x₂))
 
-"""
-    pairwise(γ, X)
-
-Evaluate variogram `γ` between all n² pairs of columns in a
-m-by-n matrix `X` efficiently.
-"""
-function pairwise(γ::Variogram, X::AbstractMatrix)
-  m, n = size(X)
-  Γ = Array{result_type(γ, X, X)}(n, n)
-  for j=1:n
-    xj = view(X, :, j)
-    for i=j+1:n
-      xi = view(X, :, i)
-      @inbounds Γ[i,j] = γ(xi, xj)
-    end
-    @inbounds Γ[j,j] = γ(xj, xj)
-    for i=1:j-1
-      @inbounds Γ[i,j] = Γ[j,i] # leverage the symmetry
-    end
-  end
-
-  Γ
-end
-
 #------------------
 # IMPLEMENTATIONS
 #------------------

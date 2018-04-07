@@ -22,6 +22,7 @@ import Distances: result_type, pairwise
 # variogram models
 include("empirical_variograms.jl")
 include("theoretical_variograms.jl")
+include("pairwise.jl")
 
 # plot recipes
 include("plotrecipes/empirical_variograms.jl")
