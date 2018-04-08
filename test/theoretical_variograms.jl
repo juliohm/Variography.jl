@@ -36,6 +36,18 @@
     @test !isnan(γ(0.)) && !isinf(γ(0.))
   end
 
+  # sill is defined for compositive stationary models
+  γ = CompositeVariogram(GaussianVariogram(sill=1.), ExponentialVariogram(sill=2.))
+  @test sill(γ) == 3.
+
+  # composite (additive) models via addition
+  γ = GaussianVariogram() + ExponentialVariogram() + SphericalVariogram()
+  @test γ isa CompositeVariogram
+  @test isstationary(γ)
+  @test sill(γ) == 3.
+  γ = γ + PowerVariogram()
+  @test !isstationary(γ)
+
   if ismaintainer || istravis
     @testset "Plot recipe" begin
       function plot_variograms(fname)
