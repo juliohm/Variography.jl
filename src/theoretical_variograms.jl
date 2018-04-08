@@ -18,6 +18,13 @@ Check if variogram `γ` possesses the 2nd-order stationary property.
 isstationary(::Variogram) = false
 
 """
+    sill(γ)
+
+Return the sill of the variogram when defined.
+"""
+sill(γ::Variogram) = γ.sill
+
+"""
     param_type(γ)
 
 Return the parameter (e.g. sill, range) type of the variogram.
@@ -205,6 +212,9 @@ end
 (γ::SineHoleVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::SineHoleVariogram) = true
 
+#------------------------
+# COMPOSITIVE VARIOGRAMS
+#------------------------
 """
     CompositeVariogram(γ₁, γ₂, ..., γₙ)
 
@@ -216,4 +226,15 @@ struct CompositeVariogram <: Variogram{Real,Metric}
 end
 (c::CompositeVariogram)(h) = sum(γ(h) for γ in c.γs)
 (c::CompositeVariogram)(x, y) = sum(γ(x,y) for γ in c.γs)
+isstationary(c::CompositeVariogram) = all(isstationary(γ) for γ in c.γs)
+sill(c::CompositeVariogram) = sum(sill(γ) for γ in c.γs)
 param_type(c::CompositeVariogram) = promote_type([param_type(γ) for γ in c.γs]...)
+
+"""
+    γ₁ + γ₂
+
+Return compositive (additive) model of variograms `γ₁` and `γ₂`.
+"""
++(γ₁::Variogram, γ₂::Variogram) = CompositeVariogram(γ₁, γ₂)
++(γ::Variogram, c::CompositeVariogram) = CompositeVariogram(γ, c.γs...)
++(c::CompositeVariogram, γ::Variogram) = CompositeVariogram(c.γs..., γ)

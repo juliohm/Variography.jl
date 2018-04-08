@@ -16,7 +16,8 @@ using RecipesBase
 # won't be neeeded in Julia v0.7
 using Parameters
 
-# extend result_type and pairwise for theoretical variograms
+# extend methods for theoretical variograms
+import Base: +
 import Distances: result_type, pairwise
 
 # variogram models
@@ -44,6 +45,7 @@ export
   SineHoleVariogram,
   CompositeVariogram,
   isstationary,
+  sill,
   pairwise
 
 end
