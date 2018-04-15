@@ -56,9 +56,9 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
     end
 
     # handle missing/invalid values
-    invalid = ismissing.(zdiff) .| isnan.(zdiff)
-    lags    = lags[!invalid]
-    zdiff   = zdiff[!invalid]
+    valid = .!(ismissing.(zdiff) .| isnan.(zdiff))
+    lags  = lags[valid]
+    zdiff = zdiff[valid]
 
     # default maximum lag
     maxlag == nothing && (maxlag = maximum(lags))
