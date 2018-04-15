@@ -55,15 +55,20 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
       end
     end
 
+    # handle missing/invalid values
+    invalid = ismissing.(zdiff) .| isnan.(zdiff)
+    lags    = lags[!invalid]
+    zdiff   = zdiff[!invalid]
+
     # default maximum lag
     maxlag == nothing && (maxlag = maximum(lags))
 
     # find bin for the pair
     binsize = maxlag / nbins
-    binidx = ceil.(Int, lags / binsize)
+    binidx  = ceil.(Int, lags / binsize)
 
     # discard lags greater than maximum lag
-    zdiff = zdiff[binidx .≤ nbins]
+    zdiff  = zdiff[binidx .≤ nbins]
     binidx = binidx[binidx .≤ nbins]
 
     # place squared differences at the bins

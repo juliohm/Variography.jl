@@ -11,6 +11,8 @@ importall GeoStatsBase
 
 using Distances
 using SpecialFunctions: besselk
+using StaticArrays
+using Missings
 using RecipesBase
 
 # won't be neeeded in Julia v0.7
