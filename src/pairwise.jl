@@ -32,14 +32,16 @@ end
 
 Evaluate variogram `γ` between all `locations` in `domain`.
 """
-function pairwise(γ::Variogram, domain::AbstractDomain, locations::AbstractVector{Int})
+function pairwise(γ::Variogram, domain::AbstractDomain{T,N},
+                  locations::AbstractVector{Int}) where {T<:Real,N}
+  xi = MVector{N,T}()
+  xj = MVector{N,T}()
   n = length(locations)
-  x = coordinates(domain, locations[1])
-  Γ = Array{result_type(γ, x, x)}(n, n)
+  Γ = Matrix{result_type(γ, xi, xj)}(n, n)
   for j=1:n
-    xj = coordinates(domain, locations[j])
+    coordinates!(xj, domain, locations[j])
     for i=j+1:n
-      xi = coordinates(domain, locations[i])
+      coordinates!(xi, domain, locations[i])
       @inbounds Γ[i,j] = γ(xi, xj)
     end
     @inbounds Γ[j,j] = γ(xj, xj)
@@ -56,18 +58,18 @@ end
 
 Evaluate variogram `γ` between `locations₁` and `locations₂` in `domain`.
 """
-function pairwise(γ::Variogram, domain::AbstractDomain,
+function pairwise(γ::Variogram, domain::AbstractDomain{T,N},
                   locations₁::AbstractVector{Int},
-                  locations₂::AbstractVector{Int})
+                  locations₂::AbstractVector{Int}) where {T<:Real,N}
+  xi = MVector{N,T}()
+  xj = MVector{N,T}()
   m = length(locations₁)
   n = length(locations₂)
-  x₁ = coordinates(domain, locations₁[1])
-  x₂ = coordinates(domain, locations₂[1])
-  Γ = Array{result_type(γ, x₁, x₂)}(m, n)
+  Γ = Array{result_type(γ, xi, xj)}(m, n)
   for j=1:n
-    xj = coordinates(domain, locations₂[j])
+    coordinates!(xj, domain, locations₂[j])
     for i=1:m
-      xi = coordinates(domain, locations₁[i])
+      coordinates!(xi, domain, locations₁[i])
       @inbounds Γ[i,j] = γ(xi, xj)
     end
   end
