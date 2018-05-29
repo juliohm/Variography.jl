@@ -18,9 +18,16 @@ Check if variogram `γ` possesses the 2nd-order stationary property.
 isstationary(::Variogram) = false
 
 """
+    range(γ)
+
+Return the range of the variogram `γ` when defined.
+"""
+Base.range(γ::Variogram) = γ.range
+
+"""
     sill(γ)
 
-Return the sill of the variogram when defined.
+Return the sill of the variogram `γ` when defined.
 """
 sill(γ::Variogram) = γ.sill
 
