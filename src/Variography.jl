@@ -9,6 +9,7 @@ module Variography
 
 importall GeoStatsBase
 
+using Optim
 using Distances
 using SpecialFunctions: besselk
 using StaticArrays
@@ -26,6 +27,7 @@ import Distances: result_type, pairwise
 include("empirical_variograms.jl")
 include("theoretical_variograms.jl")
 include("pairwise.jl")
+include("fitting.jl")
 
 # plot recipes
 include("plotrecipes/empirical_variograms.jl")
@@ -48,6 +50,10 @@ export
   CompositeVariogram,
   isstationary,
   sill,
-  pairwise
+  pairwise,
+
+  # fitting methods
+  WeightedLeastSquares,
+  fit
 
 end
