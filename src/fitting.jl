@@ -86,7 +86,7 @@ function fit_impl(::Type{V}, γ::EmpiricalVariogram,
   u  = [xmax, ymax, ymax]
 
   # solve optimization problem
-  sol = optimize(J, pₒ, l, u)
+  sol = optimize(J, l, u, pₒ)
   err = Optim.minimum(sol)
   p   = Optim.minimizer(sol)
 
