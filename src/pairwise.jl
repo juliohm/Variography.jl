@@ -11,7 +11,8 @@ m-by-n matrix `X` efficiently.
 """
 function pairwise(γ::Variogram, X::AbstractMatrix)
   m, n = size(X)
-  Γ = Array{result_type(γ, X, X)}(n, n)
+  R = result_type(γ, X, X)
+  Γ = Array{R}(undef, n, n)
   for j=1:n
     xj = view(X, :, j)
     for i=j+1:n
@@ -34,10 +35,11 @@ Evaluate variogram `γ` between all `locations` in `domain`.
 """
 function pairwise(γ::Variogram, domain::AbstractDomain{T,N},
                   locations::AbstractVector{Int}) where {T<:Real,N}
-  xi = MVector{N,T}()
-  xj = MVector{N,T}()
+  xi = MVector{N,T}(undef)
+  xj = MVector{N,T}(undef)
   n = length(locations)
-  Γ = Matrix{result_type(γ, xi, xj)}(n, n)
+  R = result_type(γ, xi, xj)
+  Γ = Matrix{R}(undef, n, n)
   for j=1:n
     coordinates!(xj, domain, locations[j])
     for i=j+1:n
@@ -61,11 +63,12 @@ Evaluate variogram `γ` between `locations₁` and `locations₂` in `domain`.
 function pairwise(γ::Variogram, domain::AbstractDomain{T,N},
                   locations₁::AbstractVector{Int},
                   locations₂::AbstractVector{Int}) where {T<:Real,N}
-  xi = MVector{N,T}()
-  xj = MVector{N,T}()
+  xi = MVector{N,T}(undef)
+  xj = MVector{N,T}(undef)
   m = length(locations₁)
   n = length(locations₂)
-  Γ = Array{result_type(γ, xi, xj)}(m, n)
+  R = result_type(γ, xi, xj)
+  Γ = Array{R}(undef, m, n)
   for j=1:n
     coordinates!(xj, domain, locations₂[j])
     for i=1:m

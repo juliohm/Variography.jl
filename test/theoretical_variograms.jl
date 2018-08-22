@@ -1,5 +1,5 @@
 @testset "Theoretical variograms" begin
-  h = linspace(0,10)
+  h = range(0, stop=10, length=50)
   x, y = rand(3), rand(3)
 
   # stationary variogram models
@@ -22,22 +22,22 @@
   @test all(!isstationary(γ) for γ ∈ γn)
 
   # variograms are symmetric under Euclidean distance
-  for γ ∈ (γs ∪ γn ∪ γnd ∪ [CompositeVariogram(γs..., γn..., γnd...)])
+  for γ in (γs ∪ γn ∪ γnd ∪ [sum(γs) + sum(γn) + sum(γnd)])
     @test γ(x, y) ≈ γ(y, x)
   end
 
   # some variograms are non-decreasing
-  for γ ∈ (γnd ∪ [CompositeVariogram(γnd...)])
-    @test all(γ(h) .≤ γ(h+1))
+  for γ in (γnd ∪ [sum(γnd)])
+    @test all(γ(h) .≤ γ(h.+1))
   end
 
   # variograms are valid at the origin
-  for γ ∈ (γs ∪ γn ∪ γnd)
+  for γ in (γs ∪ γn ∪ γnd)
     @test !isnan(γ(0.)) && !isinf(γ(0.))
   end
 
   # sill is defined for compositive stationary models
-  γ = CompositeVariogram(GaussianVariogram(sill=1.), ExponentialVariogram(sill=2.))
+  γ = GaussianVariogram(sill=1.) + ExponentialVariogram(sill=2.)
   @test sill(γ) == 3.
 
   # composite (additive) models via addition
@@ -45,8 +45,7 @@
   @test γ isa CompositeVariogram
   @test isstationary(γ)
   @test sill(γ) == 3.
-  γ = γ + PowerVariogram()
-  @test !isstationary(γ)
+  @test !isstationary(γ + PowerVariogram())
 
   if ismaintainer || istravis
     @testset "Plot recipe" begin

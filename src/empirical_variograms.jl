@@ -16,9 +16,9 @@ Alternatively, compute the (cross-)variogram for the variables
 
 ## Parameters
 
-  * nbins - number of bins (default to 20)
-  * maxlag - maximum lag distance (default to maximum lag of data)
-  * distance - custom distance function
+  * nlags - number of lags (default to 20)
+  * maxlag - maximum lag (default to maximum lag of data)
+  * distance - custom distance function (default to Euclidean distance)
 """
 struct EmpiricalVariogram{T<:Real,V,D<:Metric}
   abscissa::Vector{Float64}
@@ -26,10 +26,10 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
   counts::Vector{Int}
 
   function EmpiricalVariogram{T,V,D}(X, z₁, z₂,
-                                     nbins, maxlag,
+                                     nlags, maxlag,
                                      distance) where {T<:Real,V,D<:Metric}
     # sanity checks
-    @assert nbins > 0 "number of bins must be positive"
+    @assert nlags > 0 "number of lags must be positive"
     if maxlag ≠ nothing
       @assert maxlag > 0 "maximum lag distance must be positive"
     end
@@ -42,8 +42,8 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
     R = result_type(distance, view(X,:,1), view(X,:,1))
 
     # compute pairwise distance
-    lags = Vector{R}(npairs)
-    zdiff = Vector{V}(npairs)
+    lags  = Vector{R}(undef, npairs)
+    zdiff = Vector{V}(undef, npairs)
     idx = 1
     for j=1:npoints
       xj = view(X,:,j)
@@ -64,27 +64,27 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
     maxlag == nothing && (maxlag = maximum(lags))
 
     # find bin for the pair
-    binsize = maxlag / nbins
+    binsize = maxlag / nlags
     binidx  = ceil.(Int, lags / binsize)
 
     # discard lags greater than maximum lag
-    zdiff  = zdiff[binidx .≤ nbins]
-    binidx = binidx[binidx .≤ nbins]
+    zdiff  = zdiff[binidx .≤ nlags]
+    binidx = binidx[binidx .≤ nlags]
 
     # place squared differences at the bins
-    bins = [zdiff[binidx .== i] for i=1:nbins]
+    bins = [zdiff[binidx .== i] for i=1:nlags]
 
     # variogram abscissa, ordinate, and count
-    abscissa = linspace(binsize/2, maxlag - binsize/2, nbins)
-    ordinate = [length(bin) > 0 ? mean(bin)/2 : NaN for bin in bins]
+    abscissa = range(binsize/2, stop=maxlag - binsize/2, length=nlags)
+    ordinate = [length(bin) > 0 ? sum(bin)/2length(bin) : NaN for bin in bins]
     counts   = length.(bins)
 
     new(abscissa, ordinate, counts)
   end
 end
 
-EmpiricalVariogram(X, z₁, z₂=z₁; nbins=20, maxlag=nothing, distance=Euclidean()) =
-  EmpiricalVariogram{eltype(X),eltype(z₁),typeof(distance)}(X, z₁, z₂, nbins, maxlag, distance)
+EmpiricalVariogram(X, z₁, z₂=z₁; nlags=20, maxlag=nothing, distance=Euclidean()) =
+  EmpiricalVariogram{eltype(X),eltype(z₁),typeof(distance)}(X, z₁, z₂, nlags, maxlag, distance)
 
 function EmpiricalVariogram(spatialdata::S, var₁::Symbol, var₂::Symbol=var₁;
                             kwargs...) where {S<:AbstractSpatialData}

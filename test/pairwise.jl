@@ -1,9 +1,9 @@
 @testset "Pairwise evaluation" begin
-  Γ = pairwise(GaussianVariogram(), eye(3))
+  Γ = pairwise(GaussianVariogram(), Matrix(1.0I, 3, 3))
   @test eltype(Γ) == Float64
   @test issymmetric(Γ)
 
-  Γ_f = pairwise(GaussianVariogram(range=1f0, sill=1f0, nugget=0f0), eye(Float32, 3))
+  Γ_f = pairwise(GaussianVariogram(range=1f0, sill=1f0, nugget=0f0), Matrix(1.0f0I, 3, 3))
   @test eltype(Γ_f) == Float32
   @test issymmetric(Γ_f)
 

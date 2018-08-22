@@ -5,7 +5,7 @@
 
 @recipe function f(γ::Variogram; maxlag=3.)
   # discretize
-  h = linspace(0, maxlag, 100)
+  h = range(0, stop=maxlag, length=100)
 
   seriestype --> :path
   xlabel --> "Lag h"

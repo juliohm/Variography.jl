@@ -7,16 +7,13 @@ __precompile__()
 
 module Variography
 
-importall GeoStatsBase
+using GeoStatsBase
 
 using Optim
 using Distances
-using SpecialFunctions: besselk
+using SpecialFunctions: besselk, gamma
 using StaticArrays
-using Missings
 using RecipesBase
-
-# won't be neeeded in Julia v0.7
 using Parameters
 
 # extend methods for theoretical variograms

@@ -57,7 +57,7 @@ function fit(::Type{Variogram}, γ::EmpiricalVariogram,
   errs   = last.(res)
 
   # return best candidate
-  varios[indmin(errs)]
+  varios[argmin(errs)]
 end
 
 function fit_impl(::Type{V}, γ::EmpiricalVariogram,
@@ -73,7 +73,10 @@ function fit_impl(::Type{V}, γ::EmpiricalVariogram,
   w = map(algo.weightfun, x)
 
   # objective function
-  J(p) = w ⋅ (V(range=p[1], sill=p[2], nugget=p[3])(x) - y).^2
+  J(p) = begin
+    g = V(range=p[1], sill=p[2], nugget=p[3])
+    sum(w[i]*(g(x[i]) - y[i])^2 for i in eachindex(x))
+  end
 
   # auxiliary variables
   xmax, ymax = maximum(x), maximum(y)
