@@ -212,7 +212,7 @@ end
 
   # shift lag by machine precision to
   # avoid explosion at the origin
-  h = h + eps(eltype(h))
+  h = h .+ eps(eltype(h))
 
   (s - n) * (1 .- sin.(π*h/r)./(π*h/r)) .+ n
 end

@@ -3,7 +3,7 @@ using GeoStatsDevTools
 using GeoStatsImages
 using LinearAlgebra
 using Plots; gr(size=(600,400))
-# using VisualRegressionTests
+using VisualRegressionTests
 using Test
 
 # list of maintainers
