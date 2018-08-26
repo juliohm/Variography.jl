@@ -27,7 +27,8 @@
     end
   end
 
-  seriestype --> :scatter
+  seriestype --> :scatterpath
+  linecolor --> :black
   xlim --> (0, maximum(x) + binsize/2)
   xlabel --> "Lag h"
   ylabel --> "Variogram(h)"
