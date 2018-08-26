@@ -16,7 +16,7 @@ datadir = joinpath(@__DIR__,"data")
 
 # load data sets
 fname2D = joinpath(datadir,"data2D.tsv")
-data2D = readtable(fname2D, delim='\t', coordnames=[:x,:y])
+data2D = readgeotable(fname2D, delim='\t', coordnames=[:x,:y])
 
 # empirical variograms
 TI = training_image("WalkerLake")[1:20,1:20,1]
