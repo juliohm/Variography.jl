@@ -27,7 +27,7 @@
         png(fname)
       end
       refimg = joinpath(datadir,"Fitting.png")
-      @test test_images(VisualTest(plot_fit, refimg), popup=!istravis) |> success
+      @test test_images(VisualTest(plot_fit, refimg), popup=!istravis, tol=0.1) |> success
     end
   end
 end

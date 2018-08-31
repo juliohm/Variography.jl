@@ -62,7 +62,7 @@
         png(fname)
       end
       refimg = joinpath(datadir,"TheoreticalVariograms.png")
-      @test test_images(VisualTest(plot_variograms, refimg), popup=!istravis) |> success
+      @test test_images(VisualTest(plot_variograms, refimg), popup=!istravis, tol=0.1) |> success
     end
   end
 end
