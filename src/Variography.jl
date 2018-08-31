@@ -7,8 +7,10 @@ module Variography
 
 using GeoStatsBase
 
+using Printf
 using Optim
 using Distances
+using Statistics
 using SpecialFunctions: besselk, gamma
 using StaticArrays
 using RecipesBase
@@ -27,6 +29,7 @@ include("fitting.jl")
 # plot recipes
 include("plotrecipes/empirical_variograms.jl")
 include("plotrecipes/theoretical_variograms.jl")
+include("plotrecipes/hscatter.jl")
 
 export
   # empirical variograms

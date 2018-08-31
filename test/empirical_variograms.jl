@@ -7,7 +7,7 @@
   @test n == [0, 3]
 
   # test geodataframe interface
-  γ = EmpiricalVariogram(data2D, :value, nlags=20, maxlag=1.)
+  γ = EmpiricalVariogram(psetdata2D, :z, nlags=20, maxlag=1.)
   x, y, n = values(γ)
   @test length(x) == 20
   @test length(y) == 20
