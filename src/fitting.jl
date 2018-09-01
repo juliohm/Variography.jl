@@ -13,15 +13,16 @@ abstract type FitAlgo end
 """
     WeightedLeastSquares(weightfun)
 
-Fit theoretical variogram using weighted least squares.
-The default weighting function `weightfun` is `x -> 1`
-(i.e. no weighting)
+Fit theoretical variogram using weighted least squares
+with weighting function `weightfun` (e.g. h -> 1/h).
+If not weighting function is provided, bin counts of
+empirical variogram are normalized and used as weights.
 """
 struct WeightedLeastSquares <: FitAlgo
-  weightfun::Function
+  weightfun::Union{Function,Nothing}
 end
 
-WeightedLeastSquares() = WeightedLeastSquares(x -> 1.)
+WeightedLeastSquares() = WeightedLeastSquares(nothing)
 
 """
     fit(V, γ, [algo])
@@ -68,9 +69,11 @@ function fit_impl(::Type{V}, γ::EmpiricalVariogram,
   # discard invalid bins
   x = x[n .> 0]
   y = y[n .> 0]
+  n = n[n .> 0]
 
   # evaluate weights
-  w = map(algo.weightfun, x)
+  f = algo.weightfun
+  w = f ≠ nothing ? map(f, x) : n / sum(n)
 
   # objective function
   J(p) = begin
