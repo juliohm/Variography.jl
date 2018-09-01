@@ -11,7 +11,7 @@ simulation, and many other geostatistical algorithms.
 Get the latest stable release with Julia's package manager:
 
 ```julia
-Pkg.add("Variography")
+] add Variography
 ```
 
 ## Usage
