@@ -49,6 +49,7 @@ export
   isstationary,
   sill,
   pairwise,
+  pairwise!,
 
   # fitting methods
   WeightedLeastSquares,
