@@ -13,6 +13,18 @@ function pairwise(γ::Variogram, X::AbstractMatrix)
   m, n = size(X)
   R = result_type(γ, X, X)
   Γ = Array{R}(undef, n, n)
+  pairwise!(Γ, γ, X)
+
+  Γ
+end
+
+"""
+    pairwise!(Γ, γ, X)
+
+Non-allocating pairwise evaluation.
+"""
+function pairwise!(Γ, γ::Variogram, X::AbstractMatrix)
+  m, n = size(X)
   for j=1:n
     xj = view(X, :, j)
     for i=j+1:n
@@ -24,8 +36,6 @@ function pairwise(γ::Variogram, X::AbstractMatrix)
       @inbounds Γ[i,j] = Γ[j,i] # leverage the symmetry
     end
   end
-
-  Γ
 end
 
 """
