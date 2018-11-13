@@ -18,7 +18,6 @@ using Parameters
 
 # extend methods for theoretical variograms
 import Base: +
-import Distances: result_type, pairwise
 
 # variogram models
 include("empirical_variograms.jl")

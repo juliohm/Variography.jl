@@ -39,7 +39,7 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
     npairs = (npoints * (npoints-1)) ÷ 2
 
     # result type of distance between coordinates
-    R = result_type(distance, view(X,:,1), view(X,:,1))
+    R = Distances.result_type(distance, view(X,:,1), view(X,:,1))
 
     # compute pairwise distance
     lags  = Vector{R}(undef, npairs)

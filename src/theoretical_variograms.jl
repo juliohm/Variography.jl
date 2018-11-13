@@ -44,7 +44,7 @@ param_type(::Variogram{T,D}) where {T<:Real,D<:Metric} = T
 Return result type of γ(x₁, x₂).
 """
 result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) =
-  promote_type(param_type(γ), result_type(γ.distance, x₁, x₂))
+  promote_type(param_type(γ), Distances.result_type(γ.distance, x₁, x₂))
 
 #------------------
 # IMPLEMENTATIONS
