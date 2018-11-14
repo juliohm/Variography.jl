@@ -6,7 +6,7 @@
         png(fname)
       end
       refimg = joinpath(datadir,"HScatter.png")
-      @test test_images(VisualTest(plot_hscatter, refimg), popup=!istravis, tol=0.1) |> success
+      @test test_images(VisualTest(plot_hscatter, refimg), popup=!istravis, tol=0.15) |> success
     end
   end
 end
