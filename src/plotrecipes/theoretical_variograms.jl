@@ -4,10 +4,11 @@
 # ------------------------------------------------------------------
 
 @recipe function f(γ::Variogram; maxlag=3.)
-  # discretize
-  h = range(0, stop=maxlag, length=100)
+  # start at 1e-6 instead of 0 to avoid nugget artifact in plot
+  h = range(1e-6, stop=maxlag, length=100)
 
   seriestype --> :path
+  xlim --> (0, maxlag)
   xlabel --> "Lag h"
   ylabel --> "Variogram(h)"
   label --> "variogram"
