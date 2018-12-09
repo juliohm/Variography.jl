@@ -6,6 +6,7 @@
 module Variography
 
 using GeoStatsBase
+using GeoStatsDevTools
 
 using Printf
 using Optim
@@ -33,6 +34,7 @@ include("plotrecipes/hscatter.jl")
 export
   # empirical variograms
   EmpiricalVariogram,
+  DirectionalVariogram,
 
   # theoretical variograms
   Variogram,

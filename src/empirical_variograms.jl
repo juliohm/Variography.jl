@@ -56,7 +56,7 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
     end
 
     # handle missing/invalid values
-    valid = .!(ismissing.(zdiff) .| isnan.(zdiff))
+    valid = @. !(ismissing(zdiff) | isnan(zdiff))
     lags  = lags[valid]
     zdiff = zdiff[valid]
 
@@ -88,21 +88,73 @@ EmpiricalVariogram(X, z₁, z₂=z₁; nlags=20, maxlag=nothing, distance=Euclid
 
 function EmpiricalVariogram(spatialdata::S, var₁::Symbol, var₂::Symbol=var₁;
                             kwargs...) where {S<:AbstractSpatialData}
+  T = coordtype(spatialdata)
+  N = ndims(spatialdata)
   npts = npoints(spatialdata)
 
-  X = hcat([coordinates(spatialdata, i) for i in 1:npts]...)
+  X = Matrix{T}(undef, N, npts)
+  for i in 1:npts
+    coordinates!(view(X,:,i), spatialdata, i)
+  end
   z₁ = [value(spatialdata, i, var₁) for i in 1:npts]
   z₂ = var₁ ≠ var₂ ? [value(spatialdata, i, var₂) for i in 1:npts] : z₁
 
   EmpiricalVariogram(X, z₁, z₂; kwargs...)
 end
 
+function EmpiricalVariogram(partition::P, var₁::Symbol, var₂::Symbol=var₁;
+                            kwargs...) where {P<:AbstractPartition}
+  spatialdata, state = iterate(partition)
+  γ = EmpiricalVariogram(spatialdata, var₁, var₂; kwargs...)
+  while state < length(partition)
+    spatialdata, state = iterate(partition, state)
+    γiter = EmpiricalVariogram(spatialdata, var₁, var₂; kwargs...)
+    update!(γ, γiter)
+  end
+
+  γ
+end
+
+function DirectionalVariogram(spatialdata::S, direction::NTuple,
+                              var₁::Symbol, var₂::Symbol=var₁;
+                              kwargs...) where {S<:AbstractSpatialData}
+  EmpiricalVariogram(DirectionalPartition(spatialdata, direction), var₁, var₂; kwargs...)
+end
+
 """
-    values(γemp)
+    update!(γₐ, γᵦ)
+
+Update the empirical variogram `γₐ` with the empirical variogram `γᵦ`
+assuming that both have the same abscissa.
+"""
+function update!(γₐ::EmpiricalVariogram{T,V,D},
+                 γᵦ::EmpiricalVariogram{T,V,D}) where {T<:Real,V,D<:Metric}
+  yₐ = γₐ.ordinate
+  yᵦ = γᵦ.ordinate
+  nₐ = γₐ.counts
+  nᵦ = γᵦ.counts
+
+  for i in eachindex(yₐ)
+    if nᵦ[i] > 0
+      if nₐ[i] > 0
+        yₐ[i] = (yₐ[i]*nₐ[i] + yᵦ[i]*nᵦ[i]) / (nₐ[i] + nᵦ[i])
+      else
+        yₐ[i] = yᵦ[i]
+      end
+    end
+  end
+
+  @. nₐ = nₐ + nᵦ
+
+  nothing
+end
+
+"""
+    values(γ)
 
 Returns the center of the bins, the mean squared differences divided by 2
 and the number of squared differences at the bins for a given empirical
-variogram `γemp`.
+variogram `γ`.
 
 ## Examples
 
