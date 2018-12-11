@@ -14,11 +14,17 @@ Computes the empirical (a.k.a. experimental) omnidirectional
 Alternatively, compute the (cross-)variogram for the variables
 `var₁` and `var₂` stored in a `spatialdata` object.
 
+    EmpiricalVariogram(partition, var₁, var₂=var₁; [optional parameters])
+
+Alternatively, compute the (cross-)variogram on a `partition` of the data.
+
 ## Parameters
 
   * nlags - number of lags (default to 20)
   * maxlag - maximum lag (default to maximum lag of data)
   * distance - custom distance function (default to Euclidean distance)
+
+See also: [`DirectionalVariogram`](@ref)
 """
 struct EmpiricalVariogram{T<:Real,V,D<:Metric}
   abscissa::Vector{Float64}
@@ -115,6 +121,20 @@ function EmpiricalVariogram(partition::P, var₁::Symbol, var₂::Symbol=var₁;
   γ
 end
 
+"""
+    DirectionalVariogram(spatialdata, direction, var₁, var₂=var₁; [optional parameters])
+
+Computes the empirical (cross-)variogram for the variables `var₁` and `var₂` stored in
+`spatialdata` along a given `direction`.
+
+### Notes
+
+A `DirectionalVariogram` is just a function that first partitions the `spatialdata`
+using a `DirectionalPartition` and then passes the result to the corresponding
+`EmpiricalVariogram` constructor.
+
+See also: [`EmpiricalVariogram`](@ref)
+"""
 function DirectionalVariogram(spatialdata::S, direction::NTuple,
                               var₁::Symbol, var₂::Symbol=var₁;
                               kwargs...) where {S<:AbstractSpatialData}
