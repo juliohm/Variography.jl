@@ -2,6 +2,7 @@ using Variography
 using GeoStatsDevTools
 using GeoStatsImages
 using LinearAlgebra
+using DelimitedFiles
 using Plots; gr(size=(600,400))
 using VisualRegressionTests
 using Test, Pkg

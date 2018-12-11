@@ -6,7 +6,7 @@
   @test isnan(y[1]) && y[2] == 0.
   @test n == [0, 3]
 
-  # test geodataframe interface
+  # test spatial data interface
   γ = EmpiricalVariogram(psetdata2D, :z, nlags=20, maxlag=1.)
   x, y, n = values(γ)
   @test length(x) == 20
@@ -20,6 +20,15 @@
   @test isnan(y[1]) && y[2] == 0.
   @test n == [0, 3]
 
+  # directional variogram and known anisotropy ratio
+  imgdata = readdlm(joinpath(datadir,"anisotropic.tsv"))
+  geodata = RegularGridData{Float64}(Dict(:z => imgdata))
+  γhor = DirectionalVariogram(geodata, (1.,0.), :z, maxlag=50.)
+  γver = DirectionalVariogram(geodata, (0.,1.), :z, maxlag=50.)
+  γₕ = fit(GaussianVariogram, γhor)
+  γᵥ = fit(GaussianVariogram, γver)
+  @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
+
   if ismaintainer || istravis
     @testset "Plot recipe" begin
       function plot_variograms(fname)
@@ -28,6 +37,17 @@
       end
       refimg = joinpath(datadir,"EmpiricalVariograms.png")
       @test test_images(VisualTest(plot_variograms, refimg), popup=!istravis, tol=0.1) |> success
+
+      function plot_directional(fname)
+        p1 = plot(γhor, showbins=false, label="horizontal")
+        plot!(γver, showbins=false, label="vertical")
+        p2 = plot(γₕ, maxlag=50., label="horizontal")
+        plot!(γᵥ, maxlag=50., label="vertical")
+        plot(p1, p2, layout=(2,1))
+        png(fname)
+      end
+      refimg = joinpath(datadir,"DirectionalVariograms.png")
+      @test test_images(VisualTest(plot_directional, refimg), popup=!istravis, tol=0.1) |> success
     end
   end
 end
