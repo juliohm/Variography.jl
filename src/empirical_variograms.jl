@@ -110,10 +110,14 @@ end
 
 function EmpiricalVariogram(partition::P, var₁::Symbol, var₂::Symbol=var₁;
                             kwargs...) where {P<:AbstractPartition}
-  spatialdata, state = iterate(partition)
+  # retain spatial data with at least 2 points
+  filtered = Iterators.filter(d -> npoints(d) > 1, partition)
+
+  @assert !isempty(filtered) "invalid partition of spatial data"
+
+  spatialdata, _ = iterate(filtered)
   γ = EmpiricalVariogram(spatialdata, var₁, var₂; kwargs...)
-  while state < length(partition)
-    spatialdata, state = iterate(partition, state)
+  for spatialdata in Iterators.drop(filtered, 1)
     γiter = EmpiricalVariogram(spatialdata, var₁, var₂; kwargs...)
     update!(γ, γiter)
   end
@@ -127,6 +131,9 @@ end
 Computes the empirical (cross-)variogram for the variables `var₁` and `var₂` stored in
 `spatialdata` along a given `direction`.
 
+Optional parameters include the parameters for `EmpiricalVariogram` and the parameters
+for `DirectionalPartition`.
+
 ### Notes
 
 A `DirectionalVariogram` is just a function that first partitions the `spatialdata`
@@ -137,8 +144,8 @@ See also: [`EmpiricalVariogram`](@ref)
 """
 function DirectionalVariogram(spatialdata::S, direction::NTuple,
                               var₁::Symbol, var₂::Symbol=var₁;
-                              kwargs...) where {S<:AbstractSpatialData}
-  EmpiricalVariogram(DirectionalPartition(spatialdata, direction), var₁, var₂; kwargs...)
+                              atol=10., btol=0.95, kwargs...) where {S<:AbstractSpatialData}
+  EmpiricalVariogram(DirectionalPartition(spatialdata, direction; atol=atol, btol=btol), var₁, var₂; kwargs...)
 end
 
 """
