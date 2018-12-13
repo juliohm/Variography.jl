@@ -21,7 +21,7 @@ Alternatively, compute the (cross-)variogram on a `partition` of the data.
 ## Parameters
 
   * nlags - number of lags (default to 20)
-  * maxlag - maximum lag (default to maximum lag of data)
+  * maxlag - maximum lag (default to half of maximum lag of data)
   * distance - custom distance function (default to Euclidean distance)
 
 See also: [`DirectionalVariogram`](@ref)
@@ -67,7 +67,7 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
     zdiff = zdiff[valid]
 
     # default maximum lag
-    maxlag == nothing && (maxlag = maximum(lags))
+    maxlag == nothing && (maxlag = maximum(lags) / 2)
 
     # find bin for the pair
     binsize = maxlag / nlags
