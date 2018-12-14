@@ -58,7 +58,7 @@ Optionally, use a custom distance `d`.
 @with_kw struct GaussianVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
   range::T  = 1.
   sill::T   = 1.
-  nugget::T = 0.
+  nugget::T = 1e-4 # positive nugget for numerical stability
   distance::D = Euclidean()
 end
 (γ::GaussianVariogram)(h) = @. (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range)^2)) + (h > 0) * γ.nugget
