@@ -90,7 +90,7 @@ struct EmpiricalVariogram
 
       new(abscissa, ordinate, counts)
     else
-      new(abscissa, [NaN for i=1:nlags], [0 for i=1:nlags])
+      new(abscissa, fill(NaN, nlags), fill(0, nlags))
     end
   end
 end
