@@ -20,6 +20,14 @@
   @test isnan(y[1]) && y[2] == 0.
   @test n == [0, 3]
 
+  # empirical variogram with only missing data
+  X = rand(3,2); z = [NaN, NaN, NaN]
+  γ = EmpiricalVariogram(X, z, maxlag=1., nlags=5)
+  x, y, n = values(γ)
+  @test x == [.1, .3, .5, .7, .9]
+  @test all(isnan.(y))
+  @test all(iszero.(n))
+
   # directional variogram and known anisotropy ratio
   imgdata = readdlm(joinpath(datadir,"anisotropic.tsv"))
   geodata = RegularGridData{Float64}(Dict(:z => imgdata))

@@ -61,31 +61,40 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
       end
     end
 
-    # handle missing/invalid values
-    valid = @. !(ismissing(zdiff) | isnan(zdiff))
-    lags  = lags[valid]
-    zdiff = zdiff[valid]
-
     # default maximum lag
     maxlag == nothing && (maxlag = maximum(lags) / 2)
 
-    # find bin for the pair
+    # corresponding bin size
     binsize = maxlag / nlags
-    binidx  = ceil.(Int, lags / binsize)
 
-    # discard lags greater than maximum lag
-    zdiff  = zdiff[binidx .≤ nlags]
-    binidx = binidx[binidx .≤ nlags]
-
-    # place squared differences at the bins
-    bins = [zdiff[binidx .== i] for i=1:nlags]
-
-    # variogram abscissa, ordinate, and count
+    # variogram abscissa
     abscissa = range(binsize/2, stop=maxlag - binsize/2, length=nlags)
-    ordinate = [length(bin) > 0 ? sum(bin)/2length(bin) : NaN for bin in bins]
-    counts   = length.(bins)
 
-    new(abscissa, ordinate, counts)
+    # handle missing/invalid values
+    valid = @. !(ismissing(zdiff) | isnan(zdiff))
+
+    if any(valid)
+      lags  = lags[valid]
+      zdiff = zdiff[valid]
+
+      # find bin for the pair
+      binidx  = ceil.(Int, lags / binsize)
+
+      # discard lags greater than maximum lag
+      zdiff  = zdiff[binidx .≤ nlags]
+      binidx = binidx[binidx .≤ nlags]
+
+      # place squared differences at the bins
+      bins = [zdiff[binidx .== i] for i=1:nlags]
+
+      # variogram ordinate and count
+      ordinate = [length(bin) > 0 ? sum(bin)/2length(bin) : NaN for bin in bins]
+      counts   = length.(bins)
+
+      new(abscissa, ordinate, counts)
+    else
+      new(abscissa, [NaN for i=1:nlags], [0 for i=1:nlags])
+    end
   end
 end
 
