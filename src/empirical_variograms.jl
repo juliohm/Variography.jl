@@ -26,14 +26,12 @@ Alternatively, compute the (cross-)variogram on a `partition` of the data.
 
 See also: [`DirectionalVariogram`](@ref)
 """
-struct EmpiricalVariogram{T<:Real,V,D<:Metric}
+struct EmpiricalVariogram
   abscissa::Vector{Float64}
   ordinate::Vector{Float64}
   counts::Vector{Int}
 
-  function EmpiricalVariogram{T,V,D}(X, z₁, z₂,
-                                     nlags, maxlag,
-                                     distance) where {T<:Real,V,D<:Metric}
+  function EmpiricalVariogram(X, z₁, z₂, nlags, maxlag, distance)
     # sanity checks
     @assert nlags > 0 "number of lags must be positive"
     if maxlag ≠ nothing
@@ -44,19 +42,18 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
     npoints = size(X, 2)
     npairs = (npoints * (npoints-1)) ÷ 2
 
-    # result type of distance between coordinates
-    R = Distances.result_type(distance, view(X,:,1), view(X,:,1))
-
     # compute pairwise distance
-    lags  = Vector{R}(undef, npairs)
-    zdiff = Vector{V}(undef, npairs)
+    lags  = Vector{Float64}(undef, npairs)
+    zdiff = Vector{Float64}(undef, npairs)
     idx = 1
     for j=1:npoints
       xj = view(X,:,j)
       for i=j+1:npoints
         xi = view(X,:,i)
-        @inbounds lags[idx] = evaluate(distance, xi, xj)
-        @inbounds zdiff[idx] = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
+        @inbounds δx = evaluate(distance, xi, xj)
+        @inbounds δz = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
+        @inbounds lags[idx] = δx
+        @inbounds zdiff[idx] = ismissing(δz) ? NaN : δz
         idx += 1
       end
     end
@@ -71,7 +68,7 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
     abscissa = range(binsize/2, stop=maxlag - binsize/2, length=nlags)
 
     # handle missing/invalid values
-    valid = @. !(ismissing(zdiff) | isnan(zdiff))
+    valid = @. !isnan(zdiff)
 
     if any(valid)
       lags  = lags[valid]
@@ -99,7 +96,7 @@ struct EmpiricalVariogram{T<:Real,V,D<:Metric}
 end
 
 EmpiricalVariogram(X, z₁, z₂=z₁; nlags=20, maxlag=nothing, distance=Euclidean()) =
-  EmpiricalVariogram{eltype(X),eltype(z₁),typeof(distance)}(X, z₁, z₂, nlags, maxlag, distance)
+  EmpiricalVariogram(X, z₁, z₂, nlags, maxlag, distance)
 
 function EmpiricalVariogram(spatialdata::S, var₁::Symbol, var₂::Symbol=var₁;
                             kwargs...) where {S<:AbstractSpatialData}
@@ -163,8 +160,7 @@ end
 Update the empirical variogram `γₐ` with the empirical variogram `γᵦ`
 assuming that both have the same abscissa.
 """
-function update!(γₐ::EmpiricalVariogram{T,V,D},
-                 γᵦ::EmpiricalVariogram{T,V,D}) where {T<:Real,V,D<:Metric}
+function update!(γₐ::EmpiricalVariogram, γᵦ::EmpiricalVariogram)
   yₐ = γₐ.ordinate
   yᵦ = γᵦ.ordinate
   nₐ = γₐ.counts
