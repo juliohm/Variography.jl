@@ -150,7 +150,7 @@ See also: [`EmpiricalVariogram`](@ref)
 """
 function DirectionalVariogram(spatialdata::S, direction::NTuple,
                               var₁::Symbol, var₂::Symbol=var₁;
-                              atol=10., btol=0.95, kwargs...) where {S<:AbstractSpatialData}
+                              atol=20., btol=0.95, kwargs...) where {S<:AbstractSpatialData}
   EmpiricalVariogram(DirectionalPartition(spatialdata, direction; atol=atol, btol=btol), var₁, var₂; kwargs...)
 end
 
