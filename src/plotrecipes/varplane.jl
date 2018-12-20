@@ -24,7 +24,8 @@
   elseif N == 3
     θ = deg2rad(theta)
     ϕ = deg2rad(phi)
-    u, v = plane_basis((cos(ϕ)cos(θ), cos(ϕ)sin(θ), sin(ϕ)))
+    n = (cos(ϕ)cos(θ), cos(ϕ)sin(θ), sin(ϕ))
+    u, v = plane_basis(n)
   else
     @error "variogram plane only supported in 2D or 3D"
   end
