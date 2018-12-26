@@ -137,20 +137,20 @@ Computes the empirical (cross-)variogram for the variables `var₁` and `var₂`
 `spatialdata` along a given `direction`.
 
 Optional parameters include the parameters for `EmpiricalVariogram` and the parameters
-for `DirectionalPartitioner`.
+for `DirectionPartitioner`.
 
 ### Notes
 
 A `DirectionalVariogram` is just a function that first partitions the `spatialdata`
-using a `DirectionalPartitioner` and then passes the result to the corresponding
+using a `DirectionPartitioner` and then passes the result to the corresponding
 `EmpiricalVariogram` constructor.
 
-See also: [`EmpiricalVariogram`](@ref), [`DirectionalPartitioner`](@ref)
+See also: [`EmpiricalVariogram`](@ref), [`DirectionPartitioner`](@ref)
 """
 function DirectionalVariogram(spatialdata::S, direction::NTuple,
                               var₁::Symbol, var₂::Symbol=var₁;
                               atol=20., btol=0.95, kwargs...) where {S<:AbstractSpatialData}
-  partitioner = DirectionalPartitioner(direction; atol=atol, btol=btol)
+  partitioner = DirectionPartitioner(direction; atol=atol, btol=btol)
   EmpiricalVariogram(partition(spatialdata, partitioner), var₁, var₂; kwargs...)
 end
 
