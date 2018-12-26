@@ -124,7 +124,7 @@ function EmpiricalVariogram(partition::SpatialPartition,
   γ = EmpiricalVariogram(spatialdata, var₁, var₂; kwargs...)
   for spatialdata in Iterators.drop(filtered, 1)
     γiter = EmpiricalVariogram(spatialdata, var₁, var₂; kwargs...)
-    update!(γ, γiter)
+    merge!(γ, γiter)
   end
 
   γ
@@ -155,12 +155,12 @@ function DirectionalVariogram(spatialdata::S, direction::NTuple,
 end
 
 """
-    update!(γₐ, γᵦ)
+    merge!(γₐ, γᵦ)
 
-Update the empirical variogram `γₐ` with the empirical variogram `γᵦ`
+Merge the empirical variogram `γₐ` with the empirical variogram `γᵦ`
 assuming that both have the same abscissa.
 """
-function update!(γₐ::EmpiricalVariogram, γᵦ::EmpiricalVariogram)
+function merge!(γₐ::EmpiricalVariogram, γᵦ::EmpiricalVariogram)
   yₐ = γₐ.ordinate
   yᵦ = γᵦ.ordinate
   nₐ = γₐ.counts

@@ -4,9 +4,10 @@
 
 @userplot VarPlane
 
-@recipe function f(vp::VarPlane; theta=0, phi=90,
-                   nlags=20, maxlag=nothing,
+@recipe function f(vp::VarPlane;
+                   theta=0, phi=90, ptol=1e-6,
                    nangs=50, atol=10., btol=0.95,
+                   nlags=20, maxlag=nothing,
                    showrange=true, varmodel=GaussianVariogram)
   # sanity checks
   @assert 0 ≤ theta ≤ 360 "theta must lie in [0,360]"
@@ -16,15 +17,17 @@
   spatialdata = vp.args[1]
   var₁ = vp.args[2]
   var₂ = length(vp.args) == 3 ? vp.args[3] : var₁
+  N = ndims(spatialdata)
 
   # basis for variogram plane
-  N = ndims(spatialdata)
   if N == 2
+    planes = [spatialdata]
     u, v = (1.,0.), (0.,1.)
   elseif N == 3
-    θ = deg2rad(theta)
-    ϕ = deg2rad(phi)
+    θ = deg2rad(theta); ϕ = deg2rad(phi)
     n = (cos(ϕ)cos(θ), cos(ϕ)sin(θ), sin(ϕ))
+
+    planes = partition(spatialdata, PlanePartitioner(n, tol=ptol))
     u, v = plane_basis(n)
   else
     @error "variogram plane only supported in 2D or 3D"
@@ -37,12 +40,23 @@
 
   # ranges for each angle
   ls = Vector{Float64}(undef, nangs)
-  # loop over half plane
-  for (j, θ) in Iterators.enumerate(θs)
-    direction = ntuple(i -> cos(θ)*u[i] + sin(θ)*v[i], N)
 
-    γ = DirectionalVariogram(spatialdata, direction, var₁, var₂;
-                             nlags=nlags, maxlag=maxlag, atol=atol, btol=btol)
+  # loop over half of the plane
+  for (j, θ) in Iterators.enumerate(θs)
+    dir = ntuple(i -> cos(θ)*u[i] + sin(θ)*v[i], N)
+
+    dpart = DirectionPartitioner(dir, atol=atol, btol=btol)
+
+    # compute directional variogram across planes
+    plane, _ = iterate(planes)
+    γ = EmpiricalVariogram(partition(plane, dpart), var₁, var₂;
+                           nlags=nlags, maxlag=maxlag)
+    for plane in Iterators.drop(planes, 1)
+      γplane = EmpiricalVariogram(partition(plane, dpart), var₁, var₂;
+                                  nlags=nlags, maxlag=maxlag)
+      merge!(γ, γplane)
+    end
+
     rs, ys, _ = values(γ)
 
     # clean NaN values (i.e. empty bins)
@@ -64,8 +78,12 @@
   θs = range(0, stop=2π, length=2nangs)
   zs = hcat(zs, zs)
 
+  # show variables in plot title
+  ptitle = var₁ == var₂ ? "$var₁" : "$var₁-$var₂"
+
   projection --> :polar
   ylim --> (0, Inf)
+  title --> ptitle
 
   # plot variogram plane
   @series begin
