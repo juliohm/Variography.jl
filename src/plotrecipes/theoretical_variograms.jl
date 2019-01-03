@@ -12,5 +12,5 @@
   ylabel --> "Variogram(h)"
   label --> "variogram"
 
-  h, γ(h)
+  h, γ.(h)
 end

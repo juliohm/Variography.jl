@@ -60,7 +60,7 @@ Optionally, use a custom distance `d`.
   nugget::T = 1e-4 # positive nugget for numerical stability
   distance::D = Euclidean()
 end
-(γ::GaussianVariogram)(h) = @. (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range)^2)) + (h > 0) * γ.nugget
+(γ::GaussianVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range)^2)) + (h > 0) * γ.nugget
 (γ::GaussianVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::GaussianVariogram) = true
 
@@ -76,7 +76,7 @@ Optionally, use a custom distance `d`.
   nugget::T = 0.
   distance::D = Euclidean()
 end
-(γ::ExponentialVariogram)(h) = @. (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range))) + (h > 0) * γ.nugget
+(γ::ExponentialVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range))) + (h > 0) * γ.nugget
 (γ::ExponentialVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::ExponentialVariogram) = true
 
@@ -101,10 +101,10 @@ end
 
   # shift lag by machine precision to
   # avoid explosion at the origin
-  h2 = h .+ eps(eltype(h))
-  h3 = sqrt.(2.0ν)h2/r
+  h2 = h + eps(eltype(h))
+  h3 = sqrt(2.0ν)h2/r
 
-  @. (s - n) * (1 - 2.0^(1 - ν)/gamma(ν) * h3^ν * besselk(ν, h3)) + (h > 0) * n
+  (s - n) * (1 - 2.0^(1 - ν)/gamma(ν) * h3^ν * besselk(ν, h3)) + (h > 0) * n
 end
 (γ::MaternVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::MaternVariogram) = true
@@ -126,7 +126,7 @@ end
   r = γ.range
   n = γ.nugget
 
-  @. (h < r) * (s - n) * (1.5(h/r) - 0.5(h/r)^3) + (h ≥ r) * (s - n) + (h > 0) * n
+  (h < r) * (s - n) * (1.5(h/r) - 0.5(h/r)^3) + (h ≥ r) * (s - n) + (h > 0) * n
 end
 (γ::SphericalVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::SphericalVariogram) = true
@@ -148,8 +148,8 @@ end
   r = γ.range
   n = γ.nugget
 
-  @. (h < r) * (s - n) * (7*(h/r)^2 - (35/4)*(h/r)^3 + (7/2)*(h/r)^5 - (3/4)*(h/r)^7) +
-     (h ≥ r) * (s - n) + (h > 0) * n
+  (h < r) * (s - n) * (7*(h/r)^2 - (35/4)*(h/r)^3 + (7/2)*(h/r)^5 - (3/4)*(h/r)^7) +
+  (h ≥ r) * (s - n) + (h > 0) * n
 end
 (γ::CubicVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::CubicVariogram) = true
@@ -171,8 +171,8 @@ end
   r = γ.range
   n = γ.nugget
 
-  @. (h < r) * (s - n) * ((15/8)*(h/r) - (5/4)*(h/r)^3 + (3/8)*(h/r)^5) +
-     (h ≥ r) * (s - n) + (h > 0) * n
+  (h < r) * (s - n) * ((15/8)*(h/r) - (5/4)*(h/r)^3 + (3/8)*(h/r)^5) +
+  (h ≥ r) * (s - n) + (h > 0) * n
 end
 (γ::PentasphericalVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::PentasphericalVariogram) = true
@@ -211,9 +211,9 @@ end
 
   # shift lag by machine precision to
   # avoid explosion at the origin
-  h = h .+ eps(eltype(h))
+  h = h + eps(eltype(h))
 
-  @. (s - n) * (1 - sin(π*h/r)/(π*h/r)) + (h > 0) * n
+  (s - n) * (1 - sin(π*h/r)/(π*h/r)) + (h > 0) * n
 end
 (γ::SineHoleVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::SineHoleVariogram) = true

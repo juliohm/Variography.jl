@@ -28,7 +28,7 @@
 
   # some variograms are non-decreasing
   for γ in (γnd ∪ [sum(γnd)])
-    @test all(γ(h) .≤ γ(h.+1))
+    @test all(γ.(h) .≤ γ.(h.+1))
   end
 
   # variograms are valid at the origin
