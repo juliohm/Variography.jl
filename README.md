@@ -1,6 +1,6 @@
 # Variography.jl
 
-[![][travis-img]][travis-url] [![][julia-pkg-img]][julia-pkg-url] [![][codecov-img]][codecov-url]
+[![][travis-img]][travis-url] [![][codecov-img]][codecov-url]
 
 This package provides variogram models and tools for estimating empirical variograms
 from data. Variograms are extensively used in Kriging estimation, sequential Gaussian
@@ -26,9 +26,6 @@ If you have any questions, please contact our community on the [gitter channel](
 
 [travis-img]: https://travis-ci.org/juliohm/Variography.jl.svg?branch=master
 [travis-url]: https://travis-ci.org/juliohm/Variography.jl
-
-[julia-pkg-img]: http://pkg.julialang.org/badges/Variography_0.7.svg
-[julia-pkg-url]: http://pkg.julialang.org/?pkg=Variography
 
 [codecov-img]: https://codecov.io/gh/juliohm/Variography.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/juliohm/Variography.jl
