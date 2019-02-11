@@ -33,8 +33,8 @@
   geodata = RegularGridData{Float64}(Dict(:z => imgdata))
   γhor = DirectionalVariogram(geodata, (1.,0.), :z, maxlag=50.)
   γver = DirectionalVariogram(geodata, (0.,1.), :z, maxlag=50.)
-  γₕ = fit(GaussianVariogram, γhor)
-  γᵥ = fit(GaussianVariogram, γver)
+  γₕ = Variography.fit(GaussianVariogram, γhor)
+  γᵥ = Variography.fit(GaussianVariogram, γver)
   @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
 
   if ismaintainer || istravis

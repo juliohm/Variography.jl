@@ -4,13 +4,13 @@
         ExponentialVariogram, MaternVariogram)
 
   # all fits lead to same sill
-  γs = [fit(V, γwalker) for V in Vs]
+  γs = [Variography.fit(V, γwalker) for V in Vs]
   for γ in γs
     @test isapprox(sill(γ), 0.054, atol=1e-3)
   end
 
   # best fit is a Gaussian variogram
-  γbest = fit(Variogram, γwalker)
+  γbest = Variography.fit(Variogram, γwalker)
   @test γbest isa GaussianVariogram
   @test isapprox(sill(γbest), 0.054, atol=1e-3)
 
