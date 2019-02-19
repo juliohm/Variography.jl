@@ -22,8 +22,8 @@
   # use quartiles by default
   lags == nothing && (lags = quantile(ds, [.00,.25,.50,.75]))
 
-  xlabel := var₁
-  ylabel := var₂
+  xguide := var₁
+  yguide := var₂
   legend := false
   aspect_ratio := :equal
   layout --> (1, length(lags))
