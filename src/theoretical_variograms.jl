@@ -155,7 +155,7 @@ end
 isstationary(::CubicVariogram) = true
 
 """
-    PentasphericalVariogram
+    PentasphericalVariogram(sill=s, range=r, nugget=n, distance=d)
 
 A pentaspherical variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
