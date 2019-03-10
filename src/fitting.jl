@@ -10,6 +10,7 @@ An algorithm for fitting theoretical variograms.
 abstract type FitAlgo end
 
 """
+    WeightedLeastSquares()
     WeightedLeastSquares(weightfun)
 
 Fit theoretical variogram using weighted least squares
