@@ -5,9 +5,9 @@
 @userplot VarPlane
 
 @recipe function f(vp::VarPlane;
-                   theta=0, phi=90, ptol=1e-6,
-                   nangs=50, atol=10., btol=0.95,
-                   nlags=20, maxlag=nothing,
+                   theta=0, phi=90,
+                   ptol=1e-6, dtol=0.5,
+                   nangs=50, nlags=20, maxlag=nothing,
                    showrange=true, varmodel=GaussianVariogram)
   # sanity checks
   @assert 0 ≤ theta ≤ 360 "theta must lie in [0,360]"
@@ -45,7 +45,7 @@
   for (j, θ) in Iterators.enumerate(θs)
     dir = ntuple(i -> cos(θ)*u[i] + sin(θ)*v[i], N)
 
-    dpart = DirectionPartitioner(dir, atol=atol, btol=btol)
+    dpart = DirectionPartitioner(dir, tol=dtol)
 
     # compute directional variogram across planes
     plane, _ = iterate(planes)

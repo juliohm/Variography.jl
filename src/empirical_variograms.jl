@@ -99,14 +99,9 @@ EmpiricalVariogram(X, z₁, z₂=z₁; nlags=20, maxlag=nothing, distance=Euclid
 
 function EmpiricalVariogram(spatialdata::S, var₁::Symbol, var₂::Symbol=var₁;
                             kwargs...) where {S<:AbstractSpatialData}
-  T = coordtype(spatialdata)
-  N = ndims(spatialdata)
   npts = npoints(spatialdata)
 
-  X = Matrix{T}(undef, N, npts)
-  for i in 1:npts
-    coordinates!(view(X,:,i), spatialdata, i)
-  end
+  X = coordinates(spatialdata)
   z₁ = [value(spatialdata, i, var₁) for i in 1:npts]
   z₂ = var₁ ≠ var₂ ? [value(spatialdata, i, var₂) for i in 1:npts] : z₁
 
@@ -149,8 +144,8 @@ See also: [`EmpiricalVariogram`](@ref), [`DirectionPartitioner`](@ref)
 """
 function DirectionalVariogram(spatialdata::S, direction::NTuple,
                               var₁::Symbol, var₂::Symbol=var₁;
-                              atol=20., btol=0.95, kwargs...) where {S<:AbstractSpatialData}
-  partitioner = DirectionPartitioner(direction; atol=atol, btol=btol)
+                              tol=1e-6, kwargs...) where {S<:AbstractSpatialData}
+  partitioner = DirectionPartitioner(direction; tol=tol)
   EmpiricalVariogram(partition(spatialdata, partitioner), var₁, var₂; kwargs...)
 end
 
