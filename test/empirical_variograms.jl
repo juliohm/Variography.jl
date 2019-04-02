@@ -37,25 +37,15 @@
   γᵥ = Variography.fit(GaussianVariogram, γver)
   @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
 
-  if ismaintainer || istravis
-    @testset "Plot recipe" begin
-      function plot_variograms(fname)
-        plot(γwalker)
-        png(fname)
-      end
-      refimg = joinpath(datadir,"EmpiricalVariograms.png")
-      @test test_images(VisualTest(plot_variograms, refimg), popup=!istravis, tol=0.1) |> success
+  if visualtests
+    @plottest plot(γwalker) joinpath(datadir,"EmpiricalVariograms.png") !istravis
 
-      function plot_directional(fname)
-        p1 = plot(γhor, showbins=false, label="horizontal")
-        plot!(γver, showbins=false, label="vertical")
-        p2 = plot(γₕ, maxlag=50., label="horizontal")
-        plot!(γᵥ, maxlag=50., label="vertical")
-        plot(p1, p2, layout=(2,1))
-        png(fname)
-      end
-      refimg = joinpath(datadir,"DirectionalVariograms.png")
-      @test test_images(VisualTest(plot_directional, refimg), popup=!istravis, tol=0.1) |> success
-    end
+    @plottest begin
+      p1 = plot(γhor, showbins=false, label="horizontal")
+      plot!(γver, showbins=false, label="vertical")
+      p2 = plot(γₕ, maxlag=50., label="horizontal")
+      plot!(γᵥ, maxlag=50., label="vertical")
+      plot(p1, p2, layout=(2,1))
+    end joinpath(datadir,"DirectionalVariograms.png") !istravis
   end
 end

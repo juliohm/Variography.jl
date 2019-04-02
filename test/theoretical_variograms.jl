@@ -64,22 +64,17 @@
   @test γ(1e-6) > 0
   @test cond(C) < 100.
 
-  if ismaintainer || istravis
-    @testset "Plot recipe" begin
-      function plot_variograms(fname)
-        plt1 = plot()
-        for γ ∈ γs
-          plot!(plt1, γ, maxlag=3.)
-        end
-        plt2 = plot()
-        for γ ∈ γn
-          plot!(plt2, γ, maxlag=3.)
-        end
-        plot(plt1, plt2, size=(600,800), layout=(2,1))
-        png(fname)
+  if visualtests
+    @plottest begin
+      plt1 = plot()
+      for γ ∈ γs
+        plot!(plt1, γ, maxlag=3.)
       end
-      refimg = joinpath(datadir,"TheoreticalVariograms.png")
-      @test test_images(VisualTest(plot_variograms, refimg), popup=!istravis, tol=0.1) |> success
-    end
+      plt2 = plot()
+      for γ ∈ γn
+        plot!(plt2, γ, maxlag=3.)
+      end
+      plot(plt1, plt2, size=(600,800), layout=(2,1))
+    end joinpath(datadir,"TheoreticalVariograms.png") !istravis
   end
 end
