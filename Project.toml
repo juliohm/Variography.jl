@@ -1,7 +1,7 @@
 name = "Variography"
 uuid = "04a0146e-e6df-5636-8d7f-62fa9eb0b20c"
 author = "Júlio Hoffimann <julio.hoffimann@gmail.com>"
-version = "0.3.6"
+version = "0.3.7"
 
 [deps]
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
@@ -31,5 +31,5 @@ VisualRegressionTests = "34922c18-7c2a-561c-bac1-01e79b2c4c92"
 test = ["GeoStatsImages", "Pkg", "GR", "GeoStatsBase", "Test", "DelimitedFiles", "VisualRegressionTests", "LinearAlgebra", "Plots", "ImageMagick", "QuartzImageIO"]
 
 [compat]
-GeoStatsBase = "≥ 0.4.1"
+GeoStatsBase = "≥ 0.5.0"
 julia = "1"
