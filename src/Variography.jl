@@ -5,7 +5,6 @@
 module Variography
 
 using GeoStatsBase
-using GeoStatsDevTools
 
 using Printf
 using Optim

@@ -1,5 +1,5 @@
 using Variography
-using GeoStatsDevTools
+using GeoStatsBase
 using GeoStatsImages
 using LinearAlgebra
 using DelimitedFiles
