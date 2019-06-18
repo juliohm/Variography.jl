@@ -31,5 +31,11 @@ VisualRegressionTests = "34922c18-7c2a-561c-bac1-01e79b2c4c92"
 test = ["GeoStatsImages", "Pkg", "GR", "GeoStatsBase", "Test", "DelimitedFiles", "VisualRegressionTests", "LinearAlgebra", "Plots", "ImageMagick", "QuartzImageIO"]
 
 [compat]
-GeoStatsBase = "≥ 0.5.0"
+Distances = "^0.8"
+GeoStatsBase = "^0.5"
+Optim = "^0.18"
+Parameters = "^0.10"
+RecipesBase = "^0.6"
+SpecialFunctions = "^0.7"
+StaticArrays = "^0.11"
 julia = "1"
