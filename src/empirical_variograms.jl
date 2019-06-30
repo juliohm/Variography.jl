@@ -98,7 +98,7 @@ EmpiricalVariogram(X, z₁, z₂=z₁; nlags=20, maxlag=nothing, distance=Euclid
   EmpiricalVariogram(X, z₁, z₂, nlags, maxlag, distance)
 
 function EmpiricalVariogram(spatialdata::S, var₁::Symbol, var₂::Symbol=var₁;
-                            kwargs...) where {S<:AbstractSpatialData}
+                            kwargs...) where {S<:AbstractData}
   npts = npoints(spatialdata)
 
   X = coordinates(spatialdata)
@@ -144,7 +144,7 @@ See also: [`EmpiricalVariogram`](@ref), [`DirectionPartitioner`](@ref)
 """
 function DirectionalVariogram(spatialdata::S, direction::NTuple,
                               var₁::Symbol, var₂::Symbol=var₁;
-                              tol=1e-6, kwargs...) where {S<:AbstractSpatialData}
+                              tol=1e-6, kwargs...) where {S<:AbstractData}
   partitioner = DirectionPartitioner(direction; tol=tol)
   EmpiricalVariogram(partition(spatialdata, partitioner), var₁, var₂; kwargs...)
 end
