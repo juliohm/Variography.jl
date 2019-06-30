@@ -52,7 +52,6 @@ export
   pairwise!,
 
   # fitting methods
-  WeightedLeastSquares,
-  fit
+  WeightedLeastSquares
 
 end
