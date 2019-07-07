@@ -2,7 +2,8 @@
   if visualtests
     @testset "h-scatter" begin
       @plottest begin
-        hscatter(geodf2D, :value, lags=[0.,1.,2.,3.], size=(1000,300))
+        sdata = readgeotable(joinpath(datadir,"samples2D.tsv"), delim='\t', coordnames=[:x,:y])
+        hscatter(sdata, :value, lags=[0.,1.,2.,3.], size=(1000,300))
       end joinpath(datadir,"HScatter.png") !istravis
     end
 

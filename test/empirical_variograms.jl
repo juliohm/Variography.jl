@@ -7,7 +7,8 @@
   @test n == [0, 3]
 
   # test spatial data interface
-  γ = EmpiricalVariogram(psetdata2D, :z, nlags=20, maxlag=1.)
+  sdata = PointSetData(Dict(:z => [1.,0.,1.]), [25. 50. 75.; 25. 75. 50.])
+  γ = EmpiricalVariogram(sdata, :z, nlags=20, maxlag=1.)
   x, y, n = values(γ)
   @test length(x) == 20
   @test length(y) == 20
@@ -38,6 +39,11 @@
   @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
 
   if visualtests
+    TI = training_image("WalkerLake")[1:20,1:20,1]
+    xwalker = Float64[i for i=1:20 for j=1:20]
+    ywalker = Float64[j for i=1:20 for j=1:20]
+    zwalker = Float64[TI[i,j] for i=1:20 for j=1:20]
+    γwalker = EmpiricalVariogram(hcat(xwalker,ywalker)', zwalker, maxlag=15.)
     @plottest plot(γwalker) joinpath(datadir,"EmpiricalVariograms.png") !istravis
 
     @plottest begin

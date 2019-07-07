@@ -1,4 +1,10 @@
 @testset "Fitting" begin
+  TI = training_image("WalkerLake")[1:20,1:20,1]
+  xwalker = Float64[i for i=1:20 for j=1:20]
+  ywalker = Float64[j for i=1:20 for j=1:20]
+  zwalker = Float64[TI[i,j] for i=1:20 for j=1:20]
+  γwalker = EmpiricalVariogram(hcat(xwalker,ywalker)', zwalker, maxlag=15.)
+
   # variogram types to fit
   Vs = (GaussianVariogram, SphericalVariogram,
         ExponentialVariogram, MaternVariogram)
