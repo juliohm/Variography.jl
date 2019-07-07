@@ -22,10 +22,10 @@
   # use quartiles by default
   lags == nothing && (lags = quantile(ds, [.00,.25,.50,.75]))
 
-  xguide := var₁
-  yguide := var₂
-  legend := false
-  aspect_ratio := :equal
+  xguide --> var₁
+  yguide --> var₂
+  legend --> false
+  aspect_ratio --> :equal
   layout --> (1, length(lags))
 
   for (i, lag) in enumerate(lags)
