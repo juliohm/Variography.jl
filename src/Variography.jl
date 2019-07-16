@@ -19,14 +19,14 @@ using Parameters
 import Base: +
 
 # variogram models
-include("empirical_variograms.jl")
-include("theoretical_variograms.jl")
+include("empirical.jl")
+include("theoretical.jl")
 include("pairwise.jl")
 include("fitting.jl")
 
 # plot recipes
-include("plotrecipes/empirical_variograms.jl")
-include("plotrecipes/theoretical_variograms.jl")
+include("plotrecipes/empirical.jl")
+include("plotrecipes/theoretical.jl")
 include("plotrecipes/hscatter.jl")
 include("plotrecipes/varplane.jl")
 

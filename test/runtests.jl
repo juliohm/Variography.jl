@@ -22,8 +22,8 @@ end
 
 # list of tests
 testfiles = [
-  "empirical_variograms.jl",
-  "theoretical_variograms.jl",
+  "empirical.jl",
+  "theoretical.jl",
   "pairwise.jl",
   "fitting.jl",
   "plotrecipes.jl"
