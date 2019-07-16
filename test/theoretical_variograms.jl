@@ -40,6 +40,15 @@
   γ = GaussianVariogram(sill=1.) + ExponentialVariogram(sill=2.)
   @test sill(γ) == 3.
 
+  # small positive nugget by default in Gaussian model
+  γ = GaussianVariogram()
+  @test nugget(γ) > 0.
+
+  # nugget is defined for composite models
+  γ₁ = GaussianVariogram()
+  γ₂ = GaussianVariogram() + ExponentialVariogram()
+  @test nugget(γ₁) == nugget(γ₂)
+
   # composite (additive) models via addition
   γ = GaussianVariogram() + ExponentialVariogram() + SphericalVariogram()
   @test γ isa CompositeVariogram

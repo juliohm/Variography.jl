@@ -97,13 +97,13 @@ end
 EmpiricalVariogram(X, z₁, z₂=z₁; nlags=20, maxlag=nothing, distance=Euclidean()) =
   EmpiricalVariogram(X, z₁, z₂, nlags, maxlag, distance)
 
-function EmpiricalVariogram(spatialdata::S, var₁::Symbol, var₂::Symbol=var₁;
+function EmpiricalVariogram(sdata::S, var₁::Symbol, var₂::Symbol=var₁;
                             kwargs...) where {S<:AbstractData}
-  npts = npoints(spatialdata)
+  npts = npoints(sdata)
 
-  X = coordinates(spatialdata)
-  z₁ = [value(spatialdata, i, var₁) for i in 1:npts]
-  z₂ = var₁ ≠ var₂ ? [value(spatialdata, i, var₂) for i in 1:npts] : z₁
+  X = coordinates(sdata)
+  z₁ = [sdata[i,var₁] for i in 1:npts]
+  z₂ = var₁ ≠ var₂ ? [sdata[i,var₂] for i in 1:npts] : z₁
 
   EmpiricalVariogram(X, z₁, z₂; kwargs...)
 end
@@ -115,10 +115,10 @@ function EmpiricalVariogram(partition::SpatialPartition,
 
   @assert !isempty(filtered) "invalid partition of spatial data"
 
-  spatialdata, _ = iterate(filtered)
-  γ = EmpiricalVariogram(spatialdata, var₁, var₂; kwargs...)
-  for spatialdata in Iterators.drop(filtered, 1)
-    γiter = EmpiricalVariogram(spatialdata, var₁, var₂; kwargs...)
+  sdata, _ = iterate(filtered)
+  γ = EmpiricalVariogram(sdata, var₁, var₂; kwargs...)
+  for sdata in Iterators.drop(filtered, 1)
+    γiter = EmpiricalVariogram(sdata, var₁, var₂; kwargs...)
     merge!(γ, γiter)
   end
 
@@ -142,11 +142,11 @@ using a `DirectionPartitioner` and then passes the result to the corresponding
 
 See also: [`EmpiricalVariogram`](@ref), [`DirectionPartitioner`](@ref)
 """
-function DirectionalVariogram(spatialdata::S, direction::NTuple,
+function DirectionalVariogram(sdata::S, direction::NTuple,
                               var₁::Symbol, var₂::Symbol=var₁;
                               tol=1e-6, kwargs...) where {S<:AbstractData}
   partitioner = DirectionPartitioner(direction; tol=tol)
-  EmpiricalVariogram(partition(spatialdata, partitioner), var₁, var₂; kwargs...)
+  EmpiricalVariogram(partition(sdata, partitioner), var₁, var₂; kwargs...)
 end
 
 """

@@ -47,7 +47,7 @@ export
   SineHoleVariogram,
   CompositeVariogram,
   isstationary,
-  sill,
+  sill, nugget,
   pairwise,
   pairwise!,
 

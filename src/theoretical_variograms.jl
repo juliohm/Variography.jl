@@ -31,6 +31,13 @@ Return the sill of the variogram `γ` when defined.
 sill(γ::Variogram) = γ.sill
 
 """
+    nugget(γ)
+
+Return the nugget of the variogram `γ` when defined.
+"""
+nugget(γ::Variogram) = γ.nugget
+
+"""
     param_type(γ)
 
 Return the parameter (e.g. sill, range) type of the variogram.
@@ -234,6 +241,7 @@ end
 (c::CompositeVariogram)(x, y) = sum(γ(x,y) for γ in c.γs)
 isstationary(c::CompositeVariogram) = all(isstationary(γ) for γ in c.γs)
 sill(c::CompositeVariogram) = sum(sill(γ) for γ in c.γs)
+nugget(c::CompositeVariogram) = sum(nugget(γ) for γ in c.γs)
 param_type(c::CompositeVariogram) = promote_type([param_type(γ) for γ in c.γs]...)
 
 """
