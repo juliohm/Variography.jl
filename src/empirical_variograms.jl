@@ -99,11 +99,9 @@ EmpiricalVariogram(X, z₁, z₂=z₁; nlags=20, maxlag=nothing, distance=Euclid
 
 function EmpiricalVariogram(sdata::S, var₁::Symbol, var₂::Symbol=var₁;
                             kwargs...) where {S<:AbstractData}
-  npts = npoints(sdata)
-
   X = coordinates(sdata)
-  z₁ = [sdata[i,var₁] for i in 1:npts]
-  z₂ = var₁ ≠ var₂ ? [sdata[i,var₂] for i in 1:npts] : z₁
+  z₁ = sdata[var₁]
+  z₂ = var₁ ≠ var₂ ? sdata[var₂] : z₁
 
   EmpiricalVariogram(X, z₁, z₂; kwargs...)
 end
