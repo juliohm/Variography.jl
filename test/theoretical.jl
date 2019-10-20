@@ -1,4 +1,4 @@
-@testset "Theoretical variograms" begin
+@testset "Theoretical" begin
   h = range(0, stop=10, length=50)
   x, y = rand(3), rand(3)
 

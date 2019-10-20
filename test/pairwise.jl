@@ -1,4 +1,4 @@
-@testset "Pairwise evaluation" begin
+@testset "Pairwise" begin
   Γ = pairwise(GaussianVariogram(), Matrix(1.0I, 3, 3))
   @test eltype(Γ) == Float64
   @test issymmetric(Γ)

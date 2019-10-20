@@ -1,4 +1,4 @@
-@testset "Empirical variograms" begin
+@testset "Empirical" begin
   # homogeneous field has zero variogram
   γ = EmpiricalVariogram(Matrix(1.0I, 3, 3), ones(3), nlags=2, maxlag=2.)
   x, y, n = values(γ)
@@ -22,12 +22,16 @@
   @test n == [0, 3]
 
   # empirical variogram with only missing data
-  X = rand(3,2); z = [NaN, NaN, NaN]
+  X = rand(2,3); z = [NaN, NaN, NaN]
   γ = EmpiricalVariogram(X, z, maxlag=1., nlags=5)
   x, y, n = values(γ)
   @test x == [.1, .3, .5, .7, .9]
   @test all(isnan.(y))
   @test all(iszero.(n))
+
+  # invalid number of coordinates for observations
+  X = rand(3,2); z = [1, 2, 3]
+  @test_throws AssertionError EmpiricalVariogram(X, z)
 
   # directional variogram and known anisotropy ratio
   imgdata = readdlm(joinpath(datadir,"anisotropic.tsv"))
