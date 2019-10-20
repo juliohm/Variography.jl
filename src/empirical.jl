@@ -30,80 +30,74 @@ struct EmpiricalVariogram
   ordinate::Vector{Float64}
   counts::Vector{Int}
 
-  function EmpiricalVariogram(X, z₁, z₂, nlags, maxlag, distance)
+  function EmpiricalVariogram(sdata, var₁, var₂, nlags, maxlag, distance)
+    # retrieve relevant parameters
+    npts = npoints(sdata)
+    hmax = maxlag ≠ nothing ? maxlag : diagonal(boundbox(sdata)) / 2
+
     # sanity checks
+    @assert (var₁, var₂) ⊆ keys(variables(sdata)) "invalid variable names"
     @assert nlags > 0 "number of lags must be positive"
-    if maxlag ≠ nothing
-      @assert maxlag > 0 "maximum lag distance must be positive"
-    end
+    @assert npts > 1 "variogram requires at least 2 points"
+    @assert hmax > 0 "maximum lag distance must be positive"
 
-    # number of point pairs
-    npoints = size(X, 2)
-    npairs = (npoints * (npoints-1)) ÷ 2
+    # lookup variables as vectors
+    z₁ = sdata[var₁]; z₂ = sdata[var₂]
 
-    # compute pairwise distance
-    lags  = Vector{Float64}(undef, npairs)
-    zdiff = Vector{Float64}(undef, npairs)
-    idx = 1
-    for j=1:npoints
-      xj = view(X,:,j)
-      for i=j+1:npoints
-        xi = view(X,:,i)
-        @inbounds δx = evaluate(distance, xi, xj)
-        @inbounds δz = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
-        @inbounds lags[idx] = δx
-        @inbounds zdiff[idx] = ismissing(δz) ? NaN : δz
-        idx += 1
+    # bin (or lag) size
+    Δh = hmax / nlags
+
+    # lag sums and counts
+    sums   = zeros(nlags)
+    counts = zeros(Int, nlags)
+
+    # preallocate memory for coordinates
+    xi = MVector{ndims(sdata),coordtype(sdata)}(undef)
+    xj = MVector{ndims(sdata),coordtype(sdata)}(undef)
+
+    for j in 1:npts
+      coordinates!(xj, sdata, j)
+      for i in j+1:npts
+        coordinates!(xi, sdata, i)
+
+        # evaluate lag and (cross-)variance
+        h = evaluate(distance, xi, xj)
+        v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
+
+        # bin (or lag) where to accumulate result
+        lag = ceil(Int, h / Δh)
+
+        if lag ≤ nlags && !ismissing(v) && !isnan(v)
+          sums[lag] += v
+          counts[lag] += 1
+        end
       end
     end
 
-    # default maximum lag
-    maxlag == nothing && (maxlag = maximum(lags) / 2)
-
-    # corresponding bin size
-    binsize = maxlag / nlags
-
     # variogram abscissa
-    abscissa = range(binsize/2, stop=maxlag - binsize/2, length=nlags)
+    abscissa = range(Δh/2, stop=hmax - Δh/2, length=nlags)
 
-    # handle missing/invalid values
-    valid = @. !isnan(zdiff)
+    # variogram ordinate
+    ordinate = (sums ./ counts) / 2
+    ordinate[counts .== 0] .= NaN
 
-    if any(valid)
-      lags  = lags[valid]
-      zdiff = zdiff[valid]
-
-      # find bin for the pair
-      binidx  = ceil.(Int, lags / binsize)
-
-      # discard lags greater than maximum lag
-      zdiff  = zdiff[binidx .≤ nlags]
-      binidx = binidx[binidx .≤ nlags]
-
-      # place squared differences at the bins
-      bins = [zdiff[binidx .== i] for i=1:nlags]
-
-      # variogram ordinate and count
-      ordinate = [length(bin) > 0 ? sum(bin)/2length(bin) : NaN for bin in bins]
-      counts   = length.(bins)
-
-      new(abscissa, ordinate, counts)
-    else
-      new(abscissa, fill(NaN, nlags), fill(0, nlags))
-    end
+    new(abscissa, ordinate, counts)
   end
 end
 
-EmpiricalVariogram(X, z₁, z₂=z₁; nlags=20, maxlag=nothing, distance=Euclidean()) =
-  EmpiricalVariogram(X, z₁, z₂, nlags, maxlag, distance)
+EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=var₁;
+                   nlags=20, maxlag=nothing, distance=Euclidean()) =
+  EmpiricalVariogram(sdata, var₁, var₂, nlags, maxlag, distance)
 
-function EmpiricalVariogram(sdata::S, var₁::Symbol, var₂::Symbol=var₁;
-                            kwargs...) where {S<:AbstractData}
-  X = coordinates(sdata)
-  z₁ = sdata[var₁]
-  z₂ = var₁ ≠ var₂ ? sdata[var₂] : z₁
-
-  EmpiricalVariogram(X, z₁, z₂; kwargs...)
+function EmpiricalVariogram(X::AbstractMatrix,
+                            z₁::AbstractVector,
+                            z₂::AbstractVector=z₁;
+                            kwargs...)
+  if z₁ === z₂
+    EmpiricalVariogram(PointSetData(Dict(:z₁=>z₁), X), :z₁; kwargs...)
+  else
+    EmpiricalVariogram(PointSetData(Dict(:z₁=>z₁, :z₂=>z₂), X), :z₁, :z₂; kwargs...)
+  end
 end
 
 function EmpiricalVariogram(partition::SpatialPartition,
