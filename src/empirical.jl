@@ -55,6 +55,7 @@ struct EmpiricalVariogram
     xi = MVector{ndims(sdata),coordtype(sdata)}(undef)
     xj = MVector{ndims(sdata),coordtype(sdata)}(undef)
 
+    @inbounds (
     for j in 1:npts
       coordinates!(xj, sdata, j)
       for i in j+1:npts
@@ -73,6 +74,7 @@ struct EmpiricalVariogram
         end
       end
     end
+    )
 
     # variogram abscissa
     abscissa = range(Δh/2, stop=hmax - Δh/2, length=nlags)
