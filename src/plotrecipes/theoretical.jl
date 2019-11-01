@@ -8,6 +8,7 @@
 
   seriestype --> :path
   xlim --> (0, maxlag)
+  ylim --> (0, Inf)
   xguide --> "Lag h"
   yguide --> "Variogram(h)"
   label --> "variogram"
