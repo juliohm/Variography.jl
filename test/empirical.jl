@@ -6,8 +6,8 @@
   @test isnan(y[1]) && y[2] == 0.
   @test n == [0, 3]
 
-  # test spatial data interface
-  sdata = PointSetData(Dict(:z => [1.,0.,1.]), [25. 50. 75.; 25. 75. 50.])
+  # test spatial data interface, includes a duplicate point
+  sdata = PointSetData(Dict(:z => [1.,1.,0.,1.]), [25. 25. 50. 75.; 25. 25. 75. 50.])
   γ = EmpiricalVariogram(sdata, :z, nlags=20, maxlag=1.)
   x, y, n = values(γ)
   @test length(x) == 20

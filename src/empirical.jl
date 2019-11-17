@@ -63,6 +63,7 @@ struct EmpiricalVariogram
 
         # evaluate lag and (cross-)variance
         h = evaluate(distance, xi, xj)
+        iszero(h) && continue
         v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
 
         # bin (or lag) where to accumulate result
