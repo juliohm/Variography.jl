@@ -2,6 +2,57 @@
 # Licensed under the ISC License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
+"Internal function used to calculate the empirical variogram using a spatial index"
+function spatial_index_variogram!(sums, counts, sdata, xi, xj, distance, nlags, Δh, hmax, z₁, z₂, npts)
+  neigh = BallNeighborhood(hmax, distance)
+  neighsearcher = NeighborhoodSearcher(sdata, neigh)
+
+  @inbounds for j in 1:npts
+    coordinates!(xj, sdata, j)
+
+    for i in search(xj, neighsearcher)
+      # avoid double counting
+      i <= j && continue
+      coordinates!(xi, sdata, i)
+
+      # evaluate lag and (cross-)variance
+      h = evaluate(distance, xi, xj)
+      v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
+
+      # bin (or lag) where to accumulate result
+      lag = ceil(Int, h / Δh)
+      if lag ≤ nlags && !ismissing(v) && !isnan(v)
+        sums[lag] += v
+        counts[lag] += 1
+      end
+    end
+  end
+end
+
+"Internal function used to calculate the empirical variogram, looping over all pairs"
+function simple_loop_variogram!(sums, counts, sdata, xi, xj, distance, nlags, Δh, hmax, z₁, z₂, npts)
+  @inbounds for j in 1:npts
+    coordinates!(xj, sdata, j)
+
+    for i in j+1:npts
+      coordinates!(xi, sdata, i)
+
+      # evaluate lag and (cross-)variance
+      h = evaluate(distance, xi, xj)
+      # early exit if out of range
+      h > hmax && continue
+      v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
+
+      # bin (or lag) where to accumulate result
+      lag = ceil(Int, h / Δh)
+      if lag ≤ nlags && !ismissing(v) && !isnan(v)
+        sums[lag] += v
+        counts[lag] += 1
+      end
+    end
+  end
+end
+
 """
     EmpiricalVariogram(X, z₁, z₂=z₁; [optional parameters])
 
@@ -22,6 +73,7 @@ Alternatively, compute the (cross-)variogram on a `partition` of the data.
   * nlags - number of lags (default to 20)
   * maxlag - maximum lag (default to half of maximum lag of data)
   * distance - custom distance function (default to Euclidean distance)
+  * nearestsearch - boolean, whether to use a spatial index to find neighbours efficiently (defaults uses a heuristic based on data type and size)
 
 See also: [`DirectionalVariogram`](@ref)
 """
@@ -30,7 +82,7 @@ struct EmpiricalVariogram
   ordinate::Vector{Float64}
   counts::Vector{Int}
 
-  function EmpiricalVariogram(sdata, var₁, var₂, nlags, maxlag, distance)
+  function EmpiricalVariogram(sdata, var₁, var₂, nlags, maxlag, distance, nearestsearch)
     # retrieve relevant parameters
     npts = npoints(sdata)
     hmax = maxlag ≠ nothing ? maxlag : diagonal(boundbox(sdata)) / 2
@@ -55,26 +107,31 @@ struct EmpiricalVariogram
     xi = MVector{ndims(sdata),coordtype(sdata)}(undef)
     xj = MVector{ndims(sdata),coordtype(sdata)}(undef)
 
-    @inbounds (
-    for j in 1:npts
-      coordinates!(xj, sdata, j)
-      for i in j+1:npts
-        coordinates!(xi, sdata, i)
+    # coordinates need to be AbstractFloat for NearestNeighbors to work
+    # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
+    isfloat = coordtype(sdata) <: AbstractFloat
 
-        # evaluate lag and (cross-)variance
-        h = evaluate(distance, xi, xj)
-        v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
-
-        # bin (or lag) where to accumulate result
-        lag = ceil(Int, h / Δh)
-
-        if lag ≤ nlags && !ismissing(v) && !isnan(v)
-          sums[lag] += v
-          counts[lag] += 1
-        end
-      end
+    # decide whether to construct a spatial index
+    if nearestsearch === nothing
+      # quite arbitrary, but for small datasets setting up the index is too much overhead
+      # it really also depends on what fraction of points are within hmax
+      use_spatial_index = isfloat && (npts > 1000)
+    elseif nearestsearch
+      # override user choice if the data type does not allow it
+      use_spatial_index = isfloat
+    elseif !nearestsearch
+      use_spatial_index = false
+    else
+      throw(ArgumentError("nearestsearch should be boolean or nothing"))
     end
-    )
+
+    if use_spatial_index
+      # construct the variogram with neighbour search
+      spatial_index_variogram!(sums, counts, sdata, xi, xj, distance, nlags, Δh, hmax, z₁, z₂, npts)
+    else
+      # construct the variogram with naive loops
+      simple_loop_variogram!(sums, counts, sdata, xi, xj, distance, nlags, Δh, hmax, z₁, z₂, npts)
+    end
 
     # variogram abscissa
     abscissa = range(Δh/2, stop=hmax - Δh/2, length=nlags)
@@ -88,8 +145,8 @@ struct EmpiricalVariogram
 end
 
 EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=var₁;
-                   nlags=20, maxlag=nothing, distance=Euclidean()) =
-  EmpiricalVariogram(sdata, var₁, var₂, nlags, maxlag, distance)
+                   nlags=20, maxlag=nothing, distance=Euclidean(), nearestsearch=nothing) =
+  EmpiricalVariogram(sdata, var₁, var₂, nlags, maxlag, distance, nearestsearch)
 
 function EmpiricalVariogram(X::AbstractMatrix,
                             z₁::AbstractVector,

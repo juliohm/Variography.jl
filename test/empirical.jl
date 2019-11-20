@@ -33,6 +33,18 @@
   X = rand(3,2); z = [1, 2, 3]
   @test_throws AssertionError EmpiricalVariogram(X, z)
 
+  # use of spatial index should not affect results
+  Random.seed!(38)
+  n = 2_000
+  X = rand(2, n)
+  z = rand(n)
+  index_d = EmpiricalVariogram(X, z, nlags=20, maxlag=0.05)
+  index_f = EmpiricalVariogram(X, z, nlags=20, maxlag=0.05, nearestsearch=false)
+  index_t = EmpiricalVariogram(X, z, nlags=20, maxlag=0.05, nearestsearch=true)
+  @test index_d.abscissa ≈ index_f.abscissa ≈ index_t.abscissa
+  @test index_d.ordinate ≈ index_f.ordinate ≈ index_t.ordinate
+  @test index_d.counts == index_f.counts == index_t.counts
+
   # directional variogram and known anisotropy ratio
   imgdata = readdlm(joinpath(datadir,"anisotropic.tsv"))
   geodata = RegularGridData{Float64}(Dict(:z => imgdata))
