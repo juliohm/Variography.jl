@@ -29,67 +29,65 @@ struct EmpiricalVariogram
   abscissa::Vector{Float64}
   ordinate::Vector{Float64}
   counts::Vector{Int}
-
-  function EmpiricalVariogram(sdata, var₁, var₂, nlags, maxlag, distance)
-    # retrieve relevant parameters
-    npts = npoints(sdata)
-    hmax = maxlag ≠ nothing ? maxlag : diagonal(boundbox(sdata)) / 2
-
-    # sanity checks
-    @assert (var₁, var₂) ⊆ keys(variables(sdata)) "invalid variable names"
-    @assert nlags > 0 "number of lags must be positive"
-    @assert npts > 1 "variogram requires at least 2 points"
-    @assert hmax > 0 "maximum lag distance must be positive"
-
-    # lookup variables as vectors
-    z₁ = sdata[var₁]; z₂ = sdata[var₂]
-
-    # bin (or lag) size
-    Δh = hmax / nlags
-
-    # lag sums and counts
-    sums   = zeros(nlags)
-    counts = zeros(Int, nlags)
-
-    # preallocate memory for coordinates
-    xi = MVector{ndims(sdata),coordtype(sdata)}(undef)
-    xj = MVector{ndims(sdata),coordtype(sdata)}(undef)
-
-    @inbounds (
-    for j in 1:npts
-      coordinates!(xj, sdata, j)
-      for i in j+1:npts
-        coordinates!(xi, sdata, i)
-
-        # evaluate lag and (cross-)variance
-        h = evaluate(distance, xi, xj)
-        v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
-
-        # bin (or lag) where to accumulate result
-        lag = ceil(Int, h / Δh)
-
-        if lag ≤ nlags && !ismissing(v) && !isnan(v)
-          sums[lag] += v
-          counts[lag] += 1
-        end
-      end
-    end
-    )
-
-    # variogram abscissa
-    abscissa = range(Δh/2, stop=hmax - Δh/2, length=nlags)
-
-    # variogram ordinate
-    ordinate = (sums ./ counts) / 2
-    ordinate[counts .== 0] .= NaN
-
-    new(abscissa, ordinate, counts)
-  end
 end
 
-EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=var₁;
-                   nlags=20, maxlag=nothing, distance=Euclidean()) =
-  EmpiricalVariogram(sdata, var₁, var₂, nlags, maxlag, distance)
+function EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=var₁;
+                            nlags=20, maxlag=nothing, distance=Euclidean())
+  # retrieve relevant parameters
+  npts = npoints(sdata)
+  hmax = maxlag ≠ nothing ? maxlag : diagonal(boundbox(sdata)) / 2
+
+  # sanity checks
+  @assert (var₁, var₂) ⊆ keys(variables(sdata)) "invalid variable names"
+  @assert nlags > 0 "number of lags must be positive"
+  @assert npts > 1 "variogram requires at least 2 points"
+  @assert hmax > 0 "maximum lag distance must be positive"
+
+  # lookup variables as vectors
+  z₁ = sdata[var₁]
+  z₂ = var₂ ≠ var₁ ? sdata[var₂] : z₁
+
+  # bin (or lag) size
+  Δh = hmax / nlags
+
+  # lag sums and counts
+  sums   = zeros(nlags)
+  counts = zeros(Int, nlags)
+
+  # preallocate memory for coordinates
+  xi = MVector{ndims(sdata),coordtype(sdata)}(undef)
+  xj = MVector{ndims(sdata),coordtype(sdata)}(undef)
+
+  @inbounds (
+  for j in 1:npts
+    coordinates!(xj, sdata, j)
+    for i in j+1:npts
+      coordinates!(xi, sdata, i)
+
+      # evaluate lag and (cross-)variance
+      h = evaluate(distance, xi, xj)
+      v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
+
+      # bin (or lag) where to accumulate result
+      lag = ceil(Int, h / Δh)
+
+      if lag ≤ nlags && !ismissing(v) && !isnan(v)
+        sums[lag] += v
+        counts[lag] += 1
+      end
+    end
+  end
+  )
+
+  # variogram abscissa
+  abscissa = range(Δh/2, stop=hmax - Δh/2, length=nlags)
+
+  # variogram ordinate
+  ordinate = (sums ./ counts) / 2
+  ordinate[counts .== 0] .= NaN
+
+  EmpiricalVariogram(abscissa, ordinate, counts)
+end
 
 function EmpiricalVariogram(X::AbstractMatrix,
                             z₁::AbstractVector,
