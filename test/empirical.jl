@@ -22,33 +22,33 @@
   @test n == [0, 3]
 
   # empirical variogram with only missing data
-  X = rand(2,3); z = [NaN, NaN, NaN]
-  γ = EmpiricalVariogram(X, z, maxlag=1., nlags=5)
-  x, y, n = values(γ)
-  @test x == [.1, .3, .5, .7, .9]
-  @test all(isnan.(y))
-  @test all(iszero.(n))
+  X = rand(2,3)
+  for z in [[NaN,NaN,NaN], [missing,missing,missing]]
+    γ = EmpiricalVariogram(X, z, maxlag=1., nlags=5)
+    x, y, n = values(γ)
+    @test x == [.1, .3, .5, .7, .9]
+    @test all(isnan.(y))
+    @test all(iszero.(n))
+  end
 
   # invalid number of coordinates for observations
   X = rand(3,2); z = [1, 2, 3]
   @test_throws AssertionError EmpiricalVariogram(X, z)
 
   # directional variogram and known anisotropy ratio
-  imgdata = readdlm(joinpath(datadir,"anisotropic.tsv"))
-  geodata = RegularGridData{Float64}(Dict(:z => imgdata))
-  γhor = DirectionalVariogram(geodata, (1.,0.), :z, maxlag=50.)
-  γver = DirectionalVariogram(geodata, (0.,1.), :z, maxlag=50.)
-  γₕ = Variography.fit(GaussianVariogram, γhor)
-  γᵥ = Variography.fit(GaussianVariogram, γver)
+  img = readdlm(joinpath(datadir,"anisotropic.tsv"))
+  sdata = RegularGridData{Float64}(Dict(:z => img))
+  γhor = DirectionalVariogram(sdata, (1.,0.), :z, maxlag=50.)
+  γver = DirectionalVariogram(sdata, (0.,1.), :z, maxlag=50.)
+  γₕ = fit(GaussianVariogram, γhor)
+  γᵥ = fit(GaussianVariogram, γver)
   @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
 
   if visualtests
     TI = training_image("WalkerLake")[1:20,1:20,1]
-    xwalker = Float64[i for i=1:20 for j=1:20]
-    ywalker = Float64[j for i=1:20 for j=1:20]
-    zwalker = Float64[TI[i,j] for i=1:20 for j=1:20]
-    γwalker = EmpiricalVariogram(hcat(xwalker,ywalker)', zwalker, maxlag=15.)
-    @plottest plot(γwalker) joinpath(datadir,"EmpiricalVariograms.png") !istravis
+    d = RegularGridData{Float64}(Dict(:z=>TI))
+    γ = EmpiricalVariogram(d, :z, maxlag=15.)
+    @plottest plot(γ) joinpath(datadir,"EmpiricalVariograms.png") !istravis
 
     @plottest begin
       p1 = plot(γhor, showbins=false, label="horizontal")

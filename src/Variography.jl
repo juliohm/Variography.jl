@@ -15,8 +15,8 @@ using StaticArrays
 using RecipesBase
 using Parameters
 
-# extend methods for theoretical variograms
 import Base: +
+import GeoStatsBase: fit
 
 # variogram models
 include("empirical.jl")
