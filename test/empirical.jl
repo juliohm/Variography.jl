@@ -1,13 +1,14 @@
 @testset "Empirical" begin
   # homogeneous field has zero variogram
-  γ = EmpiricalVariogram(Matrix(1.0I, 3, 3), ones(3), nlags=2, maxlag=2.)
+  sdata = PointSetData(Dict(:z=>ones(3)), Matrix(1.0I, 3, 3))
+  γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2.)
   x, y, n = values(γ)
   @test x ≈ [1/2, 3/2]
   @test isnan(y[1]) && y[2] == 0.
   @test n == [0, 3]
 
-  # test spatial data interface
-  sdata = PointSetData(Dict(:z => [1.,0.,1.]), [25. 50. 75.; 25. 75. 50.])
+  # basic test on number of lags
+  sdata = PointSetData(Dict(:z=>[1.,0.,1.]), [25. 50. 75.; 25. 75. 50.])
   γ = EmpiricalVariogram(sdata, :z, nlags=20, maxlag=1.)
   x, y, n = values(γ)
   @test length(x) == 20
@@ -15,7 +16,8 @@
   @test length(n) == 20
 
   # empirical variogram on integer coordinates
-  γ = EmpiricalVariogram(Matrix(1I, 3, 3), ones(3), nlags=2, maxlag=2)
+  sdata = PointSetData(Dict(:z=>ones(3)), Matrix(1I, 3, 3))
+  γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2)
   x, y, n = values(γ)
   @test x ≈ [1/2, 3/2]
   @test isnan(y[1]) && y[2] == 0.
@@ -24,16 +26,13 @@
   # empirical variogram with only missing data
   X = rand(2,3)
   for z in [[NaN,NaN,NaN], [missing,missing,missing]]
-    γ = EmpiricalVariogram(X, z, maxlag=1., nlags=5)
+    sdata = PointSetData(Dict(:z=>z), X)
+    γ = EmpiricalVariogram(sdata, :z, maxlag=1., nlags=5)
     x, y, n = values(γ)
     @test x == [.1, .3, .5, .7, .9]
     @test all(isnan.(y))
     @test all(iszero.(n))
   end
-
-  # invalid number of coordinates for observations
-  X = rand(3,2); z = [1, 2, 3]
-  @test_throws AssertionError EmpiricalVariogram(X, z)
 
   # directional variogram and known anisotropy ratio
   img = readdlm(joinpath(datadir,"anisotropic.tsv"))

@@ -9,11 +9,11 @@
 
     # UNCOMMENT WHEN GR ADDS SUPPORT TO POLAR PLOTS
     # @testset "varplane" begin
-      # imgdata = readdlm(joinpath(datadir,"anisotropic.tsv"))
-      # geodata = RegularGridData{Float64}(Dict(:z => imgdata))
+      # img = readdlm(joinpath(datadir,"anisotropic.tsv"))
+      # sdata = RegularGridData{Float64}(Dict(:z => img))
 
       # function plot_varplane(fname)
-        # varplane(geodata, :z, maxlag=50., size=(500,500))
+        # varplane(sdata, :z, maxlag=50., size=(500,500))
         # png(fname)
       # end
       # refimg = joinpath(datadir,"VarPlane.png")

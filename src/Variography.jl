@@ -10,7 +10,7 @@ using Printf
 using Optim
 using Distances
 using Statistics
-using SpecialFunctions: besselk, gamma
+using SpecialFunctions
 using StaticArrays
 using RecipesBase
 using Parameters

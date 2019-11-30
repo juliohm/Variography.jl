@@ -3,15 +3,11 @@
 # ------------------------------------------------------------------
 
 """
-    EmpiricalVariogram(X, z₁, z₂=z₁; [optional parameters])
+    EmpiricalVariogram(sdata, var₁, var₂=var₁; [optional parameters])
 
 Computes the empirical (a.k.a. experimental) omnidirectional
-(cross-)variogram from data locations `X` and values `z₁` and `z₂`.
-
-    EmpiricalVariogram(spatialdata, var₁, var₂=var₁; [optional parameters])
-
-Alternatively, compute the (cross-)variogram for the variables
-`var₁` and `var₂` stored in a `spatialdata` object.
+(cross-)variogram for variables `var₁` and `var₂` stored in
+spatial data `sdata`.
 
     EmpiricalVariogram(partition, var₁, var₂=var₁; [optional parameters])
 
@@ -87,17 +83,6 @@ function EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=
   ordinate[counts .== 0] .= NaN
 
   EmpiricalVariogram(abscissa, ordinate, counts)
-end
-
-function EmpiricalVariogram(X::AbstractMatrix,
-                            z₁::AbstractVector,
-                            z₂::AbstractVector=z₁;
-                            kwargs...)
-  if z₁ === z₂
-    EmpiricalVariogram(PointSetData(Dict(:z₁=>z₁), X), :z₁; kwargs...)
-  else
-    EmpiricalVariogram(PointSetData(Dict(:z₁=>z₁, :z₂=>z₂), X), :z₁, :z₂; kwargs...)
-  end
 end
 
 function EmpiricalVariogram(partition::SpatialPartition,
