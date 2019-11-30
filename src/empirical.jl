@@ -18,6 +18,13 @@ Alternatively, compute the (cross-)variogram on a `partition` of the data.
   * nlags    - number of lags (default to `20`)
   * maxlag   - maximum lag (default to half of maximum lag of data)
   * distance - custom distance function (default to `Euclidean` distance)
+  * algo     - estimation algorithm (default to `:auto`)
+
+Available algorithms:
+
+  * `:full` - loop over all pairs of points
+  * `:ball` - loop over all points inside norm ball
+  * `:auto` - heuristic based on `maxlag` and `volume(sdata)`
 
 See also: [`DirectionalVariogram`](@ref)
 """
@@ -27,32 +34,32 @@ struct EmpiricalVariogram
   counts::Vector{Int}
 end
 
-function EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=var₁;
-                            nlags=20, maxlag=nothing, distance=Euclidean())
-  # retrieve relevant parameters
+function EmpiricalVariogram(sdata::AbstractData{T,N}, var₁::Symbol, var₂::Symbol=var₁;
+                            nlags=20, maxlag=nothing, distance=Euclidean(),
+                            algo=:auto) where {N,T}
+  # compute relevant parameters
   npts = npoints(sdata)
-  hmax = maxlag ≠ nothing ? maxlag : diagonal(boundbox(sdata)) / 2
+  if isnothing(maxlag) || algo == :auto
+    bbox = boundbox(sdata)
+  end
+  hmax = isnothing(maxlag) ? diagonal(bbox) / 2 : maxlag
 
   # sanity checks
   @assert (var₁, var₂) ⊆ keys(variables(sdata)) "invalid variable names"
   @assert nlags > 0 "number of lags must be positive"
-  @assert npts > 1 "variogram requires at least 2 points"
-  @assert hmax > 0 "maximum lag distance must be positive"
-
-  # lookup variables as vectors
-  z₁ = sdata[var₁]
-  z₂ = var₂ ≠ var₁ ? sdata[var₂] : z₁
-
-  # bin (or lag) size
-  Δh = hmax / nlags
+  @assert npts  > 1 "variogram requires at least 2 points"
+  @assert hmax  > 0 "maximum lag distance must be positive"
 
   # lag sums and counts
   sums   = zeros(nlags)
   counts = zeros(Int, nlags)
 
   # preallocate memory for coordinates
-  xi = MVector{ndims(sdata),coordtype(sdata)}(undef)
-  xj = MVector{ndims(sdata),coordtype(sdata)}(undef)
+  xi = MVector{N,T}(undef)
+  xj = MVector{N,T}(undef)
+
+  # bin (or lag) size
+  Δh = hmax / nlags
 
   # loop over all pairs of points
   @inbounds for j in 1:npts
@@ -60,10 +67,14 @@ function EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=
     for i in j+1:npts
       coordinates!(xi, sdata, i)
 
-      # evaluate lag and (cross-)variance
+      # evaluate spatial lag
       h = evaluate(distance, xi, xj)
       h > hmax && continue # early exit if out of range
-      v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
+
+      # evaluate (cross-)variance
+      δ₁ = sdata[i,var₁] - sdata[j,var₁]
+      δ₂ = sdata[i,var₂] - sdata[j,var₂]
+      v = δ₁*δ₂
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / Δh)
