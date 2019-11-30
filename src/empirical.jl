@@ -19,9 +19,9 @@ Alternatively, compute the (cross-)variogram on a `partition` of the data.
 
 ## Parameters
 
-  * nlags - number of lags (default to 20)
-  * maxlag - maximum lag (default to half of maximum lag of data)
-  * distance - custom distance function (default to Euclidean distance)
+  * nlags    - number of lags (default to `20`)
+  * maxlag   - maximum lag (default to half of maximum lag of data)
+  * distance - custom distance function (default to `Euclidean` distance)
 
 See also: [`DirectionalVariogram`](@ref)
 """
@@ -58,14 +58,15 @@ function EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=
   xi = MVector{ndims(sdata),coordtype(sdata)}(undef)
   xj = MVector{ndims(sdata),coordtype(sdata)}(undef)
 
-  @inbounds (
-  for j in 1:npts
+  # loop over all pairs of points
+  @inbounds for j in 1:npts
     coordinates!(xj, sdata, j)
     for i in j+1:npts
       coordinates!(xi, sdata, i)
 
       # evaluate lag and (cross-)variance
       h = evaluate(distance, xi, xj)
+      h > hmax && continue # early exit if out of range
       v = (z₁[i] - z₁[j])*(z₂[i] - z₂[j])
 
       # bin (or lag) where to accumulate result
@@ -77,7 +78,6 @@ function EmpiricalVariogram(sdata::AbstractData, var₁::Symbol, var₂::Symbol=
       end
     end
   end
-  )
 
   # variogram abscissa
   abscissa = range(Δh/2, stop=hmax - Δh/2, length=nlags)
