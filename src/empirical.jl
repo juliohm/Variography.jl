@@ -22,9 +22,14 @@ Alternatively, compute the (cross-)variogram on a `partition` of the data.
 
 Available algorithms:
 
-  * `:full` - loop over all pairs of points
-  * `:ball` - loop over all points inside norm ball
+  * `:full` - loop over all pairs of points in the data
+  * `:ball` - loop over all points inside maximum lag ball
   * `:auto` - heuristic based on `maxlag` and `boundbox(sdata)`
+
+All implemented algorithms produce the exact same result.
+The `:ball` algorithm is considerably faster when the
+maximum lag is much smaller than the bounding box of
+the data.
 
 See also: [`DirectionalVariogram`](@ref)
 """
