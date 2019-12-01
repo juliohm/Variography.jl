@@ -34,6 +34,12 @@
     @test all(iszero.(n))
   end
 
+  # accumulation algorithms give the same result
+  sdata = PointSetData(Dict(:z=>rand(1000)), rand(3,1000))
+  γ₁ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algo=:full)
+  γ₂ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algo=:ball)
+  @test isequal(values(γ₁), values(γ₂))
+
   # directional variogram and known anisotropy ratio
   img = readdlm(joinpath(datadir,"anisotropic.tsv"))
   sdata = RegularGridData{Float64}(Dict(:z => img))
