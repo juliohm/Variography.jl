@@ -18,13 +18,13 @@ Alternatively, compute the (cross-)variogram on a `partition` of the data.
   * nlags    - number of lags (default to `20`)
   * maxlag   - maximum lag (default to half of maximum lag of data)
   * distance - custom distance function (default to `Euclidean` distance)
-  * algo     - estimation algorithm (default to `:auto`)
+  * algo     - accumulation algorithm (default to `:auto`)
 
 Available algorithms:
 
   * `:full` - loop over all pairs of points
   * `:ball` - loop over all points inside norm ball
-  * `:auto` - heuristic based on `maxlag` and `volume(sdata)`
+  * `:auto` - heuristic based on `maxlag` and `boundbox(sdata)`
 
 See also: [`DirectionalVariogram`](@ref)
 """
@@ -34,8 +34,10 @@ struct EmpiricalVariogram
   counts::Vector{Int}
 end
 
-function EmpiricalVariogram(sdata::AbstractData{T,N}, var₁::Symbol, var₂::Symbol=var₁;
-                            nlags=20, maxlag=nothing, distance=Euclidean(),
+function EmpiricalVariogram(sdata::AbstractData{T,N},
+                            var₁::Symbol, var₂::Symbol=var₁;
+                            nlags=20, maxlag=nothing,
+                            distance=Euclidean(),
                             algo=:auto) where {N,T}
   # compute relevant parameters
   npts = npoints(sdata)
@@ -46,51 +48,26 @@ function EmpiricalVariogram(sdata::AbstractData{T,N}, var₁::Symbol, var₂::Sy
 
   # sanity checks
   @assert (var₁, var₂) ⊆ keys(variables(sdata)) "invalid variable names"
+  @assert algo ∈ (:full, :ball, :auto) "invalid accumulation algorithm"
   @assert nlags > 0 "number of lags must be positive"
   @assert npts  > 1 "variogram requires at least 2 points"
   @assert hmax  > 0 "maximum lag distance must be positive"
 
-  # lag sums and counts
-  sums   = zeros(nlags)
-  counts = zeros(Int, nlags)
-
-  # preallocate memory for coordinates
-  xi = MVector{N,T}(undef)
-  xj = MVector{N,T}(undef)
-
-  # bin (or lag) size
-  Δh = hmax / nlags
-
-  # loop over all pairs of points
-  @inbounds for j in 1:npts
-    coordinates!(xj, sdata, j)
-    for i in j+1:npts
-      coordinates!(xi, sdata, i)
-
-      # evaluate spatial lag
-      h = evaluate(distance, xi, xj)
-      h > hmax && continue # early exit if out of range
-
-      # evaluate (cross-)variance
-      δ₁ = sdata[i,var₁] - sdata[j,var₁]
-      δ₂ = sdata[i,var₂] - sdata[j,var₂]
-      v = δ₁*δ₂
-
-      # bin (or lag) where to accumulate result
-      lag = ceil(Int, h / Δh)
-
-      if lag ≤ nlags && !ismissing(v) && !isnan(v)
-        sums[lag] += v
-        counts[lag] += 1
-      end
-    end
+  # choose accumulation algorithm
+  if algo == :ball || (algo == :auto && hmax < 0.1diagonal(bbox))
+    sums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+  else
+    sums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   end
 
+  # bin (or lag) size
+  δh = hmax / nlags
+
   # variogram abscissa
-  abscissa = range(Δh/2, stop=hmax - Δh/2, length=nlags)
+  abscissa = range(δh/2, stop=hmax - δh/2, length=nlags)
 
   # variogram ordinate
-  ordinate = (sums ./ counts) / 2
+  ordinate = @. (sums / counts) / 2
   ordinate[counts .== 0] .= NaN
 
   EmpiricalVariogram(abscissa, ordinate, counts)
@@ -182,3 +159,98 @@ julia> bar!(x, n, label="histogram")
 ```
 """
 Base.values(γ::EmpiricalVariogram) = γ.abscissa, γ.ordinate, γ.counts
+
+###########################
+# ACCUMULATION ALGORITHMS #
+###########################
+function full_search_accum(sdata::AbstractData{T,N},
+                           var₁::Symbol, var₂::Symbol,
+                           hmax::T, nlags::Integer,
+                           distance::Metric) where {N,T}
+  # number of points to loop over
+  npts = npoints(sdata)
+  δh = hmax / nlags
+
+  # lag sums and counts
+  sums   = zeros(nlags)
+  counts = zeros(Int, nlags)
+
+  # preallocate memory for coordinates
+  xi = MVector{N,T}(undef)
+  xj = MVector{N,T}(undef)
+
+  # loop over all pairs of points
+  @inbounds for j in 1:npts
+    coordinates!(xj, sdata, j)
+    for i in j+1:npts
+      coordinates!(xi, sdata, i)
+
+      # evaluate spatial lag
+      h = evaluate(distance, xi, xj)
+      h > hmax && continue # early exit if out of range
+
+      # evaluate (cross-)variance
+      δ₁ = sdata[i,var₁] - sdata[j,var₁]
+      δ₂ = sdata[i,var₂] - sdata[j,var₂]
+      v = δ₁*δ₂
+
+      # bin (or lag) where to accumulate result
+      lag = ceil(Int, h / δh)
+
+      if lag ≤ nlags && !ismissing(v) && !isnan(v)
+        sums[lag] += v
+        counts[lag] += 1
+      end
+    end
+  end
+
+  sums, counts
+end
+
+function ball_search_accum(sdata::AbstractData{T,N},
+                           var₁::Symbol, var₂::Symbol,
+                           hmax::T, nlags::Integer,
+                           distance::Metric) where {N,T}
+  # retrieve relevant parameters
+  npts = npoints(sdata)
+  δh = hmax / nlags
+
+  # lag sums and counts
+  sums   = zeros(nlags)
+  counts = zeros(Int, nlags)
+
+  # preallocate memory for coordinates
+  xi = MVector{N,T}(undef)
+  xj = MVector{N,T}(undef)
+
+  # fast ball search
+  ball = BallNeighborhood{N}(hmax, distance)
+  searcher = NeighborhoodSearcher(sdata, ball)
+
+  # loop over points inside norm ball
+  @inbounds for j in 1:npts
+    coordinates!(xj, sdata, j)
+    for i in search(xj, searcher)
+      i ≤ j && continue # avoid double counting
+      coordinates!(xi, sdata, i)
+
+      # evaluate spatial lag
+      h = evaluate(distance, xi, xj)
+
+      # evaluate (cross-)variance
+      δ₁ = sdata[i,var₁] - sdata[j,var₁]
+      δ₂ = sdata[i,var₂] - sdata[j,var₂]
+      v = δ₁*δ₂
+
+      # bin (or lag) where to accumulate result
+      lag = ceil(Int, h / δh)
+
+      if lag ≤ nlags && !ismissing(v) && !isnan(v)
+        sums[lag] += v
+        counts[lag] += 1
+      end
+    end
+  end
+
+  sums, counts
+end
