@@ -14,6 +14,16 @@ SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
+[compat]
+Distances = "^0.8"
+GeoStatsBase = "^0.7"
+Optim = "^0.18"
+Parameters = "^0.12"
+RecipesBase = "^0.7"
+SpecialFunctions = "^0.7"
+StaticArrays = "^0.12"
+julia = "1"
+
 [extras]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 GR = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
@@ -29,13 +39,3 @@ VisualRegressionTests = "34922c18-7c2a-561c-bac1-01e79b2c4c92"
 
 [targets]
 test = ["GeoStatsImages", "Pkg", "GR", "GeoStatsBase", "Test", "DelimitedFiles", "VisualRegressionTests", "LinearAlgebra", "Plots", "ImageMagick", "QuartzImageIO"]
-
-[compat]
-Distances = "^0.8"
-GeoStatsBase = "^0.6"
-Optim = "^0.18"
-Parameters = "^0.12"
-RecipesBase = "^0.7"
-SpecialFunctions = "^0.7"
-StaticArrays = "^0.12"
-julia = "1"
