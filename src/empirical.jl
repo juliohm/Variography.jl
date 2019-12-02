@@ -58,8 +58,15 @@ function EmpiricalVariogram(sdata::AbstractData{T,N},
   @assert npts  > 1 "variogram requires at least 2 points"
   @assert hmax  > 0 "maximum lag distance must be positive"
 
+  # ball search with NearestNeighbors.jl requires AbstractFloat
+  # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
+  isfloat = coordtype(sdata) <: AbstractFloat
+
+  # warn users requesting :ball option with non-floating point coordinates
+  (algo == :ball && !isfloat) && @warn ":ball option requires floating point coordinates"
+
   # choose accumulation algorithm
-  if algo == :ball || (algo == :auto && hmax < 0.1diagonal(bbox))
+  if isfloat && (algo == :ball || (algo == :auto && hmax < 0.1diagonal(bbox)))
     sums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   else
     sums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
