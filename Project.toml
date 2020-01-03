@@ -20,7 +20,7 @@ GeoStatsBase = "^0.7"
 Optim = "^0.18"
 Parameters = "^0.12"
 RecipesBase = "^0.7"
-SpecialFunctions = "^0.7"
+SpecialFunctions = "^0.9"
 StaticArrays = "^0.12"
 julia = "1"
 
