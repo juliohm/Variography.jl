@@ -1,6 +1,6 @@
 @testset "Fitting" begin
   TI = training_image("WalkerLake")[1:20,1:20,1]
-  d = RegularGridData{Float64}(Dict(:z=>TI))
+  d = RegularGridData{Float64}(OrderedDict(:z=>TI))
   γwalker = EmpiricalVariogram(d, :z, maxlag=15.)
 
   # variogram types to fit
