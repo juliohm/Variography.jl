@@ -46,9 +46,9 @@
     @series begin
       subplot := i
       seriestype := :path
+      seriescolor := :black
       primary := false
       linestyle := :dash
-      color := :black
 
       xmin, xmax = extrema(x)
       ymin, ymax = extrema(y)

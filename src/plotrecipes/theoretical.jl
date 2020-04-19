@@ -7,8 +7,8 @@
   h = range(1e-6, stop=maxlag, length=nlags)
 
   seriestype --> :path
-  xlim --> (0, maxlag)
-  ylim --> (0, Inf)
+  xlims --> (0, maxlag)
+  ylims --> (0, Inf)
   xguide --> "Lag h"
   yguide --> "Variogram(h)"
   label --> "variogram"

@@ -82,13 +82,13 @@
   ptitle = var₁ == var₂ ? "$var₁" : "$var₁-$var₂"
 
   projection --> :polar
-  ylim --> (0, Inf)
+  ylims --> (0, Inf)
   title --> ptitle
 
   # plot variogram plane
   @series begin
     seriestype --> :heatmap
-    color --> :curl
+    seriescolor --> :curl
 
     θs, rs, zs
   end
