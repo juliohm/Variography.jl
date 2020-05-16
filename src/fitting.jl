@@ -11,12 +11,11 @@ abstract type FitAlgo end
 
 """
     WeightedLeastSquares()
-    WeightedLeastSquares(weightfun)
+    WeightedLeastSquares(w)
 
-Fit theoretical variogram using weighted least squares
-with weighting function `weightfun` (e.g. h -> 1/h).
-If not weighting function is provided, bin counts of
-empirical variogram are normalized and used as weights.
+Fit theoretical variogram using weighted least squares with weighting
+function `w` (e.g. h -> 1/h). If no weighting function is provided,
+bin counts of empirical variogram are normalized and used as weights.
 """
 struct WeightedLeastSquares <: FitAlgo
   weightfun::Union{Function,Nothing}
@@ -29,6 +28,12 @@ WeightedLeastSquares() = WeightedLeastSquares(nothing)
 
 Fit theoretical variogram type `V` to empirical variogram `γ`
 using algorithm `algo`. Default algorithm is `WeightedLeastSquares`.
+
+## Examples
+
+```julia
+julia> fit(SphericalVariogram, γ)
+```
 """
 function fit(::Type{V}, γ::EmpiricalVariogram,
              algo::FitAlgo=WeightedLeastSquares()) where {V<:Variogram}
@@ -44,6 +49,12 @@ end
 Fit all stationary variogram types to empirical variogram `γ`,
 which are subtypes of `Variogram`, and return the one with
 minimum error as defined by the algorithm `algo`.
+
+## Examples
+
+```julia
+julia> fit(Variogram, γ)
+```
 """
 function fit(::Type{Variogram}, γ::EmpiricalVariogram,
              algo::FitAlgo=WeightedLeastSquares())
