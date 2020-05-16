@@ -3,11 +3,11 @@
 # ------------------------------------------------------------------
 
 """
-    FitAlgo
+    VariogramFitAlgo
 
 An algorithm for fitting theoretical variograms.
 """
-abstract type FitAlgo end
+abstract type VariogramFitAlgo end
 
 """
     WeightedLeastSquares()
@@ -17,7 +17,7 @@ Fit theoretical variogram using weighted least squares with weighting
 function `w` (e.g. h -> 1/h). If no weighting function is provided,
 bin counts of empirical variogram are normalized and used as weights.
 """
-struct WeightedLeastSquares <: FitAlgo
+struct WeightedLeastSquares <: VariogramFitAlgo
   weightfun::Union{Function,Nothing}
 end
 
@@ -35,8 +35,8 @@ using algorithm `algo`. Default algorithm is `WeightedLeastSquares`.
 julia> fit(SphericalVariogram, γ)
 ```
 """
-function fit(::Type{V}, γ::EmpiricalVariogram,
-             algo::FitAlgo=WeightedLeastSquares()) where {V<:Variogram}
+function fit(V::Type{<:Variogram}, γ::EmpiricalVariogram,
+             algo::VariogramFitAlgo=WeightedLeastSquares())
   # dispatch appropriate implementation
   vario, err = fit_impl(V, γ, algo)
 
@@ -57,23 +57,20 @@ julia> fit(Variogram, γ)
 ```
 """
 function fit(::Type{Variogram}, γ::EmpiricalVariogram,
-             algo::FitAlgo=WeightedLeastSquares())
+             algo::VariogramFitAlgo=WeightedLeastSquares())
   # list of variogram types to try
-  Vs = (GaussianVariogram, SphericalVariogram, ExponentialVariogram,
-        MaternVariogram, CubicVariogram, PentasphericalVariogram,
-        SineHoleVariogram)
+  Vs = filter(isstationary, setdiff(subtypes(Variogram), [CompositeVariogram]))
 
   # fit each variogram type
-  res    = [fit_impl(V, γ, algo) for V in Vs]
-  varios = first.(res)
-  errs   = last.(res)
+  res = [fit_impl(V, γ, algo) for V in Vs]
+  γs, es = first.(res), last.(res)
 
   # return best candidate
-  varios[argmin(errs)]
+  γs[argmin(es)]
 end
 
-function fit_impl(::Type{V}, γ::EmpiricalVariogram,
-                  algo::WeightedLeastSquares) where {V<:Variogram}
+function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
+                  algo::WeightedLeastSquares)
   # retrieve empirical points
   x, y, n = values(γ)
 
@@ -103,7 +100,7 @@ function fit_impl(::Type{V}, γ::EmpiricalVariogram,
   u  = [xmax, ymax, ymax]
 
   # solve optimization problem
-  sol = optimize(J, l, u, pₒ)
+  sol = Optim.optimize(J, l, u, pₒ)
   err = Optim.minimum(sol)
   p   = Optim.minimizer(sol)
 

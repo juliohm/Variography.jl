@@ -62,7 +62,7 @@
     @series begin
       subplot := i
       seriestype := :scatter
-      title --> @sprintf "lag = %.1f, corr = %.2f" lag cor(x, y)
+      title --> @sprintf "lag = %.1f" lag
 
       x, y
     end

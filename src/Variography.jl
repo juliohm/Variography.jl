@@ -6,14 +6,14 @@ module Variography
 
 using GeoStatsBase
 
-using Printf
 using Optim
 using Distances
-using Statistics
-using SpecialFunctions
-using StaticArrays
+using InteractiveUtils: subtypes
+using SpecialFunctions: gamma, besselk
+using StaticArrays: MVector
 using RecipesBase
 using Parameters
+using Printf
 
 import Base: +
 import GeoStatsBase: fit
@@ -52,6 +52,7 @@ export
   pairwise!,
 
   # fitting methods
+  VariogramFitAlgo,
   WeightedLeastSquares
 
 end

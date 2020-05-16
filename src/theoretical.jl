@@ -11,10 +11,12 @@ abstract type Variogram{T,D} end
 
 """
     isstationary(γ)
+    isstationary(V)
 
-Check if variogram `γ` possesses the 2nd-order stationary property.
+Check if variogram `γ` or variogram type `V` possesses
+the 2nd-order stationary property.
 """
-isstationary(::Variogram) = false
+isstationary(γ::Variogram) = isstationary(typeof(γ))
 
 """
     range(γ)
@@ -69,7 +71,7 @@ Optionally, use a custom distance `d`.
 end
 (γ::GaussianVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range)^2)) + (h > 0) * γ.nugget
 (γ::GaussianVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
-isstationary(::GaussianVariogram) = true
+isstationary(::Type{<:GaussianVariogram}) = true
 
 """
     ExponentialVariogram(sill=s, range=r, nugget=n, distance=d)
@@ -85,7 +87,7 @@ Optionally, use a custom distance `d`.
 end
 (γ::ExponentialVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range))) + (h > 0) * γ.nugget
 (γ::ExponentialVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
-isstationary(::ExponentialVariogram) = true
+isstationary(::Type{<:ExponentialVariogram}) = true
 
 """
     MaternVariogram(sill=s, range=r, nugget=n, order=ν, distance=d)
@@ -114,7 +116,7 @@ end
   (s - n) * (1 - 2.0^(1 - ν)/gamma(ν) * h3^ν * besselk(ν, h3)) + (h > 0) * n
 end
 (γ::MaternVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
-isstationary(::MaternVariogram) = true
+isstationary(::Type{<:MaternVariogram}) = true
 
 """
     SphericalVariogram(sill=s, range=r, nugget=n, distance=d)
@@ -136,7 +138,7 @@ end
   (h < r) * (s - n) * (1.5(h/r) - 0.5(h/r)^3) + (h ≥ r) * (s - n) + (h > 0) * n
 end
 (γ::SphericalVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
-isstationary(::SphericalVariogram) = true
+isstationary(::Type{<:SphericalVariogram}) = true
 
 """
     CubicVariogram(sill=s, range=r, nugget=n, distance=d)
@@ -159,7 +161,7 @@ end
   (h ≥ r) * (s - n) + (h > 0) * n
 end
 (γ::CubicVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
-isstationary(::CubicVariogram) = true
+isstationary(::Type{<:CubicVariogram}) = true
 
 """
     PentasphericalVariogram(sill=s, range=r, nugget=n, distance=d)
@@ -182,7 +184,7 @@ end
   (h ≥ r) * (s - n) + (h > 0) * n
 end
 (γ::PentasphericalVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
-isstationary(::PentasphericalVariogram) = true
+isstationary(::Type{<:PentasphericalVariogram}) = true
 
 """
     PowerVariogram(scaling=s, exponent=a, nugget=n, distance=d)
@@ -198,6 +200,7 @@ Optionally, use a custom distance `d`.
 end
 (γ::PowerVariogram)(h) = @. γ.scaling*h^γ.exponent + (h > 0) * γ.nugget
 (γ::PowerVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
+isstationary(::Type{<:PowerVariogram}) = false
 
 """
     SineHoleVariogram(sill=s, range=r, nugget=n, distance=d)
@@ -223,7 +226,7 @@ end
   (s - n) * (1 - sin(π*h/r)/(π*h/r)) + (h > 0) * n
 end
 (γ::SineHoleVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
-isstationary(::SineHoleVariogram) = true
+isstationary(::Type{<:SineHoleVariogram}) = true
 
 #------------------------
 # COMPOSITIVE VARIOGRAMS
@@ -239,10 +242,10 @@ struct CompositeVariogram <: Variogram{Real,Metric}
 end
 (c::CompositeVariogram)(h) = sum(γ(h) for γ in c.γs)
 (c::CompositeVariogram)(x, y) = sum(γ(x,y) for γ in c.γs)
-isstationary(c::CompositeVariogram) = all(isstationary(γ) for γ in c.γs)
 sill(c::CompositeVariogram) = sum(sill(γ) for γ in c.γs)
 nugget(c::CompositeVariogram) = sum(nugget(γ) for γ in c.γs)
 param_type(c::CompositeVariogram) = promote_type([param_type(γ) for γ in c.γs]...)
+isstationary(c::CompositeVariogram) = all(isstationary(γ) for γ in c.γs)
 
 """
     γ₁ + γ₂
