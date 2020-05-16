@@ -46,9 +46,8 @@ end
 """
     fit(Variogram, γ, [algo])
 
-Fit all stationary variogram types to empirical variogram `γ`,
-which are subtypes of `Variogram`, and return the one with
-minimum error as defined by the algorithm `algo`.
+Fit all subtypes of `Variogram` to empirical variogram `γ` and
+return the one with minimum error as defined by the algorithm `algo`.
 
 ## Examples
 
