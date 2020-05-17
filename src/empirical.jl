@@ -32,6 +32,11 @@ maximum lag is much smaller than the bounding box of
 the data.
 
 See also: [`DirectionalVariogram`](@ref)
+
+## References
+
+* Chilès, JP and Delfiner, P. 2012. [Geostatistics: Modeling Spatial Uncertainty]
+  (https://onlinelibrary.wiley.com/doi/book/10.1002/9781118136188)
 """
 struct EmpiricalVariogram
   abscissa::Vector{Float64}
@@ -103,21 +108,18 @@ function EmpiricalVariogram(partition::SpatialPartition,
 end
 
 """
-    DirectionalVariogram(spatialdata, direction, var₁, var₂=var₁; [optional parameters])
+    DirectionalVariogram(sdata, direction, var₁, var₂=var₁; [optional parameters])
 
 Computes the empirical (cross-)variogram for the variables `var₁` and `var₂` stored in
-`spatialdata` along a given `direction`.
+spatial data `sdata` along a given `direction`.
 
-Optional parameters include the parameters for `EmpiricalVariogram` and the parameters
-for `DirectionPartitioner`.
+Optional parameters include the parameters for [`EmpiricalVariogram`](@ref) and the
+parameters for [`DirectionPartitioner`](@ref).
 
-### Notes
+## References
 
-A `DirectionalVariogram` is just a function that first partitions the `spatialdata`
-using a `DirectionPartitioner` and then passes the result to the corresponding
-`EmpiricalVariogram` constructor.
-
-See also: [`EmpiricalVariogram`](@ref), [`DirectionPartitioner`](@ref)
+* Hoffimann, J and Zadrozny, B. 2019. [Efficient variography with partition variograms]
+  (https://www.sciencedirect.com/science/article/pii/S0098300419302936)
 """
 function DirectionalVariogram(sdata::S, direction::NTuple,
                               var₁::Symbol, var₂::Symbol=var₁;
@@ -172,9 +174,9 @@ julia> bar!(x, n, label="histogram")
 """
 Base.values(γ::EmpiricalVariogram) = γ.abscissa, γ.ordinate, γ.counts
 
-###########################
-# ACCUMULATION ALGORITHMS #
-###########################
+# ------------------------
+# ACCUMULATION ALGORITHMS
+# ------------------------
 function full_search_accum(sdata::AbstractData{T,N},
                            var₁::Symbol, var₂::Symbol,
                            hmax::T, nlags::Integer,
