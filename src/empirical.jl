@@ -18,13 +18,12 @@ Alternatively, compute the (cross-)variogram on a `partition` of the data.
   * nlags    - number of lags (default to `20`)
   * maxlag   - maximum lag (default to half of maximum lag of data)
   * distance - custom distance function (default to `Euclidean` distance)
-  * algo     - accumulation algorithm (default to `:auto`)
+  * algo     - accumulation algorithm (default to `:ball`)
 
 Available algorithms:
 
   * `:full` - loop over all pairs of points in the data
   * `:ball` - loop over all points inside maximum lag ball
-  * `:auto` - heuristic based on `maxlag` and `boundbox(sdata)`
 
 All implemented algorithms produce the exact same result.
 The `:ball` algorithm is considerably faster when the
@@ -48,17 +47,14 @@ function EmpiricalVariogram(sdata::AbstractData{T,N},
                             var₁::Symbol, var₂::Symbol=var₁;
                             nlags=20, maxlag=nothing,
                             distance=Euclidean(),
-                            algo=:auto) where {N,T}
+                            algo=:ball) where {N,T}
   # compute relevant parameters
   npts = npoints(sdata)
-  if isnothing(maxlag) || algo == :auto
-    bbox = boundbox(sdata)
-  end
-  hmax = isnothing(maxlag) ? diagonal(bbox) / 2 : maxlag
+  hmax = isnothing(maxlag) ? 0.1diagonal(boundbox(sdata)) : maxlag
 
   # sanity checks
   @assert (var₁, var₂) ⊆ keys(variables(sdata)) "invalid variable names"
-  @assert algo ∈ (:full, :ball, :auto) "invalid accumulation algorithm"
+  @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
   @assert nlags > 0 "number of lags must be positive"
   @assert npts  > 1 "variogram requires at least 2 points"
   @assert hmax  > 0 "maximum lag distance must be positive"
@@ -71,7 +67,7 @@ function EmpiricalVariogram(sdata::AbstractData{T,N},
   (algo == :ball && !isfloat) && @warn ":ball option requires floating point coordinates"
 
   # choose accumulation algorithm
-  if isfloat && (algo == :ball || (algo == :auto && hmax < 0.1diagonal(bbox)))
+  if isfloat && algo == :ball
     sums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   else
     sums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
