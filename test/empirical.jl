@@ -17,7 +17,7 @@
 
   # empirical variogram on integer coordinates
   sdata = PointSetData(OrderedDict(:z=>ones(3)), Matrix(1I, 3, 3))
-  γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2)
+  γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2, algo=:full)
   x, y, n = values(γ)
   @test x ≈ [1/2, 3/2]
   @test isnan(y[1]) && y[2] == 0.

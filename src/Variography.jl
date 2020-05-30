@@ -18,22 +18,25 @@ using Printf
 import Base: +
 import GeoStatsBase: fit
 
-# variogram models
+include("utils.jl")
 include("empirical.jl")
+include("partition.jl")
+include("varioplane.jl")
 include("theoretical.jl")
 include("pairwise.jl")
 include("fitting.jl")
 
 # plot recipes
 include("plotrecipes/empirical.jl")
+include("plotrecipes/varioplane.jl")
 include("plotrecipes/theoretical.jl")
 include("plotrecipes/hscatter.jl")
-include("plotrecipes/varplane.jl")
 
 export
   # empirical variograms
   EmpiricalVariogram,
   DirectionalVariogram,
+  Varioplane,
 
   # theoretical variograms
   Variogram,
