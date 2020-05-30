@@ -23,6 +23,8 @@ end
 # list of tests
 testfiles = [
   "empirical.jl",
+  "partition.jl",
+  "varioplane.jl",
   "theoretical.jl",
   "pairwise.jl",
   "fitting.jl",
