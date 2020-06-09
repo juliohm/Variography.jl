@@ -1,7 +1,7 @@
 name = "Variography"
 uuid = "04a0146e-e6df-5636-8d7f-62fa9eb0b20c"
 author = "Júlio Hoffimann <julio.hoffimann@gmail.com>"
-version = "0.5.9"
+version = "0.5.10"
 
 [deps]
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
@@ -16,7 +16,7 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [compat]
 Distances = "0.8, 0.9"
-GeoStatsBase = "0.7, 0.8, 0.9, 0.10"
+GeoStatsBase = "0.10"
 Optim = "0.18, 0.20"
 Parameters = "0.12"
 RecipesBase = "0.7, 0.8, 1.0"
