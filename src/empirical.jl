@@ -2,6 +2,11 @@
 # Licensed under the ISC License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
+# KD-tree search is only valid for Minkowski metric
+const MinkowskiMetric = Union{Euclidean,Chebyshev,Cityblock,Minkowski,
+                              WeightedEuclidean,WeightedCityblock,
+                              WeightedMinkowski}
+
 """
     EmpiricalVariogram(sdata, var₁, var₂=var₁; [optional parameters])
 
@@ -59,15 +64,17 @@ function EmpiricalVariogram(sdata::AbstractData{T,N},
   @assert npts  > 1 "variogram requires at least 2 points"
   @assert hmax  > 0 "maximum lag distance must be positive"
 
-  # ball search with NearestNeighbors.jl requires AbstractFloat
+  # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
-  isfloat = coordtype(sdata) <: AbstractFloat
+  isfloat     = coordtype(sdata) <: AbstractFloat
+  isminkowski = distance isa MinkowskiMetric
 
-  # warn users requesting :ball option with non-floating point coordinates
-  (algo == :ball && !isfloat) && @warn ":ball option requires floating point coordinates"
+  # warn users requesting :ball option with invalid parameters
+  (algo == :ball && !isfloat) && @warn ":ball algorithm requires floating point coordinates"
+  (algo == :ball && !isminkowski) && @warn ":ball algorithm requires Minkowski metric"
 
   # choose accumulation algorithm
-  if isfloat && algo == :ball
+  if algo == :ball && isfloat && isminkowski
     sums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   else
     sums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
