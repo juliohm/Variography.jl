@@ -3,9 +3,9 @@
 # ------------------------------------------------------------------
 
 """
-    Varioplane(sdata, var₁, var₂=var₁,
-               theta=0, phi=90, ptol=1e-6, dtol=0.5,
-               nangs=50, nlags=20, maxlag=nothing)
+    EmpiricalVarioplane(sdata, var₁, var₂=var₁,
+                        theta=0, phi=90, ptol=1e-6, dtol=0.5,
+                        nangs=50, nlags=20, maxlag=nothing)
 
 Given a normal direction in spherical coordinates `theta` and `phi` in degrees,
 estimate the (cross-)variogram of variables `var₁` and `var₂` along all directions
@@ -16,14 +16,14 @@ the tolerance `dtol` for the [`DirectionPartitioner`](@ref), the number of
 angles `nangs` in the plane, the number of lags `nlags` along each of these
 angles, and the maximum lag `maxlag` to consider.
 """
-struct Varioplane{T,V<:EmpiricalVariogram}
+struct EmpiricalVarioplane{T,V<:EmpiricalVariogram}
   θs::Vector{T}
   γs::Vector{V}
 end
 
-function Varioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
-                    theta=0, phi=90, ptol=1e-6, dtol=0.5,
-                    nangs=50, nlags=20, maxlag=nothing)
+function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
+                             theta=0, phi=90, ptol=1e-6, dtol=0.5,
+                             nangs=50, nlags=20, maxlag=nothing)
   # sanity checks
   @assert 0 ≤ theta ≤ 360 "theta must lie in [0,360]"
   @assert -90 ≤ phi ≤ 90 "phi must lie in [-90,90]"
@@ -64,5 +64,5 @@ function Varioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
     γ
   end
 
-  Varioplane(collect(θs), γs)
+  EmpiricalVarioplane(collect(θs), γs)
 end

@@ -2,7 +2,7 @@
 # Licensed under the ISC License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
-@recipe function f(v::Varioplane; showrange=true, model=GaussianVariogram)
+@recipe function f(v::EmpiricalVarioplane; showrange=true, model=GaussianVariogram)
   # retrieve info
   θs = v.θs
   γs = v.γs

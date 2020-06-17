@@ -36,7 +36,7 @@ export
   # empirical variograms
   EmpiricalVariogram,
   DirectionalVariogram,
-  Varioplane,
+  EmpiricalVarioplane,
 
   # theoretical variograms
   Variogram,
