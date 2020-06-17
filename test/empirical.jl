@@ -44,6 +44,6 @@
     TI = training_image("WalkerLake")[1:20,1:20,1]
     d = RegularGridData{Float64}(OrderedDict(:z=>TI))
     γ = EmpiricalVariogram(d, :z, maxlag=15.)
-    @plottest plot(γ) joinpath(datadir,"EmpiricalVariograms.png") !istravis
+    @plottest plot(γ) joinpath(datadir,"empirical.png") !istravis
   end
 end

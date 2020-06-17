@@ -16,7 +16,7 @@
         p2 = plot(γₕ, maxlag=50., label="horizontal")
         plot!(γᵥ, maxlag=50., label="vertical")
         plot(p1, p2, layout=(2,1))
-      end joinpath(datadir,"DirectionalVariograms.png") !istravis
+      end joinpath(datadir,"directional.png") !istravis
     end
   end
 end

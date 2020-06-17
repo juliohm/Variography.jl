@@ -1,4 +1,5 @@
 @testset "Theoretical" begin
+  Random.seed!(123)
   h = range(0, stop=10, length=50)
   x, y = rand(3), rand(3)
 
@@ -77,13 +78,13 @@
     @plottest begin
       plt1 = plot()
       for γ ∈ γs
-        plot!(plt1, γ, maxlag=3.)
+        plot!(plt1, γ)
       end
       plt2 = plot()
       for γ ∈ γn
-        plot!(plt2, γ, maxlag=3.)
+        plot!(plt2, γ)
       end
       plot(plt1, plt2, size=(600,800), layout=(2,1))
-    end joinpath(datadir,"TheoreticalVariograms.png") !istravis
+    end joinpath(datadir,"theoretical.png") !istravis
   end
 end

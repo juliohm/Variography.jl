@@ -27,6 +27,6 @@
         push!(plts, plt)
       end
       plot(plts...)
-    end joinpath(datadir,"Fitting.png") !istravis
+    end joinpath(datadir,"fitting.png") !istravis
   end
 end

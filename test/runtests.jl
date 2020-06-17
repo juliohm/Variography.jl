@@ -5,7 +5,7 @@ using LinearAlgebra
 using DelimitedFiles
 using Plots; gr(size=(600,400))
 using VisualRegressionTests
-using Test, Pkg
+using Test, Pkg, Random
 
 # workaround for GR warnings
 ENV["GKSwstype"] = "100"
