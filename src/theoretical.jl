@@ -242,6 +242,7 @@ struct CompositeVariogram <: Variogram{Real,Metric}
 end
 (c::CompositeVariogram)(h) = sum(γ(h) for γ in c.γs)
 (c::CompositeVariogram)(x, y) = sum(γ(x,y) for γ in c.γs)
+Base.range(c::CompositeVariogram) = maximum(range(γ) for γ in c.γs)
 sill(c::CompositeVariogram) = sum(sill(γ) for γ in c.γs)
 nugget(c::CompositeVariogram) = sum(nugget(γ) for γ in c.γs)
 param_type(c::CompositeVariogram) = promote_type([param_type(γ) for γ in c.γs]...)
