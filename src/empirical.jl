@@ -16,7 +16,8 @@ spatial data `sdata`.
 
     EmpiricalVariogram(partition, var₁, var₂=var₁; [optional parameters])
 
-Alternatively, compute the (cross-)variogram on a `partition` of the data.
+Alternatively, compute the (cross-)variogram on a `partition` of the data
+as described in Hoffimann & Zadrozny 2019.
 
 ## Parameters
 
@@ -41,6 +42,8 @@ See also: [`DirectionalVariogram`](@ref)
 
 * Chilès, JP and Delfiner, P. 2012. [Geostatistics: Modeling Spatial Uncertainty]
   (https://onlinelibrary.wiley.com/doi/book/10.1002/9781118136188)
+* Hoffimann, J and Zadrozny, B. 2019. [Efficient variography with partition variograms]
+  (https://www.sciencedirect.com/science/article/pii/S0098300419302936)
 """
 struct EmpiricalVariogram
   abscissa::Vector{Float64}
