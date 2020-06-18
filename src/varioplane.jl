@@ -52,16 +52,11 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
     dpart = DirectionPartitioner(dir, tol=dtol)
 
     # compute directional variogram across planes
-    plane, _ = iterate(planes)
-    γ = EmpiricalVariogram(partition(plane, dpart), var₁, var₂;
-                           nlags=nlags, maxlag=maxlag)
-    for plane in Iterators.drop(planes, 1)
-      γplane = EmpiricalVariogram(partition(plane, dpart), var₁, var₂;
-                                  nlags=nlags, maxlag=maxlag)
-      merge!(γ, γplane)
+    function vario(plane)
+      p = partition(plane, dpart)
+      EmpiricalVariogram(p, var₁, var₂; nlags=nlags, maxlag=maxlag)
     end
-
-    γ
+    mapreduce(vario, merge, planes)
   end
 
   EmpiricalVarioplane(collect(θs), γs)

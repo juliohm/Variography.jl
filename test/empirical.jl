@@ -4,7 +4,7 @@
   γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2.)
   x, y, n = values(γ)
   @test x ≈ [1/2, 3/2]
-  @test isnan(y[1]) && y[2] == 0.
+  @test y[2] == 0.
   @test n == [0, 3]
 
   # basic test on number of lags
@@ -20,7 +20,7 @@
   γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2, algo=:full)
   x, y, n = values(γ)
   @test x ≈ [1/2, 3/2]
-  @test isnan(y[1]) && y[2] == 0.
+  @test y[2] == 0.
   @test n == [0, 3]
 
   # empirical variogram with only missing data
@@ -30,7 +30,6 @@
     γ = EmpiricalVariogram(sdata, :z, maxlag=1., nlags=5)
     x, y, n = values(γ)
     @test x == [.1, .3, .5, .7, .9]
-    @test all(isnan.(y))
     @test all(iszero.(n))
   end
 
