@@ -99,7 +99,7 @@ end
 Merge the empirical variogram `γ₁` with the empirical variogram `γ₂`
 assuming that both have the same abscissa.
 """
-function Base.merge(γ₁::EmpiricalVariogram, γ₂::EmpiricalVariogram)
+function merge(γ₁::EmpiricalVariogram, γ₂::EmpiricalVariogram)
   y₁ = γ₁.ordinate
   y₂ = γ₂.ordinate
   n₁ = γ₁.counts

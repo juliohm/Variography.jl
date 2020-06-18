@@ -15,7 +15,7 @@ using RecipesBase
 using Parameters
 using Printf
 
-import Base: +
+import Base: merge, +
 import GeoStatsBase: fit
 
 include("utils.jl")
