@@ -135,6 +135,20 @@ julia> bar!(x, n, label="histogram")
 """
 Base.values(γ::EmpiricalVariogram) = γ.abscissa, γ.ordinate, γ.counts
 
+# ------------
+# IO methods
+# ------------
+function Base.show(io::IO, γ::EmpiricalVariogram)
+  print(io, "EmpiricalVariogram")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", γ::EmpiricalVariogram)
+  println(io, γ)
+  println(io, "  abscissa: ", extrema(γ.abscissa))
+  println(io, "  ordinate: ", extrema(γ.ordinate))
+  println(io, "  N° pairs: ", sum(γ.counts))
+end
+
 # ------------------------
 # ACCUMULATION ALGORITHMS
 # ------------------------

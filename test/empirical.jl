@@ -39,9 +39,16 @@
   γ₂ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algo=:ball)
   @test isequal(values(γ₁), values(γ₂))
 
+  # print methods
+  Random.seed!(123)
+  d = RegularGridData(OrderedDict(:z=>rand(100,100)))
+  γ = EmpiricalVariogram(d, :z)
+  @test sprint(show, γ) == "EmpiricalVariogram"
+  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.35001785668734103, 13.650696410806301)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
+
   if visualtests
     TI = training_image("WalkerLake")[1:20,1:20,1]
-    d = RegularGridData{Float64}(OrderedDict(:z=>TI))
+    d = RegularGridData(OrderedDict(:z=>TI))
     γ = EmpiricalVariogram(d, :z, maxlag=15.)
     @plottest plot(γ) joinpath(datadir,"empirical.png") !istravis
   end
