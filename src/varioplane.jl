@@ -61,3 +61,20 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
 
   EmpiricalVarioplane(collect(θs), γs)
 end
+
+# ------------
+# IO methods
+# ------------
+function Base.show(io::IO, γ::EmpiricalVarioplane)
+  print(io, "EmpiricalVarioplane")
+end
+
+function Base.show(io::IO, ::MIME"text/plain", γ::EmpiricalVarioplane)
+  θs = [@sprintf "%.2f" rad2deg(θ) for θ in γ.θs]
+  ns = [sum(values(g)[3]) for g in γ.γs]
+  lines = ["  └─$(θ)° → $n" for (θ, n) in zip(θs, ns)]
+  lines = length(lines) > 11 ? vcat(lines[1:5],["  ⋮"],lines[end-4:end]) : lines
+  println(io, γ)
+  println(io, "  N° pairs")
+  print(io, join(lines, "\n"))
+end
