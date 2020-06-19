@@ -20,7 +20,8 @@ function EmpiricalVariogram(partition::SpatialPartition,
 
   @assert !isempty(filtered) "invalid partition of spatial data"
 
-  mapreduce(d -> EmpiricalVariogram(d, var₁, var₂; kwargs...), merge, filtered)
+  f(d) = EmpiricalVariogram(d, var₁, var₂; kwargs...)
+  reduce(merge, Map(f), collect(filtered))
 end
 
 """

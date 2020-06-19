@@ -56,7 +56,7 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
       p = partition(plane, dpart)
       EmpiricalVariogram(p, var₁, var₂; nlags=nlags, maxlag=maxlag)
     end
-    mapreduce(vario, merge, planes)
+    reduce(merge, Map(vario), collect(planes))
   end
 
   EmpiricalVarioplane(collect(θs), γs)
