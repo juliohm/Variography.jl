@@ -36,8 +36,9 @@ include("plotrecipes/hscatter.jl")
 export
   # empirical variograms
   EmpiricalVariogram,
-  DirectionalVariogram,
   EmpiricalVarioplane,
+  DirectionalVariogram,
+  PlanarVariogram,
 
   # theoretical variograms
   Variogram,
