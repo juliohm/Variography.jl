@@ -97,20 +97,20 @@ function EmpiricalVariogram(sdata::AbstractData{T,N},
 end
 
 """
-    merge(γ₁, γ₂)
+    merge(γα, γβ)
 
-Merge the empirical variogram `γ₁` with the empirical variogram `γ₂`
-assuming that both have the same abscissa.
+Merge the empirical variogram `γα` with the empirical variogram `γβ`
+assuming that both variograms have the same abscissa.
 """
-function merge(γ₁::EmpiricalVariogram, γ₂::EmpiricalVariogram)
-  y₁ = γ₁.ordinate
-  y₂ = γ₂.ordinate
-  n₁ = γ₁.counts
-  n₂ = γ₂.counts
+function merge(γα::EmpiricalVariogram, γβ::EmpiricalVariogram)
+  yα = γα.ordinate
+  yβ = γβ.ordinate
+  nα = γα.counts
+  nβ = γβ.counts
 
-  n = n₁ + n₂
-  x = γ₁.abscissa
-  y = @. (y₁*n₁ + y₂*n₂) / n
+  n = nα + nβ
+  x = γα.abscissa
+  y = @. (yα*nα + yβ*nβ) / n
   y[n .== 0] .= 0
 
   EmpiricalVariogram(x, y, n)
