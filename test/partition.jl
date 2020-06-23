@@ -3,8 +3,8 @@
     # directional variogram and known anisotropy ratio
     img = readdlm(joinpath(datadir,"anisotropic.tsv"))
     sdata = RegularGridData(OrderedDict(:z => img))
-    γhor = DirectionalVariogram(sdata, (1.,0.), :z, maxlag=50.)
-    γver = DirectionalVariogram(sdata, (0.,1.), :z, maxlag=50.)
+    γhor = DirectionalVariogram((1.,0.), sdata, :z, maxlag=50.)
+    γver = DirectionalVariogram((0.,1.), sdata, :z, maxlag=50.)
     γₕ = fit(GaussianVariogram, γhor)
     γᵥ = fit(GaussianVariogram, γver)
     @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
@@ -24,15 +24,15 @@
     # directional equals planar rotated by 90 degrees in 2D
     img = readdlm(joinpath(datadir,"anisotropic.tsv"))
     sdata = RegularGridData(OrderedDict(:z => img))
-    γ₁ = PlanarVariogram(sdata, (0.,1.), :z, maxlag=50.)
-    γ₂ = DirectionalVariogram(sdata, (1.,0.), :z, maxlag=50.)
+    γ₁ = PlanarVariogram((0.,1.), sdata, :z, maxlag=50.)
+    γ₂ = DirectionalVariogram((1.,0.), sdata, :z, maxlag=50.)
     x₁, y₁, n₁ = values(γ₁)
     x₂, y₂, n₂ = values(γ₂)
     @test x₁ == x₂
     @test y₁ ≈ y₂
     @test n₁ == n₂
-    γ₁ = PlanarVariogram(sdata, (1.,0.), :z, maxlag=50.)
-    γ₂ = DirectionalVariogram(sdata, (0.,1.), :z, maxlag=50.)
+    γ₁ = PlanarVariogram((1.,0.), sdata, :z, maxlag=50.)
+    γ₂ = DirectionalVariogram((0.,1.), sdata, :z, maxlag=50.)
     x₁, y₁, n₁ = values(γ₁)
     x₂, y₂, n₂ = values(γ₂)
     @test x₁ == x₂
@@ -40,8 +40,8 @@
     @test n₁ == n₂
 
     # planar variogram and known anisotropy ratio
-    γhor = PlanarVariogram(sdata, (0.,1.), :z, maxlag=50.)
-    γver = PlanarVariogram(sdata, (1.,0.), :z, maxlag=50.)
+    γhor = PlanarVariogram((0.,1.), sdata, :z, maxlag=50.)
+    γver = PlanarVariogram((1.,0.), sdata, :z, maxlag=50.)
     γₕ = fit(GaussianVariogram, γhor)
     γᵥ = fit(GaussianVariogram, γver)
     @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
