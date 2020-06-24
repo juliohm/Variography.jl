@@ -11,7 +11,7 @@ using Distances
 using InteractiveUtils: subtypes
 using SpecialFunctions: gamma, besselk
 using Transducers: Map, reduce
-using StaticArrays: MVector
+using StaticArrays: SVector, MVector
 using RecipesBase
 using Parameters
 using Printf
