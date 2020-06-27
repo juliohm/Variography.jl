@@ -97,6 +97,25 @@ function EmpiricalVariogram(sdata::AbstractData{T,N},
 end
 
 """
+    values(γ)
+
+Returns the center of the bins, the mean squared differences divided by 2
+and the number of squared differences at the bins for a given empirical
+variogram `γ`.
+
+## Examples
+
+Plotting empirical variogram manually:
+
+```julia
+julia> x, y, n = values(γemp)
+julia> plot(x, y, label="variogram")
+julia> bar!(x, n, label="histogram")
+```
+"""
+Base.values(γ::EmpiricalVariogram) = γ.abscissa, γ.ordinate, γ.counts
+
+"""
     merge(γα, γβ)
 
 Merge the empirical variogram `γα` with the empirical variogram `γβ`
@@ -115,25 +134,6 @@ function merge(γα::EmpiricalVariogram, γβ::EmpiricalVariogram)
 
   EmpiricalVariogram(x, y, n)
 end
-
-"""
-    values(γ)
-
-Returns the center of the bins, the mean squared differences divided by 2
-and the number of squared differences at the bins for a given empirical
-variogram `γ`.
-
-## Examples
-
-Plotting empirical variogram manually:
-
-```julia
-julia> x, y, n = values(γemp)
-julia> plot(x, y, label="variogram")
-julia> bar!(x, n, label="histogram")
-```
-"""
-Base.values(γ::EmpiricalVariogram) = γ.abscissa, γ.ordinate, γ.counts
 
 # ------------
 # IO methods

@@ -52,7 +52,7 @@
 
   # composite (additive) models via addition
   γ = GaussianVariogram() + ExponentialVariogram() + SphericalVariogram()
-  @test γ isa CompositeVariogram
+  @test γ isa SumVariogram
   @test isstationary(γ)
   @test sill(γ) == 3.
   @test !isstationary(γ + PowerVariogram())

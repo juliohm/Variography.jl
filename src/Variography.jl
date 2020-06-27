@@ -16,7 +16,7 @@ using RecipesBase
 using Parameters
 using Printf
 
-import Base: merge, +
+import Base: merge, +, *
 import GeoStatsBase: fit
 
 include("utils.jl")
@@ -50,7 +50,8 @@ export
   PentasphericalVariogram,
   PowerVariogram,
   SineHoleVariogram,
-  CompositeVariogram,
+  SumVariogram,
+  ScaledVariogram,
   isstationary,
   sill, nugget,
   pairwise,

@@ -44,7 +44,14 @@ nugget(γ::Variogram) = γ.nugget
 
 Return the parameter (e.g. sill, range) type of the variogram.
 """
-param_type(::Variogram{T,D}) where {T<:Real,D<:Metric} = T
+param_type(::Variogram{T,D}) where {T,D} = T
+
+"""
+    metric_type(γ)
+
+Return the metric (e.g. Euclidean) type of the variogram.
+"""
+metric_type(::Variogram{T,D}) where {T,D} = D
 
 """
     result_type(γ, x₁, x₂)
@@ -53,6 +60,13 @@ Return result type of γ(x₁, x₂).
 """
 result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) =
   promote_type(param_type(γ), Distances.result_type(γ.distance, x₁, x₂))
+
+"""
+    γ(x, y)
+
+Evaluate the variogram at points `x` and `y`.
+"""
+(γ::Variogram)(x, y) = γ(evaluate(γ.distance, x, y))
 
 #------------------
 # IMPLEMENTATIONS
@@ -63,14 +77,13 @@ result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) =
 A Gaussian variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct GaussianVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
+@with_kw struct GaussianVariogram{T,D} <: Variogram{T,D}
   range::T  = 1.
   sill::T   = 1.
   nugget::T = 1e-6 # positive nugget for numerical stability
   distance::D = Euclidean()
 end
 (γ::GaussianVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range)^2)) + (h > 0) * γ.nugget
-(γ::GaussianVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::Type{<:GaussianVariogram}) = true
 
 """
@@ -79,14 +92,13 @@ isstationary(::Type{<:GaussianVariogram}) = true
 An exponential variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct ExponentialVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
+@with_kw struct ExponentialVariogram{T,D} <: Variogram{T,D}
   range::T  = 1.
   sill::T   = 1.
   nugget::T = 0.
   distance::D = Euclidean()
 end
 (γ::ExponentialVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range))) + (h > 0) * γ.nugget
-(γ::ExponentialVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::Type{<:ExponentialVariogram}) = true
 
 """
@@ -95,7 +107,7 @@ isstationary(::Type{<:ExponentialVariogram}) = true
 A Matérn variogram with sill `s`, range `r` and nugget `n`. The parameter
 ν is the order of the Bessel function. Optionally, use a custom distance `d`.
 """
-@with_kw struct MaternVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
+@with_kw struct MaternVariogram{T,D} <: Variogram{T,D}
   range::T  = 1.
   sill::T   = 1.
   nugget::T = 0.
@@ -115,7 +127,6 @@ end
 
   (s - n) * (1 - 2.0^(1 - ν)/gamma(ν) * h3^ν * besselk(ν, h3)) + (h > 0) * n
 end
-(γ::MaternVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::Type{<:MaternVariogram}) = true
 
 """
@@ -124,7 +135,7 @@ isstationary(::Type{<:MaternVariogram}) = true
 A spherical variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct SphericalVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
+@with_kw struct SphericalVariogram{T,D} <: Variogram{T,D}
   range::T  = 1.
   sill::T   = 1.
   nugget::T = 0.
@@ -137,7 +148,6 @@ end
 
   (h < r) * (s - n) * (1.5(h/r) - 0.5(h/r)^3) + (h ≥ r) * (s - n) + (h > 0) * n
 end
-(γ::SphericalVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::Type{<:SphericalVariogram}) = true
 
 """
@@ -146,7 +156,7 @@ isstationary(::Type{<:SphericalVariogram}) = true
 A cubic variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct CubicVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
+@with_kw struct CubicVariogram{T,D} <: Variogram{T,D}
   range::T  = 1.
   sill::T   = 1.
   nugget::T = 0.
@@ -160,7 +170,6 @@ end
   (h < r) * (s - n) * (7*(h/r)^2 - (35/4)*(h/r)^3 + (7/2)*(h/r)^5 - (3/4)*(h/r)^7) +
   (h ≥ r) * (s - n) + (h > 0) * n
 end
-(γ::CubicVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::Type{<:CubicVariogram}) = true
 
 """
@@ -169,7 +178,7 @@ isstationary(::Type{<:CubicVariogram}) = true
 A pentaspherical variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct PentasphericalVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
+@with_kw struct PentasphericalVariogram{T,D} <: Variogram{T,D}
   range::T  = 1.
   sill::T   = 1.
   nugget::T = 0.
@@ -183,7 +192,6 @@ end
   (h < r) * (s - n) * ((15/8)*(h/r) - (5/4)*(h/r)^3 + (3/8)*(h/r)^5) +
   (h ≥ r) * (s - n) + (h > 0) * n
 end
-(γ::PentasphericalVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::Type{<:PentasphericalVariogram}) = true
 
 """
@@ -192,14 +200,13 @@ isstationary(::Type{<:PentasphericalVariogram}) = true
 A power variogram with scaling `s`, exponent `a` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct PowerVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
+@with_kw struct PowerVariogram{T,D} <: Variogram{T,D}
   scaling::T  = 1.
   nugget::T   = 0.
   exponent::T = 1.
   distance::D = Euclidean()
 end
-(γ::PowerVariogram)(h) = @. γ.scaling*h^γ.exponent + (h > 0) * γ.nugget
-(γ::PowerVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
+(γ::PowerVariogram)(h) = γ.scaling*h^γ.exponent + (h > 0) * γ.nugget
 isstationary(::Type{<:PowerVariogram}) = false
 
 """
@@ -208,7 +215,7 @@ isstationary(::Type{<:PowerVariogram}) = false
 A sine hole variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
-@with_kw struct SineHoleVariogram{T<:Real,D<:Metric} <: Variogram{T,D}
+@with_kw struct SineHoleVariogram{T,D} <: Variogram{T,D}
   range::T  = 1.
   sill::T   = 1.
   nugget::T = 0.
@@ -225,35 +232,57 @@ end
 
   (s - n) * (1 - sin(π*h/r)/(π*h/r)) + (h > 0) * n
 end
-(γ::SineHoleVariogram)(x, y) = γ(evaluate(γ.distance, x, y))
 isstationary(::Type{<:SineHoleVariogram}) = true
 
-#------------------------
-# COMPOSITIVE VARIOGRAMS
-#------------------------
+#----------------------
+# VARIOGRAM OPERATIONS
+#----------------------
 """
-    CompositeVariogram(γ₁, γ₂, ..., γₙ)
+    SumVariogram(γ₁, γ₂)
 
-A composite (additive) model of variograms γ(h) = γ₁(h) + γ₂(h) + ⋯ + γₙ(h).
+Internal representation of the sum `γ₁ + γ₂`.
 """
-struct CompositeVariogram <: Variogram{Real,Metric}
-  γs::Vector{Variogram}
-  CompositeVariogram(g, gs...) = new([g, gs...])
+struct SumVariogram{G₁,G₂} <: Variogram{Number,Metric}
+  γ₁::G₁
+  γ₂::G₂
 end
-(c::CompositeVariogram)(h) = sum(γ(h) for γ in c.γs)
-(c::CompositeVariogram)(x, y) = sum(γ(x,y) for γ in c.γs)
-Base.range(c::CompositeVariogram) = maximum(range(γ) for γ in c.γs)
-sill(c::CompositeVariogram) = sum(sill(γ) for γ in c.γs)
-nugget(c::CompositeVariogram) = sum(nugget(γ) for γ in c.γs)
-param_type(c::CompositeVariogram) = promote_type([param_type(γ) for γ in c.γs]...)
-isstationary(c::CompositeVariogram) = all(isstationary(γ) for γ in c.γs)
+(γ::SumVariogram)(h) = γ.γ₁(h) + γ.γ₂(h)
+(γ::SumVariogram)(x, y) = γ.γ₁(x, y) + γ.γ₂(x, y)
+Base.range(γ::SumVariogram) = max(range(γ.γ₁), range(γ.γ₂))
+sill(γ::SumVariogram) = sill(γ.γ₁) + sill(γ.γ₂)
+nugget(γ::SumVariogram) = nugget(γ.γ₁) + nugget(γ.γ₂)
+isstationary(γ::SumVariogram) = isstationary(γ.γ₁) && isstationary(γ.γ₂)
+
+"""
+    ScaledVariogram(c, γ)
+
+Internal representation of the scalar multiplication `cγ`.
+"""
+struct ScaledVariogram{T,D,G<:Variogram{T,D},V} <: Variogram{T,D}
+  c::V
+  γ::G
+end
+(γ::ScaledVariogram)(h) = γ.c * γ.γ(h)
+(γ::ScaledVariogram)(x, y) = γ.c * γ.γ(x, y)
+Base.range(γ::ScaledVariogram) = range(γ.γ)
+sill(γ::ScaledVariogram) = γ.c * sill(γ.γ)
+nugget(γ::ScaledVariogram) = γ.c * nugget(γ.γ)
+isstationary(γ::ScaledVariogram) = isstationary(γ.γ)
 
 """
     γ₁ + γ₂
 
-Return compositive (additive) model of variograms `γ₁` and `γ₂`.
+Return sum of variograms `γ₁` and `γ₂`.
 """
-+(γ₁::Variogram, γ₂::Variogram) = CompositeVariogram(γ₁, γ₂)
-+(c::CompositeVariogram, γ::Variogram) = CompositeVariogram(c.γs..., γ)
-+(γ::Variogram, c::CompositeVariogram) = CompositeVariogram(γ, c.γs...)
-+(c₁::CompositeVariogram, c₂::CompositeVariogram) = CompositeVariogram(c₁.γs..., c₂.γs...)
++(γ₁::Variogram, γ₂::Variogram) = SumVariogram(γ₁, γ₂)
+
+"""
+    cγ
+
+Return the multiplication of the scalar `c` with the variogram `γ`.
+"""
+*(c::Number, γ::Variogram) = ScaledVariogram(c, γ)
+
+# collect all stationary models for other parts of the codebase
+const OPERATIONS = [SumVariogram, ScaledVariogram]
+const STATIONARY = filter(isstationary, setdiff(subtypes(Variogram), OPERATIONS))

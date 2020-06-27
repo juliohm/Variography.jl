@@ -1,5 +1,5 @@
 @testset "Fitting" begin
-  TI = geostatsimage("WalkerLake")[:prop][1:20,1:20]
+  TI = geostatsimage("WalkerLake")[:Z][1:20,1:20]
   d = RegularGridData{Float64}(OrderedDict(:z=>TI))
   γwalker = EmpiricalVariogram(d, :z, maxlag=15.)
 

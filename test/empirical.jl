@@ -47,7 +47,7 @@
   @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.35001785668734103, 13.650696410806301)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
 
   if visualtests
-    TI = geostatsimage("WalkerLake")[:prop][1:20,1:20]
+    TI = geostatsimage("WalkerLake")[:Z][1:20,1:20]
     d = RegularGridData(OrderedDict(:z=>TI))
     γ = EmpiricalVariogram(d, :z, maxlag=15.)
     @plottest plot(γ) joinpath(datadir,"empirical.png") !istravis

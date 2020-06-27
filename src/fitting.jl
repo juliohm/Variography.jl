@@ -57,11 +57,8 @@ julia> fit(Variogram, γ)
 """
 function fit(::Type{Variogram}, γ::EmpiricalVariogram,
              algo::VariogramFitAlgo=WeightedLeastSquares())
-  # list of variogram types to try
-  Vs = filter(isstationary, setdiff(subtypes(Variogram), [CompositeVariogram]))
-
   # fit each variogram type
-  res = [fit_impl(V, γ, algo) for V in Vs]
+  res = [fit_impl(V, γ, algo) for V in STATIONARY]
   γs, es = first.(res), last.(res)
 
   # return best candidate
