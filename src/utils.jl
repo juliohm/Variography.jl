@@ -38,3 +38,5 @@ function planebasis(normal::SVector{3,T}) where {T}
 
   SVector(u), SVector(v)
 end
+
+planebasis(normal::NTuple{3,T}) where {T} = planebasis(SVector(normal))

@@ -4,16 +4,16 @@
 
 """
     EmpiricalVarioplane(sdata, var₁, var₂=var₁;
-                        normal=spheredir(0,0), ptol=1e-6, dtol=0.5,
-                        nangs=50, nlags=20, maxlag=nothing)
+                        normal=spheredir(0,0), nangs=50,
+                        ptol=0.5, dtol=0.5, kwargs...)
 
 Given a `normal` direction, estimate the (cross-)variogram of variables
 `var₁` and `var₂` along all directions in the corresponding plane of variation.
 
 Optionally, specify the tolerance `ptol` for the [`PlanePartitioner`](@ref)
 the tolerance `dtol` for the [`DirectionPartitioner`](@ref), the number of
-angles `nangs` in the plane, the number of lags `nlags` along each of these
-angles, and the maximum lag `maxlag` to consider.
+angles `nangs` in the plane, and forward the keyword arguments `kwargs` to
+the various [`EmpiricalVariogram`](@ref) calls.
 """
 struct EmpiricalVarioplane{T,V}
   θs::Vector{T}
@@ -21,8 +21,8 @@ struct EmpiricalVarioplane{T,V}
 end
 
 function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
-                             normal=spheredir(0,0), ptol=1e-6, dtol=0.5,
-                             nangs=50, nlags=20, maxlag=nothing)
+                             normal=spheredir(0,0), nangs=50,
+                             ptol=0.5, dtol=0.5, kwargs...)
   # sanity checks
   @assert nangs > 1 "nangs must be greater than one"
 
@@ -45,7 +45,7 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
     # compute directional variogram across planes
     function γ(plane)
       p = partition(plane, dir)
-      EmpiricalVariogram(p, var₁, var₂; nlags=nlags, maxlag=maxlag)
+      EmpiricalVariogram(p, var₁, var₂; kwargs...)
     end
     reduce(merge, Map(γ), collect(planes))
   end

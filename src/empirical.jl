@@ -7,6 +7,9 @@ const MinkowskiMetric = Union{Euclidean,Chebyshev,Cityblock,Minkowski,
                               WeightedEuclidean,WeightedCityblock,
                               WeightedMinkowski}
 
+# default maximum lag to be used in various methods
+default_maxlag(sdata) = 0.1diagonal(boundbox(sdata))
+
 """
     EmpiricalVariogram(sdata, var₁, var₂=var₁; [optional parameters])
 
@@ -53,12 +56,12 @@ end
 
 function EmpiricalVariogram(sdata::AbstractData{T,N},
                             var₁::Symbol, var₂::Symbol=var₁;
-                            nlags=20, maxlag=nothing,
+                            nlags=20, maxlag=default_maxlag(sdata),
                             distance=Euclidean(),
                             algo=:ball) where {N,T}
-  # compute relevant parameters
+  # relevant parameters
   npts = npoints(sdata)
-  hmax = isnothing(maxlag) ? 0.1diagonal(boundbox(sdata)) : maxlag
+  hmax = maxlag
 
   # sanity checks
   @assert (var₁, var₂) ⊆ keys(variables(sdata)) "invalid variable names"
