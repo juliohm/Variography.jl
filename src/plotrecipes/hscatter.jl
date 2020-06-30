@@ -6,13 +6,13 @@
 
 @recipe function f(hs::HScatter; lags=nothing, tol=1e-1, distance=Euclidean())
   # get inputs
-  spatialdata = hs.args[1]
+  sdata = hs.args[1]
   var₁ = hs.args[2]
   var₂ = length(hs.args) == 3 ? hs.args[3] : var₁
 
   # lookup valid data
-  X₁, z₁ = valid(spatialdata, var₁)
-  X₂, z₂ = valid(spatialdata, var₂)
+  X₁, z₁ = valid(sdata, var₁)
+  X₂, z₂ = valid(sdata, var₂)
 
   # compute pairwise distance
   m, n = length(z₁), length(z₂)
