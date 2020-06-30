@@ -7,7 +7,7 @@
   @test eltype(Γ_f) == Float32
   @test issymmetric(Γ_f)
 
-  grid = RegularGrid{Float64}(10, 10)
+  grid = RegularGrid(10, 10)
   Γ = pairwise(GaussianVariogram(), grid, 1:5)
   @test size(Γ) == (5, 5)
   @test issymmetric(Γ)
