@@ -67,8 +67,9 @@ end
 
 function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
                   algo::WeightedLeastSquares)
-  # retrieve empirical points
+  # values and distance
   x, y, n = values(γ)
+  d = distance(γ)
 
   # discard invalid bins
   x = x[n .> 0]
@@ -81,7 +82,7 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
 
   # objective function
   J(p) = begin
-    g = V(range=p[1], sill=p[2], nugget=p[3])
+    g = V(range=p[1], sill=p[2], nugget=p[3], distance=d)
     sum(w[i]*(g(x[i]) - y[i])^2 for i in eachindex(x))
   end
 
@@ -100,8 +101,8 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
   err = Optim.minimum(sol)
   p   = Optim.minimizer(sol)
 
-  # best variogram
-  vario = V(range=p[1], sill=p[2], nugget=p[3])
+  # optimal variogram
+  vario = V(range=p[1], sill=p[2], nugget=p[3], distance=d)
 
   vario, err
 end

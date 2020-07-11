@@ -55,6 +55,7 @@ export
   ScaledVariogram,
   isstationary,
   sill, nugget,
+  distance,
   pairwise,
   pairwise!,
 
