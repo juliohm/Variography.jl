@@ -64,12 +64,12 @@
 
   # ill-conditioned covariance
   γ = GaussianVariogram(range=20.)
-  C = sill(γ) .- pairwise(γ, X)
+  C = sill(γ) .- Variography.pairwise(γ, X)
   @test cond(C) > 1000.
 
   # nugget regularization
   γ = GaussianVariogram(range=20., nugget=0.1)
-  C = sill(γ) .- pairwise(γ, X)
+  C = sill(γ) .- Variography.pairwise(γ, X)
   @test γ(0) == 0
   @test γ(1e-6) > 0
   @test cond(C) < 100.

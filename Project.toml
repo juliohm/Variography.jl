@@ -28,6 +28,7 @@ julia = "1"
 
 [extras]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 GR = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
 GeoStatsBase = "323cb8eb-fbf6-51c0-afd0-f8fba70507b2"
 GeoStatsImages = "7cd16168-b42c-5e7d-a585-4f59d326662d"
@@ -41,4 +42,4 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 VisualRegressionTests = "34922c18-7c2a-561c-bac1-01e79b2c4c92"
 
 [targets]
-test = ["GeoStatsImages", "Pkg", "GR", "GeoStatsBase", "Random", "Test", "DelimitedFiles", "VisualRegressionTests", "LinearAlgebra", "Plots", "ImageMagick", "QuartzImageIO"]
+test = ["GeoStatsImages", "Pkg", "GR", "GeoStatsBase", "Distances", "Random", "Test", "DelimitedFiles", "VisualRegressionTests", "LinearAlgebra", "Plots", "ImageMagick", "QuartzImageIO"]

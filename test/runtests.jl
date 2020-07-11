@@ -1,6 +1,7 @@
 using Variography
 using GeoStatsBase
 using GeoStatsImages
+using Distances
 using LinearAlgebra
 using DelimitedFiles
 using Plots; gr(size=(600,400))

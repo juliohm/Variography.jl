@@ -48,11 +48,15 @@ See also: [`DirectionalVariogram`](@ref)
 * Hoffimann, J and Zadrozny, B. 2019. [Efficient variography with partition variograms]
   (https://www.sciencedirect.com/science/article/pii/S0098300419302936)
 """
-struct EmpiricalVariogram
+struct EmpiricalVariogram{D}
   abscissa::Vector{Float64}
   ordinate::Vector{Float64}
   counts::Vector{Int}
+  distance::D
 end
+
+EmpiricalVariogram(abscissa, ordinate, counts, distance) =
+  EmpiricalVariogram{typeof(distance)}(abscissa, ordinate, counts, distance)
 
 function EmpiricalVariogram(sdata::AbstractData{T,N},
                             var₁::Symbol, var₂::Symbol=var₁;
@@ -96,27 +100,23 @@ function EmpiricalVariogram(sdata::AbstractData{T,N},
   ordinate = @. (sums / counts) / 2
   ordinate[counts .== 0] .= 0
 
-  EmpiricalVariogram(abscissa, ordinate, counts)
+  EmpiricalVariogram(abscissa, ordinate, counts, distance)
 end
 
 """
     values(γ)
 
-Returns the center of the bins, the mean squared differences divided by 2
-and the number of squared differences at the bins for a given empirical
-variogram `γ`.
-
-## Examples
-
-Plotting empirical variogram manually:
-
-```julia
-julia> x, y, n = values(γemp)
-julia> plot(x, y, label="variogram")
-julia> bar!(x, n, label="histogram")
-```
+Returns the abscissa, the ordinate, and the bin counts
+of the empirical variogram `γ`.
 """
 Base.values(γ::EmpiricalVariogram) = γ.abscissa, γ.ordinate, γ.counts
+
+"""
+    distance(γ)
+
+Retun the distance used to compute the empirical variogram `γ`.
+"""
+distance(γ::EmpiricalVariogram) = γ.distance
 
 """
     merge(γα, γβ)
@@ -124,7 +124,7 @@ Base.values(γ::EmpiricalVariogram) = γ.abscissa, γ.ordinate, γ.counts
 Merge the empirical variogram `γα` with the empirical variogram `γβ`
 assuming that both variograms have the same abscissa.
 """
-function merge(γα::EmpiricalVariogram, γβ::EmpiricalVariogram)
+function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {D}
   yα = γα.ordinate
   yβ = γβ.ordinate
   nα = γα.counts
@@ -135,7 +135,9 @@ function merge(γα::EmpiricalVariogram, γβ::EmpiricalVariogram)
   y = @. (yα*nα + yβ*nβ) / n
   y[n .== 0] .= 0
 
-  EmpiricalVariogram(x, y, n)
+  d = γα.distance
+
+  EmpiricalVariogram(x, y, n, d)
 end
 
 # ------------
@@ -147,6 +149,7 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", γ::EmpiricalVariogram)
   println(io, γ)
+  println(io, "  distance: ", γ.distance)
   println(io, "  abscissa: ", extrema(γ.abscissa))
   println(io, "  ordinate: ", extrema(γ.ordinate))
   println(io, "  N° pairs: ", sum(γ.counts))

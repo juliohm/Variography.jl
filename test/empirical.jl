@@ -39,12 +39,17 @@
   γ₂ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algo=:ball)
   @test isequal(values(γ₁), values(γ₂))
 
+  # custom distance is recorded
+  sdata = georef(DataFrame(z=rand(1000)), PointSet(rand(2,1000)))
+  γ = EmpiricalVariogram(sdata, :z, distance=Haversine(6371.), algo=:full)
+  @test distance(γ) == Haversine(6371.)
+
   # print methods
   Random.seed!(123)
   d = georef(DataFrame(z=rand(10000)), RegularGrid(100,100))
   γ = EmpiricalVariogram(d, :z)
   @test sprint(show, γ) == "EmpiricalVariogram"
-  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.35001785668734103, 13.650696410806301)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
+  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  distance: Euclidean(0.0)\n  abscissa: (0.35001785668734103, 13.650696410806301)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
 
   if visualtests
     wl = geostatsimage("WalkerLake")
