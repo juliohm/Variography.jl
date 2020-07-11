@@ -3,11 +3,34 @@
 # ------------------------------------------------------------------
 
 """
-    Variogram
+    Variogram{T,D}
 
-A variogram model (e.g. Gaussian variogram).
+A theoretical variogram model (e.g. Gaussian variogram)
+with parameters of type `T` and distance of type `D`.
 """
 abstract type Variogram{T,D} end
+
+"""
+    param_type(γ)
+
+Return the parameter (e.g. sill, range) type of the variogram.
+"""
+param_type(::Variogram{T,D}) where {T,D} = T
+
+"""
+    distance_type(γ)
+
+Return the metric (e.g. Euclidean) type of the variogram.
+"""
+distance_type(::Variogram{T,D}) where {T,D} = D
+
+"""
+    result_type(γ, x₁, x₂)
+
+Return result type of γ(x₁, x₂).
+"""
+result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) =
+  promote_type(param_type(γ), Distances.result_type(γ.distance, x₁, x₂))
 
 """
     isstationary(γ)
@@ -40,26 +63,11 @@ Return the nugget of the variogram `γ` when defined.
 nugget(γ::Variogram) = γ.nugget
 
 """
-    param_type(γ)
+    distance(γ)
 
-Return the parameter (e.g. sill, range) type of the variogram.
+Return the distance of the variogram `γ`.
 """
-param_type(::Variogram{T,D}) where {T,D} = T
-
-"""
-    metric_type(γ)
-
-Return the metric (e.g. Euclidean) type of the variogram.
-"""
-metric_type(::Variogram{T,D}) where {T,D} = D
-
-"""
-    result_type(γ, x₁, x₂)
-
-Return result type of γ(x₁, x₂).
-"""
-result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) =
-  promote_type(param_type(γ), Distances.result_type(γ.distance, x₁, x₂))
+distance(γ::Variogram) = γ.distance
 
 """
     γ(x, y)
