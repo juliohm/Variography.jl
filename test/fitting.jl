@@ -1,7 +1,7 @@
 @testset "Fitting" begin
   wl = geostatsimage("WalkerLake")
   TI = reshape(wl[:Z], size(domain(wl)))[1:20,1:20]
-  d = georef(DataFrame(z=vec(TI)), RegularGrid(20,20))
+  d = georef((z=TI,))
   γwalker = EmpiricalVariogram(d, :z, maxlag=15.)
 
   # variogram types to fit

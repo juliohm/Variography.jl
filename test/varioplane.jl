@@ -1,7 +1,7 @@
 @testset "Varioplane" begin
   Random.seed!(123)
   img = readdlm(joinpath(datadir,"anisotropic.tsv"))
-  sdata = georef(DataFrame(z=vec(img)), RegularGrid(size(img)))
+  sdata = georef((z=img,))
   γ = EmpiricalVarioplane(sdata, :z, maxlag=50.)
 
   @test sprint(show, γ) == "EmpiricalVarioplane"

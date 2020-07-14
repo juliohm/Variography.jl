@@ -2,7 +2,7 @@
   @testset "Directional" begin
     # directional variogram and known anisotropy ratio
     img = readdlm(joinpath(datadir,"anisotropic.tsv"))
-    sdata = georef(DataFrame(z=vec(img)), RegularGrid(size(img)))
+    sdata = georef((z=img,))
     γhor = DirectionalVariogram((1.,0.), sdata, :z, maxlag=50.)
     γver = DirectionalVariogram((0.,1.), sdata, :z, maxlag=50.)
     γₕ = fit(GaussianVariogram, γhor)
@@ -23,7 +23,7 @@
   @testset "Planar" begin
     # directional equals planar rotated by 90 degrees in 2D
     img = readdlm(joinpath(datadir,"anisotropic.tsv"))
-    sdata = georef(DataFrame(z=vec(img)), RegularGrid(size(img)))
+    sdata = georef((z=img,))
     γ₁ = PlanarVariogram((0.,1.), sdata, :z, maxlag=50.)
     γ₂ = DirectionalVariogram((1.,0.), sdata, :z, maxlag=50.)
     x₁, y₁, n₁ = values(γ₁)

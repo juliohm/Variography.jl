@@ -219,7 +219,7 @@ function ball_search_accum(sdata::AbstractData{T,N},
   xj = MVector{N,T}(undef)
 
   # fast ball search
-  ball = BallNeighborhood{N}(hmax, distance)
+  ball = BallNeighborhood(hmax, distance)
   searcher = NeighborhoodSearcher(sdata, ball)
 
   # loop over points inside norm ball
