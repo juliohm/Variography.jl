@@ -28,12 +28,6 @@ WeightedLeastSquares() = WeightedLeastSquares(nothing)
 
 Fit theoretical variogram type `V` to empirical variogram `γ`
 using algorithm `algo`. Default algorithm is `WeightedLeastSquares`.
-
-## Examples
-
-```julia
-julia> fit(SphericalVariogram, γ)
-```
 """
 function fit(V::Type{<:Variogram}, γ::EmpiricalVariogram,
              algo::VariogramFitAlgo=WeightedLeastSquares())
@@ -48,12 +42,6 @@ end
 
 Fit all subtypes of `Variogram` to empirical variogram `γ` and
 return the one with minimum error as defined by the algorithm `algo`.
-
-## Examples
-
-```julia
-julia> fit(Variogram, γ)
-```
 """
 function fit(::Type{Variogram}, γ::EmpiricalVariogram,
              algo::VariogramFitAlgo=WeightedLeastSquares())
