@@ -47,7 +47,7 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
       p = partition(plane, dir)
       EmpiricalVariogram(p, var₁, var₂; kwargs...)
     end
-    reduce(merge, Map(γ), collect(planes))
+    foldxt(merge, Map(γ), collect(planes))
   end
 
   EmpiricalVarioplane(collect(θs), γs)

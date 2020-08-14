@@ -10,7 +10,7 @@ using Optim
 using Distances
 using InteractiveUtils: subtypes
 using SpecialFunctions: gamma, besselk
-using Transducers: Map, reduce
+using Transducers: Map, foldxt
 using StaticArrays: SVector, MVector
 using RecipesBase
 using Parameters

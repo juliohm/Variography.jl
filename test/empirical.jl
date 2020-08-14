@@ -25,13 +25,12 @@
 
   # empirical variogram with only missing data
   X = rand(2,3)
-  for z in [[NaN,NaN,NaN], [missing,missing,missing]]
-    sdata = georef((z=z,), X)
-    γ = EmpiricalVariogram(sdata, :z, maxlag=1., nlags=5)
-    x, y, n = values(γ)
-    @test x == [.1, .3, .5, .7, .9]
-    @test all(iszero.(n))
-  end
+  z = Union{Float64,Missing}[missing,missing,missing]
+  𝒟 = georef((z=z,), X)
+  γ = EmpiricalVariogram(𝒟, :z, maxlag=1., nlags=5)
+  x, y, n = values(γ)
+  @test x == [.1, .3, .5, .7, .9]
+  @test all(iszero.(n))
 
   # accumulation algorithms give the same result
   sdata = georef((z=rand(1000),), rand(3,1000))

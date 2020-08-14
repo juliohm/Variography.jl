@@ -58,17 +58,15 @@ end
 EmpiricalVariogram(abscissa, ordinate, counts, distance) =
   EmpiricalVariogram{typeof(distance)}(abscissa, ordinate, counts, distance)
 
-function EmpiricalVariogram(sdata::AbstractData{T,N},
-                            var₁::Symbol, var₂::Symbol=var₁;
+function EmpiricalVariogram(sdata::AbstractData{T,N}, var₁::Symbol, var₂::Symbol=var₁;
                             nlags=20, maxlag=default_maxlag(sdata),
-                            distance=Euclidean(),
-                            algo=:ball) where {N,T}
+                            distance=Euclidean(), algo=:ball) where {N,T}
   # relevant parameters
   npts = npoints(sdata)
   hmax = maxlag
 
   # sanity checks
-  @assert (var₁, var₂) ⊆ keys(variables(sdata)) "invalid variable names"
+  @assert (var₁, var₂) ⊆ name.(variables(sdata)) "invalid variable names"
   @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
   @assert nlags > 0 "number of lags must be positive"
   @assert npts  > 1 "variogram requires at least 2 points"
