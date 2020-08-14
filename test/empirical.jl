@@ -48,7 +48,7 @@
   d = georef((z=rand(100,100),))
   γ = EmpiricalVariogram(d, :z)
   @test sprint(show, γ) == "EmpiricalVariogram"
-  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  distance: Euclidean(0.0)\n  abscissa: (0.35001785668734103, 13.650696410806301)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
+  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.35001785668734103, 13.650696410806301)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
 
   if visualtests
     wl = geostatsimage("WalkerLake")

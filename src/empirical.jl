@@ -147,7 +147,6 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", γ::EmpiricalVariogram)
   println(io, γ)
-  println(io, "  distance: ", γ.distance)
   println(io, "  abscissa: ", extrema(γ.abscissa))
   println(io, "  ordinate: ", extrema(γ.ordinate))
   println(io, "  N° pairs: ", sum(γ.counts))
