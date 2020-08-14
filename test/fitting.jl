@@ -24,7 +24,7 @@
       plts = []
       for γ in γs
         plt = plot(γwalker, legend=false)
-        plot!(γ, maxlag=15.)
+        plot!(γ, 0., 15.)
         push!(plts, plt)
       end
       plot(plts...)
