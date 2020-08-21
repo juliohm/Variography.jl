@@ -27,10 +27,10 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
   @assert nangs > 1 "nangs must be greater than one"
 
   # basis for variogram plane
-  if ndims(sdata) == 2
+  if ncoords(sdata) == 2
     planes = [sdata]
     u, v = SVector(1.,0.), SVector(0.,1.)
-  elseif ndims(sdata) == 3
+  elseif ncoords(sdata) == 3
     planes = partition(sdata, PlanePartitioner(normal, tol=ptol))
     u, v = planebasis(normal)
   else
