@@ -62,7 +62,7 @@ function EmpiricalVariogram(sdata::AbstractData{T,N}, var₁::Symbol, var₂::Sy
                             nlags=20, maxlag=default_maxlag(sdata),
                             distance=Euclidean(), algo=:ball) where {N,T}
   # relevant parameters
-  npts = npoints(sdata)
+  npts = nelms(sdata)
   hmax = maxlag
 
   # sanity checks
@@ -160,7 +160,7 @@ function full_search_accum(sdata::AbstractData{T,N},
                            hmax::T, nlags::Integer,
                            distance::Metric) where {N,T}
   # number of points to loop over
-  npts = npoints(sdata)
+  npts = nelms(sdata)
   δh = hmax / nlags
 
   # lag sums and counts
@@ -204,7 +204,7 @@ function ball_search_accum(sdata::AbstractData{T,N},
                            hmax::T, nlags::Integer,
                            distance::Metric) where {N,T}
   # retrieve relevant parameters
-  npts = npoints(sdata)
+  npts = nelms(sdata)
   δh = hmax / nlags
 
   # lag sums and counts

@@ -16,7 +16,7 @@ variables `var₁` and `var₂`.
 function EmpiricalVariogram(partition::SpatialPartition,
                             var₁::Symbol, var₂::Symbol=var₁; kwargs...)
   # retain spatial data with at least 2 points
-  filtered = Iterators.filter(d -> npoints(d) > 1, partition)
+  filtered = Iterators.filter(d -> nelms(d) > 1, partition)
 
   @assert !isempty(filtered) "invalid partition of spatial data"
 
