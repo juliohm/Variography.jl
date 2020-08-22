@@ -38,21 +38,23 @@ function pairwise!(Γ, γ::Variogram, X::AbstractMatrix)
 end
 
 """
-    pairwise(γ, domain, locations)
+    pairwise(γ, domain, inds)
 
-Evaluate variogram `γ` between all `locations` in `domain`.
+Evaluate variogram `γ` between all `inds` in `domain`.
 """
-function pairwise(γ::Variogram, domain::AbstractDomain{T,N},
-                  locations::AbstractVector{Int}) where {T<:Real,N}
+function pairwise(γ::Variogram, domain,
+                  inds::AbstractVector{Int})
+  N = ncoords(domain)
+  T = coordtype(domain)
   xi = MVector{N,T}(undef)
   xj = MVector{N,T}(undef)
-  n = length(locations)
+  n = length(inds)
   R = result_type(γ, xi, xj)
   Γ = Matrix{R}(undef, n, n)
   @inbounds for j=1:n
-    coordinates!(xj, domain, locations[j])
+    coordinates!(xj, domain, inds[j])
     for i=j+1:n
-      coordinates!(xi, domain, locations[i])
+      coordinates!(xi, domain, inds[i])
       Γ[i,j] = γ(xi, xj)
     end
     Γ[j,j] = γ(xj, xj)
@@ -65,23 +67,25 @@ function pairwise(γ::Variogram, domain::AbstractDomain{T,N},
 end
 
 """
-    pairwise(γ, domain, locations₁, locations₂)
+    pairwise(γ, domain, inds₁, inds₂)
 
-Evaluate variogram `γ` between `locations₁` and `locations₂` in `domain`.
+Evaluate variogram `γ` between `inds₁` and `inds₂` in `domain`.
 """
-function pairwise(γ::Variogram, domain::AbstractDomain{T,N},
-                  locations₁::AbstractVector{Int},
-                  locations₂::AbstractVector{Int}) where {T<:Real,N}
+function pairwise(γ::Variogram, domain,
+                  inds₁::AbstractVector{Int},
+                  inds₂::AbstractVector{Int})
+  N = ncoords(domain)
+  T = coordtype(domain)
   xi = MVector{N,T}(undef)
   xj = MVector{N,T}(undef)
-  m = length(locations₁)
-  n = length(locations₂)
+  m = length(inds₁)
+  n = length(inds₂)
   R = result_type(γ, xi, xj)
   Γ = Array{R}(undef, m, n)
   @inbounds for j=1:n
-    coordinates!(xj, domain, locations₂[j])
+    coordinates!(xj, domain, inds₂[j])
     for i=1:m
-      coordinates!(xi, domain, locations₁[i])
+      coordinates!(xi, domain, inds₁[i])
       Γ[i,j] = γ(xi, xj)
     end
   end

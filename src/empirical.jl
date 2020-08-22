@@ -58,10 +58,12 @@ end
 EmpiricalVariogram(abscissa, ordinate, counts, distance) =
   EmpiricalVariogram{typeof(distance)}(abscissa, ordinate, counts, distance)
 
-function EmpiricalVariogram(sdata::AbstractData{T,N}, var₁::Symbol, var₂::Symbol=var₁;
+function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
                             nlags=20, maxlag=default_maxlag(sdata),
-                            distance=Euclidean(), algo=:ball) where {N,T}
+                            distance=Euclidean(), algo=:ball)
   # relevant parameters
+  N = ncoords(sdata)
+  T = coordtype(sdata)
   npts = nelms(sdata)
   hmax = maxlag
 
@@ -155,11 +157,10 @@ end
 # ------------------------
 # ACCUMULATION ALGORITHMS
 # ------------------------
-function full_search_accum(sdata::AbstractData{T,N},
-                           var₁::Symbol, var₂::Symbol,
-                           hmax::T, nlags::Integer,
-                           distance::Metric) where {N,T}
-  # number of points to loop over
+function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+  # retrieve relevant parameters
+  N = ncoords(sdata)
+  T = coordtype(sdata)
   npts = nelms(sdata)
   δh = hmax / nlags
 
@@ -199,11 +200,10 @@ function full_search_accum(sdata::AbstractData{T,N},
   sums, counts
 end
 
-function ball_search_accum(sdata::AbstractData{T,N},
-                           var₁::Symbol, var₂::Symbol,
-                           hmax::T, nlags::Integer,
-                           distance::Metric) where {N,T}
+function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   # retrieve relevant parameters
+  N = ncoords(sdata)
+  T = coordtype(sdata)
   npts = nelms(sdata)
   δh = hmax / nlags
 
