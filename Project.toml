@@ -17,7 +17,7 @@ Transducers = "28d57a85-8fef-5791-bfe6-a80928e7c999"
 
 [compat]
 Distances = "0.8, 0.9"
-GeoStatsBase = "0.11"
+GeoStatsBase = "0.11, 0.12"
 Optim = "0.18, 0.20, 0.21, 0.22"
 Parameters = "0.12"
 RecipesBase = "0.7, 0.8, 1.0"
