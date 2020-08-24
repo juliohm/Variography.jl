@@ -13,8 +13,8 @@
       @plottest begin
         p1 = plot(γhor, showbins=false, label="horizontal")
         plot!(γver, showbins=false, label="vertical")
-        p2 = plot(γₕ, maxlag=50., label="horizontal")
-        plot!(γᵥ, maxlag=50., label="vertical")
+        p2 = plot(γₕ, 0., 50., label="horizontal")
+        plot!(γᵥ, 0., 50., label="vertical")
         plot(p1, p2, layout=(2,1))
       end joinpath(datadir,"directional.png") !istravis
     end
@@ -50,8 +50,8 @@
       @plottest begin
         p1 = plot(γhor, showbins=false, label="horizontal")
         plot!(γver, showbins=false, label="vertical")
-        p2 = plot(γₕ, maxlag=50., label="horizontal")
-        plot!(γᵥ, maxlag=50., label="vertical")
+        p2 = plot(γₕ, 0., 50., label="horizontal")
+        plot!(γᵥ, 0., 50., label="vertical")
         plot(p1, p2, layout=(2,1))
       end joinpath(datadir,"planar.png") !istravis
     end

@@ -29,8 +29,8 @@
   seriestype --> :scatterpath
   linecolor --> :black
   xlims --> (0, maximum(x) + binsize/2)
-  xguide --> "Lag h"
-  yguide --> "Variogram(h)"
+  xguide --> "h"
+  yguide --> "γ(h)"
   label --> "variogram"
 
   x, y

@@ -10,11 +10,11 @@ _hmax(γ::PowerVariogram) = 3.
   h = range(minlag+1e-6, stop=maxlag, length=nlags)
 
   seriestype --> :path
+  label --> string(nameof(typeof(γ)))
   xlims --> (0, maxlag)
   ylims --> (0, Inf)
-  xguide --> "Lag h"
-  yguide --> "Variogram(h)"
-  label --> "variogram"
+  xguide --> "h"
+  yguide --> "γ(h)"
 
   h, γ.(h)
 end
