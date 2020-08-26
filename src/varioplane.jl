@@ -42,11 +42,8 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
   γs = map(θs) do θ
     dir = DirectionPartitioner(cos(θ)*u + sin(θ)*v, tol=dtol)
 
-    # compute directional variogram across planes
-    function γ(plane)
-      p = partition(plane, dir)
-      EmpiricalVariogram(p, var₁, var₂; kwargs...)
-    end
+    γ(plane) = EmpiricalVariogram(partition(plane, dir),
+                                  var₁, var₂; kwargs...)
     foldxt(merge, Map(γ), collect(planes))
   end
 
