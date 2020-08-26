@@ -172,6 +172,9 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   xi = MVector{N,T}(undef)
   xj = MVector{N,T}(undef)
 
+  # collect vectors for variables
+  Z₁, Z₂ = sdata[var₁], sdata[var₂]
+
   # loop over all pairs of points
   @inbounds for j in 1:npts
     coordinates!(xj, sdata, j)
@@ -183,9 +186,7 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
       h > hmax && continue # early exit if out of range
 
       # evaluate (cross-)variance
-      δ₁ = sdata[i,var₁] - sdata[j,var₁]
-      δ₂ = sdata[i,var₂] - sdata[j,var₂]
-      v = δ₁*δ₂
+      v = (Z₁[i] - Z₁[j]) * (Z₂[i] - Z₂[j])
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
@@ -215,6 +216,9 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   xi = MVector{N,T}(undef)
   xj = MVector{N,T}(undef)
 
+  # collect vectors for variables
+  Z₁, Z₂ = sdata[var₁], sdata[var₂]
+
   # fast ball search
   ball = BallNeighborhood(hmax, distance)
   searcher = NeighborhoodSearcher(sdata, ball)
@@ -230,9 +234,7 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
       h = evaluate(distance, xi, xj)
 
       # evaluate (cross-)variance
-      δ₁ = sdata[i,var₁] - sdata[j,var₁]
-      δ₂ = sdata[i,var₂] - sdata[j,var₂]
-      v = δ₁*δ₂
+      v = (Z₁[i] - Z₁[j]) * (Z₂[i] - Z₂[j])
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
