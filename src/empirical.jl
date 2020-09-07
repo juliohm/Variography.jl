@@ -85,16 +85,16 @@ function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
 
   # choose accumulation algorithm
   if algo == :ball && isfloat && isminkowski
-    sums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+    sums, cumdists, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   else
-    sums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+    sums, cumdists, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   end
 
   # bin (or lag) size
   δh = hmax / nlags
 
   # variogram abscissa
-  abscissa = range(δh/2, stop=hmax - δh/2, length=nlags)
+  abscissa = @. (cumdists / counts)
 
   # variogram ordinate
   ordinate = @. (sums / counts) / 2
@@ -166,6 +166,7 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
   # lag sums and counts
   sums   = zeros(nlags)
+  cumdists = zeros(nlags)
   counts = zeros(Int, nlags)
 
   # preallocate memory for coordinates
@@ -190,15 +191,17 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
+      @assert h > 0 "duplicated coordinates for variography"
 
-      if lag ≤ nlags && !ismissing(v) && !isnan(v)
+      if lag ≤ nlags && !ismissing(v) && !isnan(v)# && lag != 0
         sums[lag] += v
+        cumdists[lag] += h
         counts[lag] += 1
       end
     end
   end
 
-  sums, counts
+  sums, cumdists, counts
 end
 
 function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
@@ -210,6 +213,7 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
   # lag sums and counts
   sums   = zeros(nlags)
+  cumdists = zeros(nlags)
   counts = zeros(Int, nlags)
 
   # preallocate memory for coordinates
@@ -238,13 +242,15 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
+      @assert h > 0 "duplicated coordinates for variography"
 
-      if lag ≤ nlags && !ismissing(v) && !isnan(v)
+      if lag ≤ nlags && !ismissing(v) && !isnan(v)# && lag != 0
         sums[lag] += v
+        cumdists[lag] += h
         counts[lag] += 1
       end
     end
   end
 
-  sums, counts
+  sums, cumdists, counts
 end
