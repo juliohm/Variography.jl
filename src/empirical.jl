@@ -85,20 +85,21 @@ function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
 
   # choose accumulation algorithm
   if algo == :ball && isfloat && isminkowski
-    sums, cumdists, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+    xsums, ysums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   else
-    sums, cumdists, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+    xsums, ysums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   end
 
   # bin (or lag) size
   δh = hmax / nlags
+  lags = range(δh/2, stop=hmax - δh/2, length=nlags)
 
   # variogram abscissa
-  abscissa = @. (cumdists / counts)
-  abscissa[counts .== 0] .= range(δh/2, stop=hmax - δh/2, length=nlags)[counts .== 0]
+  abscissa = @. xsums / counts
+  abscissa[counts .== 0] .= lags[counts .== 0]
 
   # variogram ordinate
-  ordinate = @. (sums / counts) / 2
+  ordinate = @. (ysums / counts) / 2
   ordinate[counts .== 0] .= 0
 
   EmpiricalVariogram(abscissa, ordinate, counts, distance)
@@ -166,8 +167,8 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   δh = hmax / nlags
 
   # lag sums and counts
-  sums   = zeros(nlags)
-  cumdists = zeros(nlags)
+  xsums = zeros(nlags)
+  ysums = zeros(nlags)
   counts = zeros(Int, nlags)
 
   # preallocate memory for coordinates
@@ -192,18 +193,17 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
+      lag == 0 && @warn "duplicate coordinates found"
 
-      if lag ≤ nlags && !ismissing(v) && lag != 0
-        sums[lag] += v
-        cumdists[lag] += h
+      if 0 < lag ≤ nlags && !ismissing(v)
+        xsums[lag] += h
+        ysums[lag] += v
         counts[lag] += 1
-      elseif lag == 0
-        @warn "pairs with duplicated coordinates are being ignored for variography"
       end
     end
   end
 
-  sums, cumdists, counts
+  xsums, ysums, counts
 end
 
 function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
@@ -214,8 +214,8 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   δh = hmax / nlags
 
   # lag sums and counts
-  sums   = zeros(nlags)
-  cumdists = zeros(nlags)
+  xsums = zeros(nlags)
+  ysums   = zeros(nlags)
   counts = zeros(Int, nlags)
 
   # preallocate memory for coordinates
@@ -244,16 +244,15 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
+      lag == 0 && @warn "duplicate coordinates found"
 
-      if lag ≤ nlags && !ismissing(v) && lag != 0
-        sums[lag] += v
-        cumdists[lag] += h
+      if 0 < lag ≤ nlags && !ismissing(v)
+        xsums[lag] += h
+        ysums[lag] += v
         counts[lag] += 1
-      elseif lag == 0
-        @warn "pairs with duplicated coordinates are being ignored for variography"
       end
     end
   end
 
-  sums, cumdists, counts
+  xsums, ysums, counts
 end
