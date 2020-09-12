@@ -95,6 +95,7 @@ function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
 
   # variogram abscissa
   abscissa = @. (cumdists / counts)
+  abscissa[counts .== 0] .= range(δh/2, stop=hmax - δh/2, length=nlags)[counts .== 0]
 
   # variogram ordinate
   ordinate = @. (sums / counts) / 2
@@ -191,12 +192,13 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
-      @assert h > 0 "duplicated coordinates for variography"
 
-      if lag ≤ nlags && !ismissing(v) && !isnan(v)# && lag != 0
+      if lag ≤ nlags && !ismissing(v) && lag != 0
         sums[lag] += v
         cumdists[lag] += h
         counts[lag] += 1
+      elseif lag == 0
+        @warn "pairs with duplicated coordinates are being ignored for variography"
       end
     end
   end
@@ -242,12 +244,13 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
-      @assert h > 0 "duplicated coordinates for variography"
 
-      if lag ≤ nlags && !ismissing(v) && !isnan(v)# && lag != 0
+      if lag ≤ nlags && !ismissing(v) && lag != 0
         sums[lag] += v
         cumdists[lag] += h
         counts[lag] += 1
+      elseif lag == 0
+        @warn "pairs with duplicated coordinates are being ignored for variography"
       end
     end
   end
