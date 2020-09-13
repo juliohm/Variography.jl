@@ -127,13 +127,15 @@ Merge the empirical variogram `γα` with the empirical variogram `γβ`
 assuming that both variograms have the same abscissa.
 """
 function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {D}
+  xα = γα.abscissa
+  xβ = γβ.abscissa
   yα = γα.ordinate
   yβ = γβ.ordinate
   nα = γα.counts
   nβ = γβ.counts
 
   n = nα + nβ
-  x = γα.abscissa
+  x = @. (xα*nα + xβ*nβ) / n
   y = @. (yα*nα + yβ*nβ) / n
   y[n .== 0] .= 0
 
@@ -215,7 +217,7 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
   # lag sums and counts
   xsums = zeros(nlags)
-  ysums   = zeros(nlags)
+  ysums = zeros(nlags)
   counts = zeros(Int, nlags)
 
   # preallocate memory for coordinates
