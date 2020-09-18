@@ -124,7 +124,7 @@ distance(γ::EmpiricalVariogram) = γ.distance
     merge(γα, γβ)
 
 Merge the empirical variogram `γα` with the empirical variogram `γβ`
-assuming that both variograms have the same abscissa.
+assuming that both variograms have the same number of lags.
 """
 function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {D}
   xα = γα.abscissa
