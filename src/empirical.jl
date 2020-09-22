@@ -85,19 +85,21 @@ function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
 
   # choose accumulation algorithm
   if algo == :ball && isfloat && isminkowski
-    sums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+    xsums, ysums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   else
-    sums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+    xsums, ysums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   end
 
   # bin (or lag) size
   δh = hmax / nlags
+  lags = range(δh/2, stop=hmax - δh/2, length=nlags)
 
   # variogram abscissa
-  abscissa = range(δh/2, stop=hmax - δh/2, length=nlags)
+  abscissa = @. xsums / counts
+  abscissa[counts .== 0] .= lags[counts .== 0]
 
   # variogram ordinate
-  ordinate = @. (sums / counts) / 2
+  ordinate = @. (ysums / counts) / 2
   ordinate[counts .== 0] .= 0
 
   EmpiricalVariogram(abscissa, ordinate, counts, distance)
@@ -122,16 +124,18 @@ distance(γ::EmpiricalVariogram) = γ.distance
     merge(γα, γβ)
 
 Merge the empirical variogram `γα` with the empirical variogram `γβ`
-assuming that both variograms have the same abscissa.
+assuming that both variograms have the same number of lags.
 """
 function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {D}
+  xα = γα.abscissa
+  xβ = γβ.abscissa
   yα = γα.ordinate
   yβ = γβ.ordinate
   nα = γα.counts
   nβ = γβ.counts
 
   n = nα + nβ
-  x = γα.abscissa
+  x = @. (xα*nα + xβ*nβ) / n
   y = @. (yα*nα + yβ*nβ) / n
   y[n .== 0] .= 0
 
@@ -165,7 +169,8 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   δh = hmax / nlags
 
   # lag sums and counts
-  sums   = zeros(nlags)
+  xsums = zeros(nlags)
+  ysums = zeros(nlags)
   counts = zeros(Int, nlags)
 
   # preallocate memory for coordinates
@@ -190,15 +195,17 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
+      lag == 0 && @warn "duplicate coordinates found"
 
-      if lag ≤ nlags && !ismissing(v) && !isnan(v)
-        sums[lag] += v
+      if 0 < lag ≤ nlags && !ismissing(v)
+        xsums[lag] += h
+        ysums[lag] += v
         counts[lag] += 1
       end
     end
   end
 
-  sums, counts
+  xsums, ysums, counts
 end
 
 function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
@@ -209,7 +216,8 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   δh = hmax / nlags
 
   # lag sums and counts
-  sums   = zeros(nlags)
+  xsums = zeros(nlags)
+  ysums = zeros(nlags)
   counts = zeros(Int, nlags)
 
   # preallocate memory for coordinates
@@ -238,13 +246,15 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
+      lag == 0 && @warn "duplicate coordinates found"
 
-      if lag ≤ nlags && !ismissing(v) && !isnan(v)
-        sums[lag] += v
+      if 0 < lag ≤ nlags && !ismissing(v)
+        xsums[lag] += h
+        ysums[lag] += v
         counts[lag] += 1
       end
     end
   end
 
-  sums, counts
+  xsums, ysums, counts
 end

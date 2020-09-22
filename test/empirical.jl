@@ -3,7 +3,7 @@
   sdata = georef((z=ones(3),), Matrix(1.0I, 3, 3))
   γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2.)
   x, y, n = values(γ)
-  @test x ≈ [1/2, 3/2]
+  @test x ≈ [1/2, √2]
   @test y[2] == 0.
   @test n == [0, 3]
 
@@ -19,7 +19,7 @@
   sdata = georef((z=ones(3),), Matrix(1I, 3, 3))
   γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2, algo=:full)
   x, y, n = values(γ)
-  @test x ≈ [1/2, 3/2]
+  @test x ≈ [1/2, √2]
   @test y[2] == 0.
   @test n == [0, 3]
 
@@ -48,7 +48,7 @@
   d = georef((z=rand(100,100),))
   γ = EmpiricalVariogram(d, :z)
   @test sprint(show, γ) == "EmpiricalVariogram"
-  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.35001785668734103, 13.650696410806301)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
+  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.35001785668734103, 13.631423424599443)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
 
   if visualtests
     wl = geostatsimage("WalkerLake")
