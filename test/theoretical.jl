@@ -57,6 +57,13 @@
   @test sill(γ) == 3.
   @test !isstationary(γ + PowerVariogram())
 
+  # result type is defined for composite models
+  # see https://github.com/JuliaEarth/GeoStats.jl/issues/121 
+  γ = GaussianVariogram() + ExponentialVariogram()
+  @test Variography.result_type(γ, rand(3), rand(3)) == Float64
+  γ = GaussianVariogram(sill=1.0f0,range=1.0f0,nugget=0.1f0)
+  @test Variography.result_type(γ, rand(Float32, 3), rand(Float32, 3)) == Float32
+
   # ill-conditioned models and nugget regularization
   # see https://github.com/JuliaEarth/GeoStats.jl/issues/29
   X = [93.0 90.0 89.0 94.0 93.0 97.0 95.0 88.0 96.0 98.0

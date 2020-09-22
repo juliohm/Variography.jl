@@ -11,26 +11,11 @@ with parameters of type `T` and distance of type `D`.
 abstract type Variogram{T,D} end
 
 """
-    param_type(γ)
-
-Return the parameter (e.g. sill, range) type of the variogram.
-"""
-param_type(::Variogram{T,D}) where {T,D} = T
-
-"""
-    distance_type(γ)
-
-Return the metric (e.g. Euclidean) type of the variogram.
-"""
-distance_type(::Variogram{T,D}) where {T,D} = D
-
-"""
     result_type(γ, x₁, x₂)
 
 Return result type of γ(x₁, x₂).
 """
-result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) =
-  promote_type(param_type(γ), Distances.result_type(γ.distance, x₁, x₂))
+result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) = typeof(γ(x₁, x₂))
 
 """
     isstationary(γ)
