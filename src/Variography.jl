@@ -43,6 +43,7 @@ export
 
   # theoretical variograms
   Variogram,
+  NuggetEffect,
   GaussianVariogram,
   ExponentialVariogram,
   MaternVariogram,

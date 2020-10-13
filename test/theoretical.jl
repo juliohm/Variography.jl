@@ -4,7 +4,7 @@
   x, y = rand(3), rand(3)
 
   # stationary variogram models
-  γs = [GaussianVariogram(), ExponentialVariogram(),
+  γs = [NuggetEffect(), GaussianVariogram(), ExponentialVariogram(),
         MaternVariogram(), SphericalVariogram(),
         SphericalVariogram(range=2.), CubicVariogram(),
         PentasphericalVariogram(), SineHoleVariogram()]
@@ -36,6 +36,24 @@
   for γ in (γs ∪ γn ∪ γnd)
     @test !isnan(γ(0.)) && !isinf(γ(0.))
   end
+
+  # nugget effect
+  γ = NuggetEffect(0.2)
+  @test nugget(γ) == 0.2
+  @test sill(γ) == 0.2
+  @test range(γ) == 0.0
+
+  # Sum and Scaled Variogram
+  γ₁ = γ + GaussianVariogram(nugget=0.1, sill=0.8, range=50.0)
+  @test nugget(γ₁) ≈ 0.3
+  @test sill(γ₁) ≈ 1.0
+  @test range(γ₁) ≈ 50.0
+  γ₁ = 2.0*γ
+  @test nugget(γ₁) ≈ 0.4
+  @test sill(γ₁) ≈ 0.4
+  @test range(γ₁) ≈ 0.0
+
+
 
   # sill is defined for compositive stationary models
   γ = GaussianVariogram(sill=1.) + ExponentialVariogram(sill=2.)

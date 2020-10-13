@@ -65,6 +65,27 @@ Evaluate the variogram at points `x` and `y`.
 # IMPLEMENTATIONS
 #------------------
 """
+    NuggetEfect(n)
+
+A pure nugget effect (random) variogram with nugget `n`
+"""
+@with_kw struct NuggetEffect{T,D} <: Variogram{T,D}
+  nugget::T = 0.0
+  sill::T = 0.0
+  range::T = 0.0
+  distance::D = Euclidean()
+end
+function NuggetEffect(n::T) where {T <: AbstractFloat}
+  @assert n > 0 "Nugget effect should be greater than zero"
+  NuggetEffect(nugget=n)
+end
+
+(γ::NuggetEffect{T,D})(h) where {T,D} = (h > 0) ? γ.nugget : zero(T)
+Base.range(::NuggetEffect{T,D}) where {T,D} = zero(T)
+sill(γ::NuggetEffect) = nugget(γ)
+isstationary(::Type{<:NuggetEffect}) = true
+
+"""
     GaussianVariogram(sill=s, range=r, nugget=n, distance=d)
 
 A Gaussian variogram with sill `s`, range `r` and nugget `n`.
