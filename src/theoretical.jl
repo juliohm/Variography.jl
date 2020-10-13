@@ -71,19 +71,13 @@ A pure nugget effect (random) variogram with nugget `n`
 """
 @with_kw struct NuggetEffect{T,D} <: Variogram{T,D}
   nugget::T = 0.0
-  sill::T = 0.0
-  range::T = 0.0
   distance::D = Euclidean()
 end
-function NuggetEffect(n::T) where {T <: AbstractFloat}
-  @assert n > 0 "Nugget effect should be greater than zero"
-  NuggetEffect(nugget=n)
-end
 
-(γ::NuggetEffect{T,D})(h) where {T,D} = (h > 0) ? γ.nugget : zero(T)
+(γ::NuggetEffect)(h) = (h > 0) * γ.nugget
 Base.range(::NuggetEffect{T,D}) where {T,D} = zero(T)
-sill(γ::NuggetEffect) = nugget(γ)
-isstationary(::Type{<:NuggetEffect}) = true
+sill(γ::NuggetEffect) = γ.nugget
+isstationary(::Type{<:NuggetEffect}) = false
 
 """
     GaussianVariogram(sill=s, range=r, nugget=n, distance=d)

@@ -4,7 +4,7 @@
   x, y = rand(3), rand(3)
 
   # stationary variogram models
-  γs = [NuggetEffect(), GaussianVariogram(), ExponentialVariogram(),
+  γs = [GaussianVariogram(), ExponentialVariogram(),
         MaternVariogram(), SphericalVariogram(),
         SphericalVariogram(range=2.), CubicVariogram(),
         PentasphericalVariogram(), SineHoleVariogram()]
@@ -38,7 +38,7 @@
   end
 
   # nugget effect
-  γ = NuggetEffect(0.2)
+  γ = NuggetEffect(nugget=0.2)
   @test nugget(γ) == 0.2
   @test sill(γ) == 0.2
   @test range(γ) == 0.0
