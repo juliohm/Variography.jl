@@ -46,7 +46,8 @@ return the one with minimum error as defined by the algorithm `algo`.
 function fit(::Type{Variogram}, γ::EmpiricalVariogram,
              algo::VariogramFitAlgo=WeightedLeastSquares())
   # fit each variogram type
-  res = [fit_impl(V, γ, algo) for V in STATIONARY]
+  varsubset = filter(x -> x != NuggetEffect, STATIONARY) # excluding NuggetEffect until is properly managed
+  res = [fit_impl(V, γ, algo) for V in varsubset]
   γs, es = first.(res), last.(res)
 
   # return best candidate
