@@ -24,8 +24,8 @@ For examples of usage, please check the main documentation.
 
 If you have any questions, please contact our community on the [gitter channel](https://gitter.im/JuliaEarth/GeoStats.jl).
 
-[travis-img]: https://travis-ci.org/JuliaEarth/Variography.jl.svg?branch=master
-[travis-url]: https://travis-ci.org/JuliaEarth/Variography.jl
+[travis-img]: https://travis-ci.com/JuliaEarth/Variography.jl.svg?branch=master
+[travis-url]: https://travis-ci.com/JuliaEarth/Variography.jl
 
 [codecov-img]: https://codecov.io/gh/JuliaEarth/Variography.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/JuliaEarth/Variography.jl
