@@ -73,13 +73,11 @@ A pure nugget effect (random) variogram with nugget `n`
   nugget::T = 0.0
   distance::D = Euclidean()
 end
-
+NuggetEffect(n) = NuggetEffect(nugget=n)
 (γ::NuggetEffect)(h) = (h > 0) * γ.nugget
 Base.range(::NuggetEffect{T,D}) where {T,D} = zero(T)
 sill(γ::NuggetEffect) = γ.nugget
 isstationary(::Type{<:NuggetEffect}) = true
-
-NuggetEffect(n) = NuggetEffect(nugget=n)
 
 """
     GaussianVariogram(sill=s, range=r, nugget=n, distance=d)
