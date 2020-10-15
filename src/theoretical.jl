@@ -64,10 +64,13 @@ Evaluate the variogram at points `x` and `y`.
 #------------------
 # IMPLEMENTATIONS
 #------------------
-"""
-    NuggetEfect(n)
 
-A pure nugget effect (random) variogram with nugget `n`
+"""
+    NuggetEffect(n)
+    NuggetEffect(nugget=n, distance=d)
+
+A pure nugget effect variogram with nugget `n`.
+Optionally use a custom distance `d`.
 """
 @with_kw struct NuggetEffect{T,D} <: Variogram{T,D}
   nugget::T = 0.0
