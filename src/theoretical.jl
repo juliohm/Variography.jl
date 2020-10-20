@@ -282,14 +282,14 @@ isstationary(γ::ScaledVariogram) = isstationary(γ.γ)
 
 Return sum of variograms `γ₁` and `γ₂`.
 """
-+(γ₁::Variogram, γ₂::Variogram) = SumVariogram(γ₁, γ₂)
+# +(γ₁::Variogram, γ₂::Variogram) = SumVariogram(γ₁, γ₂)
 
 """
     cγ
 
 Return the multiplication of the scalar `c` with the variogram `γ`.
 """
-*(c::Number, γ::Variogram) = ScaledVariogram(c, γ)
+# *(c::Number, γ::Variogram) = ScaledVariogram(c, γ)
 
 # collect all stationary models for other parts of the codebase
 const OPERATIONS = [SumVariogram, ScaledVariogram]

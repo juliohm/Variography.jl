@@ -24,6 +24,7 @@ include("empirical.jl")
 include("partition.jl")
 include("varioplane.jl")
 include("theoretical.jl")
+include("canonical.jl")
 include("pairwise.jl")
 include("fitting.jl")
 
@@ -54,9 +55,11 @@ export
   SineHoleVariogram,
   SumVariogram,
   ScaledVariogram,
+  NestedVariogram,
   isstationary,
   sill, nugget,
   distance,
+  canonical,
   pairwise,
   pairwise!,
 
