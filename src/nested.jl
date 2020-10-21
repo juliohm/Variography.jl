@@ -43,7 +43,7 @@ end
 function Base.show(io::IO, ::MIME"text/plain", g::NestedVariogram)
   println(io, g)
   println(io, "  models")
-  coeffs = [c isa UniformScaling ? 1.0 : c for c in g.cs]
+  coeffs = raw.(g.cs)
   models = [nameof(typeof(γ)) for γ in g.γs]
   params = ["range=$(range(γ)), sill=$(sill(γ)), nugget=$(nugget(γ))" for γ in g.γs]
   lines  = ["    └─$γ($p)" for (γ, p) in zip(models, params)]
