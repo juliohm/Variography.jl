@@ -61,12 +61,12 @@
   γ = GaussianVariogram()
   @test nugget(γ) > 0.
 
-  # nugget is defined for composite models
+  # nugget is defined for nested models
   γ₁ = GaussianVariogram()
   γ₂ = GaussianVariogram() + ExponentialVariogram()
   @test nugget(γ₁) == nugget(γ₂)
 
-  # composite (additive) models via addition
+  # stationarity of nested models
   γ = GaussianVariogram() + ExponentialVariogram() + SphericalVariogram()
   @test isstationary(γ)
   @test sill(γ) == 3.
@@ -78,6 +78,23 @@
   @test Variography.result_type(γ, rand(3), rand(3)) == Float64
   γ = GaussianVariogram(sill=1.0f0,range=1.0f0,nugget=0.1f0)
   @test Variography.result_type(γ, rand(Float32, 3), rand(Float32, 3)) == Float32
+
+  # nested variogram with matrix coefficients
+  C₁, C₂ = rand(3, 3), rand(3, 3)
+  γ = C₁ * GaussianVariogram(range=1.0) + C₂ * SphericalVariogram(range=2.0)
+  @test range(γ) ≈ 2.0
+  @test sill(γ)  ≈ C₁ .+ C₂
+  @test γ(10.0) ≈ sill(γ)
+  @test γ([10.,0.], [0.,0.]) ≈ sill(γ)
+  @test isstationary(γ)
+
+  # nested variogram with mixed coefficients
+  γ = GaussianVariogram() + [1. 0.; 0. 1.] * ExponentialVariogram() + CubicVariogram()
+  @test range(γ) ≈ 1.0
+  @test sill(γ) ≈ [3. 0.; 0. 3.]
+  @test γ(10.0) ≈ sill(γ)
+  @test γ([10.,0.], [0.,0.]) ≈ sill(γ)
+  @test isstationary(γ)
 
   # ill-conditioned models and nugget regularization
   # see https://github.com/JuliaEarth/GeoStats.jl/issues/29
