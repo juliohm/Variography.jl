@@ -2,6 +2,11 @@
 # Licensed under the ISC License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
+# helper function to extract raw data
+# from uniform scaling objects
+raw(a::UniformScaling) = a.λ
+raw(a) = a
+
 """
     NestedVariogram(cs, γs)
 
@@ -13,11 +18,11 @@ struct NestedVariogram{N} <: Variogram{Number,Metric}
   cs::NTuple{N,Any}
   γs::NTuple{N,Variogram}
 end
-(g::NestedVariogram)(h) = sum(c*γ(h) for (c, γ) in zip(g.cs, g.γs))
-(g::NestedVariogram)(x, y) = sum(c*γ(x,y) for (c, γ) in zip(g.cs, g.γs))
+(g::NestedVariogram)(h) = raw(sum(c*γ(h) for (c, γ) in zip(g.cs, g.γs)))
+(g::NestedVariogram)(x, y) = raw(sum(c*γ(x,y) for (c, γ) in zip(g.cs, g.γs)))
+sill(g::NestedVariogram) = raw(sum(c*sill(γ) for (c, γ) in zip(g.cs, g.γs)))
+nugget(g::NestedVariogram) = raw(sum(c*nugget(γ) for (c, γ) in zip(g.cs, g.γs)))
 Base.range(g::NestedVariogram) = maximum(range(γ) for γ in g.γs)
-sill(g::NestedVariogram) = sum(c*sill(γ) for (c, γ) in zip(g.cs, g.γs))
-nugget(g::NestedVariogram) = sum(c*nugget(γ) for (c, γ) in zip(g.cs, g.γs))
 isstationary(g::NestedVariogram) = all(isstationary(γ) for γ in g.γs)
 
 # algebraic structure
