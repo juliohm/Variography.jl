@@ -2,6 +2,9 @@
 # Licensed under the ISC License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
+# models that can be fitted currently
+const FITTABLE = filter(isstationary, setdiff(subtypes(Variogram), (NuggetEffect,NestedVariogram)))
+
 """
     VariogramFitAlgo
 
@@ -46,7 +49,7 @@ return the one with minimum error as defined by the algorithm `algo`.
 function fit(::Type{Variogram}, γ::EmpiricalVariogram,
              algo::VariogramFitAlgo=WeightedLeastSquares())
   # fit each variogram type
-  res = [fit_impl(V, γ, algo) for V in STATIONARY if V != NuggetEffect] # excluding NuggetEffect until is properly managed
+  res = [fit_impl(V, γ, algo) for V in FITTABLE]
   γs, es = first.(res), last.(res)
 
   # return best candidate

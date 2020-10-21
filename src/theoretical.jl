@@ -66,23 +66,6 @@ Evaluate the variogram at points `x` and `y`.
 #------------------
 
 """
-    NuggetEffect(n)
-    NuggetEffect(nugget=n, distance=d)
-
-A pure nugget effect variogram with nugget `n`.
-Optionally use a custom distance `d`.
-"""
-@with_kw struct NuggetEffect{T,D} <: Variogram{T,D}
-  nugget::T = 0.0
-  distance::D = Euclidean()
-end
-NuggetEffect(n) = NuggetEffect(nugget=n)
-(γ::NuggetEffect)(h) = (h > 0) * γ.nugget
-Base.range(::NuggetEffect{T,D}) where {T,D} = zero(T)
-sill(γ::NuggetEffect) = γ.nugget
-isstationary(::Type{<:NuggetEffect}) = true
-
-"""
     GaussianVariogram(sill=s, range=r, nugget=n, distance=d)
 
 A Gaussian variogram with sill `s`, range `r` and nugget `n`.
@@ -245,55 +228,19 @@ end
 end
 isstationary(::Type{<:SineHoleVariogram}) = true
 
-#----------------------
-# VARIOGRAM OPERATIONS
-#----------------------
 """
-    SumVariogram(γ₁, γ₂)
+    NuggetEffect(n)
+    NuggetEffect(nugget=n, distance=d)
 
-Internal representation of the sum `γ₁ + γ₂`.
+A pure nugget effect variogram with nugget `n`.
+Optionally use a custom distance `d`.
 """
-struct SumVariogram{G₁,G₂} <: Variogram{Number,Metric}
-  γ₁::G₁
-  γ₂::G₂
+@with_kw struct NuggetEffect{T,D} <: Variogram{T,D}
+  nugget::T = 0.0
+  distance::D = Euclidean()
 end
-(γ::SumVariogram)(h) = γ.γ₁(h) + γ.γ₂(h)
-(γ::SumVariogram)(x, y) = γ.γ₁(x, y) + γ.γ₂(x, y)
-Base.range(γ::SumVariogram) = max(range(γ.γ₁), range(γ.γ₂))
-sill(γ::SumVariogram) = sill(γ.γ₁) + sill(γ.γ₂)
-nugget(γ::SumVariogram) = nugget(γ.γ₁) + nugget(γ.γ₂)
-isstationary(γ::SumVariogram) = isstationary(γ.γ₁) && isstationary(γ.γ₂)
-
-"""
-    ScaledVariogram(c, γ)
-
-Internal representation of the scalar multiplication `cγ`.
-"""
-struct ScaledVariogram{T,D,G<:Variogram{T,D},V} <: Variogram{T,D}
-  c::V
-  γ::G
-end
-(γ::ScaledVariogram)(h) = γ.c * γ.γ(h)
-(γ::ScaledVariogram)(x, y) = γ.c * γ.γ(x, y)
-Base.range(γ::ScaledVariogram) = range(γ.γ)
-sill(γ::ScaledVariogram) = γ.c * sill(γ.γ)
-nugget(γ::ScaledVariogram) = γ.c * nugget(γ.γ)
-isstationary(γ::ScaledVariogram) = isstationary(γ.γ)
-
-"""
-    γ₁ + γ₂
-
-Return sum of variograms `γ₁` and `γ₂`.
-"""
-+(γ₁::Variogram, γ₂::Variogram) = SumVariogram(γ₁, γ₂)
-
-"""
-    cγ
-
-Return the multiplication of the scalar `c` with the variogram `γ`.
-"""
-*(c::Number, γ::Variogram) = ScaledVariogram(c, γ)
-
-# collect all stationary models for other parts of the codebase
-const OPERATIONS = [SumVariogram, ScaledVariogram]
-const STATIONARY = filter(isstationary, setdiff(subtypes(Variogram), OPERATIONS))
+NuggetEffect(n) = NuggetEffect(nugget=n)
+(γ::NuggetEffect)(h) = (h > 0) * γ.nugget
+Base.range(::NuggetEffect{T,D}) where {T,D} = zero(T)
+sill(γ::NuggetEffect) = γ.nugget
+isstationary(::Type{<:NuggetEffect}) = true

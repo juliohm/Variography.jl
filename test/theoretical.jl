@@ -43,7 +43,7 @@
   @test sill(γ) == 0.2
   @test range(γ) == 0.0
 
-  # Sum and Scaled Variogram for NuggetEffect
+  # nested variogram with nugget effect
   γ₁ = NuggetEffect(0.2) + GaussianVariogram(nugget=0.1, sill=0.8, range=50.0)
   @test nugget(γ₁) ≈ 0.3
   @test sill(γ₁) ≈ 1.0
@@ -68,7 +68,6 @@
 
   # composite (additive) models via addition
   γ = GaussianVariogram() + ExponentialVariogram() + SphericalVariogram()
-  @test γ isa SumVariogram
   @test isstationary(γ)
   @test sill(γ) == 3.
   @test !isstationary(γ + PowerVariogram())
