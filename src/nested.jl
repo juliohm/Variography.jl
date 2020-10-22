@@ -19,7 +19,7 @@ struct NestedVariogram{N} <: Variogram{Number,Metric}
   γs::NTuple{N,Variogram}
 end
 (g::NestedVariogram)(h) = raw(sum(c*γ(h) for (c, γ) in zip(g.cs, g.γs)))
-(g::NestedVariogram)(x, y) = raw(sum(c*γ(x,y) for (c, γ) in zip(g.cs, g.γs)))
+(g::NestedVariogram)(x, y) = raw(sum(c*γ(x, y) for (c, γ) in zip(g.cs, g.γs)))
 sill(g::NestedVariogram) = raw(sum(c*sill(γ) for (c, γ) in zip(g.cs, g.γs)))
 nugget(g::NestedVariogram) = raw(sum(c*nugget(γ) for (c, γ) in zip(g.cs, g.γs)))
 Base.range(g::NestedVariogram) = maximum(range(γ) for γ in g.γs)
@@ -42,7 +42,7 @@ end
 
 function Base.show(io::IO, ::MIME"text/plain", g::NestedVariogram)
   println(io, g)
-  println(io, "  models")
+  println(io, "  structures")
   coeffs = [Float64.(c) for c in raw.(g.cs)]
   models = [nameof(typeof(γ)) for γ in g.γs]
   params = ["range=$(range(γ)), sill=$(sill(γ)), nugget=$(nugget(γ))" for γ in g.γs]
