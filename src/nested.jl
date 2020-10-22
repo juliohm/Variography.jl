@@ -17,7 +17,16 @@ coefficients `cs = (c₁, c₂, ..., cₙ)` and variogram models
 struct NestedVariogram{N} <: Variogram{Number,Metric}
   cs::NTuple{N,Any}
   γs::NTuple{N,Variogram}
+
+  function NestedVariogram{N}(cs, γs) where {N}
+    @assert all(issymmetric.(cs)) "coefficients must be symmetric"
+    new(cs, γs)
+  end
 end
+
+NestedVariogram(cs, γs) = NestedVariogram{length(cs)}(cs, γs)
+
+# variogram interface
 (g::NestedVariogram)(h) = raw(sum(c*γ(h) for (c, γ) in zip(g.cs, g.γs)))
 (g::NestedVariogram)(x, y) = raw(sum(c*γ(x, y) for (c, γ) in zip(g.cs, g.γs)))
 sill(g::NestedVariogram) = raw(sum(c*sill(γ) for (c, γ) in zip(g.cs, g.γs)))

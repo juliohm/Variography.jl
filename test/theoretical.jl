@@ -80,7 +80,8 @@
   @test Variography.result_type(γ, rand(Float32, 3), rand(Float32, 3)) == Float32
 
   # nested variogram with matrix coefficients
-  C₁, C₂ = rand(3, 3), rand(3, 3)
+  C₁ = [1.0 0.5; 0.5 2.0]
+  C₂ = [3.0 0.0; 0.0 3.0]
   γ = C₁ * GaussianVariogram(range=1.0) + C₂ * SphericalVariogram(range=2.0)
   @test range(γ) ≈ 2.0
   @test sill(γ)  ≈ C₁ .+ C₂
