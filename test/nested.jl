@@ -54,4 +54,11 @@
   @test sill(γ) == 3.0
   @test range(γ) == 1.0
   @test nugget(γ) == 0.0
+
+  # test individual structures
+  γ = SphericalVariogram() + 2*ExponentialVariogram() + NuggetEffect(10.0)
+  @test structures(γ) == (10.0, (1.0, 2.0), (SphericalVariogram(), ExponentialVariogram()))
+  γ = SphericalVariogram(sill=2.0) + ExponentialVariogram(nugget=0.1)
+  @test structures(γ) == (0.1, (2.0, 0.9), (SphericalVariogram(), ExponentialVariogram()))
+  @test structures(SphericalVariogram()) == (0.0, (1.0,), (SphericalVariogram(),))
 end

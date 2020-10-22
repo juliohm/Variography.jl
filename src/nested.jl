@@ -42,6 +42,44 @@ isstationary(g::NestedVariogram) = all(isstationary(γ) for γ in g.γs)
 +(γ₁::Variogram, γ₂::NestedVariogram)       = NestedVariogram((I, γ₂.cs...), (γ₁, γ₂.γs...))
 +(γ₁::NestedVariogram, γ₂::NestedVariogram) = NestedVariogram((γ₁.cs..., γ₂.cs...), (γ₁.γs..., γ₂.γs...))
 
+"""
+    structures(γ)
+
+Return the individual structures of a (possibly nested)
+variogram. The structures are the total nugget `cₒ`, and
+the coefficients (or contributions) `cs` for the remaining
+non-trivial structures `γs`.
+"""
+function structures(γ::Variogram)
+  cₒ = nugget(γ)
+  c  = sill(γ) - nugget(γ)
+  T  = typeof(c)
+  γ = @set γ.sill = one(T)
+  γ = @set γ.nugget = zero(T)
+  cₒ, (c,), (γ,)
+end
+
+function structures(γ::NestedVariogram)
+  ks, gs = γ.cs, γ.γs
+
+  # total nugget and contributions
+  cₒ = raw(sum(@. ks * nugget(gs)))
+  cs = @. raw(ks * (sill(gs) - nugget(gs)))
+
+  # discard nugget effect terms
+  inds = findall(g->!(g isa NuggetEffect), gs)
+  cs, γs = cs[inds], gs[inds]
+
+  # adjust sill and nugget
+  γs = map(γs) do γ
+    T = typeof(sill(γ))
+    γ = @set γ.sill = one(T)
+    γ = @set γ.nugget = zero(T)
+  end
+
+  cₒ, cs, γs
+end
+
 # ------------
 # IO methods
 # ------------

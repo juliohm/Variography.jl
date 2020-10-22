@@ -15,6 +15,7 @@ using StaticArrays: SVector, MVector
 using LinearAlgebra
 using RecipesBase
 using Parameters
+using Setfield
 using Printf
 
 import Base: merge, +, *
@@ -57,6 +58,7 @@ export
   NestedVariogram,
   isstationary,
   sill, nugget,
+  structures,
   distance,
   pairwise,
   pairwise!,
