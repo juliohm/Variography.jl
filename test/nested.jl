@@ -11,7 +11,7 @@
 
   # sill is defined for nested models
   γ = GaussianVariogram(sill=1.) + ExponentialVariogram(sill=2.)
-  @test sill(γ) == 3.
+  @test sill(γ) == 3.0
 
   # nugget is defined for nested models
   γ₁ = GaussianVariogram()
@@ -21,7 +21,7 @@
   # stationarity of nested models
   γ = GaussianVariogram() + ExponentialVariogram() + SphericalVariogram()
   @test isstationary(γ)
-  @test sill(γ) == 3.
+  @test sill(γ) == 3.0
   @test !isstationary(γ + PowerVariogram())
 
   # result type is defined for nested models
@@ -48,4 +48,10 @@
   @test γ(10.0) ≈ sill(γ)
   @test γ([10.,0.], [0.,0.]) ≈ sill(γ)
   @test isstationary(γ)
+
+  # test constructor explicitly
+  γ = NestedVariogram((1., 2.), (ExponentialVariogram(), SphericalVariogram()))
+  @test sill(γ) == 3.0
+  @test range(γ) == 1.0
+  @test nugget(γ) == 0.0
 end
