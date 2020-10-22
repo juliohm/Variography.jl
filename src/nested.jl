@@ -55,8 +55,8 @@ function structures(γ::Variogram)
   cₒ = nugget(γ)
   c  = sill(γ) - nugget(γ)
   T  = typeof(c)
-  γ = @set γ.sill = one(T)
-  γ = @set γ.nugget = zero(T)
+  γ  = @set γ.sill = one(T)
+  γ  = @set γ.nugget = zero(T)
   cₒ, (c,), (γ,)
 end
 
