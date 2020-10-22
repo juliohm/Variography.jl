@@ -46,9 +46,10 @@ isstationary(g::NestedVariogram) = all(isstationary(γ) for γ in g.γs)
     structures(γ)
 
 Return the individual structures of a (possibly nested)
-variogram. The structures are the total nugget `cₒ`, and
-the coefficients (or contributions) `cs` for the remaining
-non-trivial structures `γs`.
+variogram as a tuple. The structures are the total nugget
+`cₒ`, and the coefficients (or contributions) `cs` for the
+remaining non-trivial structures `γs` after normalization
+(i.e. sill=1, nugget=0).
 """
 function structures(γ::Variogram)
   cₒ = nugget(γ)
