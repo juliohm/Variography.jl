@@ -88,7 +88,7 @@ function Base.show(io::IO, ::NestedVariogram{N}) where N
 end
 
 function Base.show(io::IO, ::MIME"text/plain", g::NestedVariogram)
-  coeffs = raw.(g.cs)
+  coeffs = 1 .* raw.(g.cs)
   models = [nameof(typeof(γ)) for γ in g.γs]
   params = ["range=$(range(γ)), sill=$(sill(γ)), nugget=$(nugget(γ))" for γ in g.γs]
   println(io, g)
