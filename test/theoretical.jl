@@ -43,42 +43,9 @@
   @test sill(γ) == 0.2
   @test range(γ) == 0.0
 
-  # Sum and Scaled Variogram for NuggetEffect
-  γ₁ = NuggetEffect(0.2) + GaussianVariogram(nugget=0.1, sill=0.8, range=50.0)
-  @test nugget(γ₁) ≈ 0.3
-  @test sill(γ₁) ≈ 1.0
-  @test range(γ₁) ≈ 50.0
-  γ₁ = 2.0*NuggetEffect(0.2)
-  @test nugget(γ₁) ≈ 0.4
-  @test sill(γ₁) ≈ 0.4
-  @test range(γ₁) ≈ 0.0
-
-  # sill is defined for compositive stationary models
-  γ = GaussianVariogram(sill=1.) + ExponentialVariogram(sill=2.)
-  @test sill(γ) == 3.
-
   # small positive nugget by default in Gaussian model
   γ = GaussianVariogram()
   @test nugget(γ) > 0.
-
-  # nugget is defined for composite models
-  γ₁ = GaussianVariogram()
-  γ₂ = GaussianVariogram() + ExponentialVariogram()
-  @test nugget(γ₁) == nugget(γ₂)
-
-  # composite (additive) models via addition
-  γ = GaussianVariogram() + ExponentialVariogram() + SphericalVariogram()
-  @test γ isa SumVariogram
-  @test isstationary(γ)
-  @test sill(γ) == 3.
-  @test !isstationary(γ + PowerVariogram())
-
-  # result type is defined for composite models
-  # see https://github.com/JuliaEarth/GeoStats.jl/issues/121 
-  γ = GaussianVariogram() + ExponentialVariogram()
-  @test Variography.result_type(γ, rand(3), rand(3)) == Float64
-  γ = GaussianVariogram(sill=1.0f0,range=1.0f0,nugget=0.1f0)
-  @test Variography.result_type(γ, rand(Float32, 3), rand(Float32, 3)) == Float32
 
   # ill-conditioned models and nugget regularization
   # see https://github.com/JuliaEarth/GeoStats.jl/issues/29

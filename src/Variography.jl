@@ -12,8 +12,10 @@ using InteractiveUtils: subtypes
 using SpecialFunctions: gamma, besselk
 using Transducers: Map, foldxt
 using StaticArrays: SVector, MVector
+using LinearAlgebra
 using RecipesBase
 using Parameters
+using Setfield
 using Printf
 
 import Base: merge, +, *
@@ -24,6 +26,7 @@ include("empirical.jl")
 include("partition.jl")
 include("varioplane.jl")
 include("theoretical.jl")
+include("nested.jl")
 include("pairwise.jl")
 include("fitting.jl")
 
@@ -52,10 +55,10 @@ export
   PentasphericalVariogram,
   PowerVariogram,
   SineHoleVariogram,
-  SumVariogram,
-  ScaledVariogram,
+  NestedVariogram,
   isstationary,
   sill, nugget,
+  structures,
   distance,
   pairwise,
   pairwise!,

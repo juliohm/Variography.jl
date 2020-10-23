@@ -27,6 +27,7 @@ testfiles = [
   "partition.jl",
   "varioplane.jl",
   "theoretical.jl",
+  "nested.jl",
   "pairwise.jl",
   "fitting.jl",
   "plotrecipes.jl"
