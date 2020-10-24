@@ -43,10 +43,6 @@
   @test sill(γ) == 0.2
   @test range(γ) == 0.0
 
-  # small positive nugget by default in Gaussian model
-  γ = GaussianVariogram()
-  @test nugget(γ) > 0.
-
   # ill-conditioned models and nugget regularization
   # see https://github.com/JuliaEarth/GeoStats.jl/issues/29
   X = [93.0 90.0 89.0 94.0 93.0 97.0 95.0 88.0 96.0 98.0

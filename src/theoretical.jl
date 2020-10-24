@@ -19,10 +19,8 @@ result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) = typeof(γ
 
 """
     isstationary(γ)
-    isstationary(V)
 
-Check if variogram `γ` or variogram type `V` possesses
-the 2nd-order stationary property.
+Check if variogram `γ` possesses the 2nd-order stationary property.
 """
 isstationary(γ::Variogram) = isstationary(typeof(γ))
 
@@ -72,12 +70,19 @@ A Gaussian variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
 @with_kw struct GaussianVariogram{T,D} <: Variogram{T,D}
-  range::T  = 1.
-  sill::T   = 1.
-  nugget::T = 1e-6 # positive nugget for numerical stability
+  range::T  = 1.0
+  sill::T   = 1.0
+  nugget::T = 0.0
   distance::D = Euclidean()
 end
-(γ::GaussianVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range)^2)) + (h > 0) * γ.nugget
+(γ::GaussianVariogram)(h) = begin
+  # add small eps to nugget
+  # for numerical stability
+  s = γ.sill
+  r = γ.range
+  n = γ.nugget + convert(typeof(s), 1e-6)
+  (s - n) * (1 - exp(-3(h/r)^2)) + (h > 0) * n
+end
 isstationary(::Type{<:GaussianVariogram}) = true
 
 """
@@ -87,9 +92,9 @@ An exponential variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
 @with_kw struct ExponentialVariogram{T,D} <: Variogram{T,D}
-  range::T  = 1.
-  sill::T   = 1.
-  nugget::T = 0.
+  range::T  = 1.0
+  sill::T   = 1.0
+  nugget::T = 0.0
   distance::D = Euclidean()
 end
 (γ::ExponentialVariogram)(h) = (γ.sill - γ.nugget) * (1 - exp(-3(h/γ.range))) + (h > 0) * γ.nugget
@@ -102,10 +107,10 @@ A Matérn variogram with sill `s`, range `r` and nugget `n`. The parameter
 ν is the order of the Bessel function. Optionally, use a custom distance `d`.
 """
 @with_kw struct MaternVariogram{T,D} <: Variogram{T,D}
-  range::T  = 1.
-  sill::T   = 1.
-  nugget::T = 0.
-  order::T  = 1.
+  range::T  = 1.0
+  sill::T   = 1.0
+  nugget::T = 0.0
+  order::T  = 1.0
   distance::D = Euclidean()
 end
 (γ::MaternVariogram)(h) = begin
@@ -116,7 +121,7 @@ end
 
   # shift lag by machine precision to
   # avoid explosion at the origin
-  h2 = h + eps(eltype(h))
+  h2 = h + eps(typeof(h))
   h3 = sqrt(2.0ν)h2/r
 
   (s - n) * (1 - 2.0^(1 - ν)/gamma(ν) * h3^ν * besselk(ν, h3)) + (h > 0) * n
@@ -130,9 +135,9 @@ A spherical variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
 @with_kw struct SphericalVariogram{T,D} <: Variogram{T,D}
-  range::T  = 1.
-  sill::T   = 1.
-  nugget::T = 0.
+  range::T  = 1.0
+  sill::T   = 1.0
+  nugget::T = 0.0
   distance::D = Euclidean()
 end
 (γ::SphericalVariogram)(h) = begin
@@ -151,9 +156,9 @@ A cubic variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
 @with_kw struct CubicVariogram{T,D} <: Variogram{T,D}
-  range::T  = 1.
-  sill::T   = 1.
-  nugget::T = 0.
+  range::T  = 1.0
+  sill::T   = 1.0
+  nugget::T = 0.0
   distance::D = Euclidean()
 end
 (γ::CubicVariogram)(h) = begin
@@ -173,9 +178,9 @@ A pentaspherical variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
 @with_kw struct PentasphericalVariogram{T,D} <: Variogram{T,D}
-  range::T  = 1.
-  sill::T   = 1.
-  nugget::T = 0.
+  range::T  = 1.0
+  sill::T   = 1.0
+  nugget::T = 0.0
   distance::D = Euclidean()
 end
 (γ::PentasphericalVariogram)(h) = begin
@@ -195,9 +200,9 @@ A power variogram with scaling `s`, exponent `a` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
 @with_kw struct PowerVariogram{T,D} <: Variogram{T,D}
-  scaling::T  = 1.
-  nugget::T   = 0.
-  exponent::T = 1.
+  scaling::T  = 1.0
+  nugget::T   = 0.0
+  exponent::T = 1.0
   distance::D = Euclidean()
 end
 (γ::PowerVariogram)(h) = γ.scaling*h^γ.exponent + (h > 0) * γ.nugget
@@ -210,9 +215,9 @@ A sine hole variogram with sill `s`, range `r` and nugget `n`.
 Optionally, use a custom distance `d`.
 """
 @with_kw struct SineHoleVariogram{T,D} <: Variogram{T,D}
-  range::T  = 1.
-  sill::T   = 1.
-  nugget::T = 0.
+  range::T  = 1.0
+  sill::T   = 1.0
+  nugget::T = 0.0
   distance::D = Euclidean()
 end
 (γ::SineHoleVariogram)(h) = begin
