@@ -29,8 +29,7 @@ testfiles = [
   "theoretical.jl",
   "nested.jl",
   "pairwise.jl",
-  "fitting.jl",
-  "plotrecipes.jl"
+  "fitting.jl"
 ]
 
 @testset "Variography.jl" begin

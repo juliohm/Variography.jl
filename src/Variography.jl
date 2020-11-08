@@ -34,7 +34,6 @@ include("fitting.jl")
 include("plotrecipes/empirical.jl")
 include("plotrecipes/varioplane.jl")
 include("plotrecipes/theoretical.jl")
-include("plotrecipes/hscatter.jl")
 
 export
   # empirical variograms
