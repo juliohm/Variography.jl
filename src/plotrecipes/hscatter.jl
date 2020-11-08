@@ -23,11 +23,6 @@
   pairs = [(i,j) for j in 1:n for i in j:m]
   ds = [evaluate(distance, view(X₁,:,i), view(X₂,:,j)) for (i,j) in pairs]
 
-  xguide --> var₁
-  yguide --> var₂
-  legend --> false
-  aspect_ratio --> :equal
-
   # find indices with given lag
   match = findall(abs.(ds .- lag) .< tol)
 
@@ -41,12 +36,36 @@
   x = z₁[first.(mpairs)]
   y = z₂[last.(mpairs)]
 
+  xguide --> var₁
+  yguide --> var₂
+
+  # plot h-scatter
+  @series begin
+    seriestype --> :scatter
+    seriescolor --> :black
+    label --> "samples"
+
+    x, y
+  end
+
+  # plot regression line
+  @series begin
+    seriestype --> :path
+    seriescolor --> :red
+    label --> "regression"
+
+    X = [x ones(length(x))]
+    ŷ = X * (X \ y)
+
+    x, ŷ
+  end
+
   # plot identity line
   @series begin
-    seriestype := :path
-    seriescolor := :black
-    primary := false
-    linestyle := :dash
+    seriestype --> :path
+    seriescolor --> :black
+    linestyle --> :dash
+    label --> "identity"
 
     xmin, xmax = extrema(x)
     ymin, ymax = extrema(y)
@@ -54,12 +73,5 @@
     vmax = max(xmax, ymax)
 
     [vmin, vmax], [vmin, vmax]
-  end
-
-  # plot h-scatter
-  @series begin
-    seriestype := :scatter
-
-    x, y
   end
 end
