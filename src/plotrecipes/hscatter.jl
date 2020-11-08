@@ -74,4 +74,20 @@
 
     [vmin, vmax], [vmin, vmax]
   end
+
+  # plot mean lines
+  @series begin
+    seriestype --> :vline
+    seriescolor --> :grey
+    linestyle --> :dash
+    primary --> false
+    [mean(x)]
+  end
+  @series begin
+    seriestype --> :hline
+    seriescolor --> :grey
+    linestyle --> :dash
+    primary --> false
+    [mean(y)]
+  end
 end
