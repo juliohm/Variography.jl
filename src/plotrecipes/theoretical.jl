@@ -3,7 +3,8 @@
 # ------------------------------------------------------------------
 
 _hmax(γ::Variogram) = 3range(γ)
-_hmax(γ::PowerVariogram) = 3.
+_hmax(γ::PowerVariogram) = 3.0
+_hmax(γ::NuggetEffect) = 3.0
 
 @recipe function f(γ::Variogram, minlag=0, maxlag=_hmax(γ); nlags=100)
   # start at 1e-6 instead of 0 to avoid nugget artifact in plot

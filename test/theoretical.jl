@@ -72,5 +72,7 @@
       end
       plot(plt1, plt2, size=(600,800), layout=(2,1))
     end joinpath(datadir,"theoretical.png") !istravis
+
+    @plottest plot(NuggetEffect(0.1),ylim=(0,1)) joinpath(datadir,"nugget.png") !istravis
   end
 end
