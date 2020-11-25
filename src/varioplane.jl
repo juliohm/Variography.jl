@@ -10,8 +10,8 @@
 Given a `normal` direction, estimate the (cross-)variogram of variables
 `var₁` and `var₂` along all directions in the corresponding plane of variation.
 
-Optionally, specify the tolerance `ptol` for the [`PlanePartitioner`](@ref)
-the tolerance `dtol` for the [`DirectionPartitioner`](@ref), the number of
+Optionally, specify the tolerance `ptol` for the [`PlanePartition`](@ref)
+the tolerance `dtol` for the [`DirectionPartition`](@ref), the number of
 angles `nangs` in the plane, and forward the keyword arguments `kwargs` to
 the various [`EmpiricalVariogram`](@ref) calls.
 """
@@ -31,7 +31,7 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
     planes = [sdata]
     u, v = SVector(1.,0.), SVector(0.,1.)
   elseif ncoords(sdata) == 3
-    planes = partition(sdata, PlanePartitioner(normal, tol=ptol))
+    planes = partition(sdata, PlanePartition(normal, tol=ptol))
     u, v = planebasis(normal)
   else
     @error "varioplane only supported in 2D or 3D"
@@ -40,7 +40,7 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
   # loop over half of the plane
   θs = range(0, stop=π, length=nangs)
   γs = map(θs) do θ
-    dir = DirectionPartitioner(cos(θ)*u + sin(θ)*v, tol=dtol)
+    dir = DirectionPartition(cos(θ)*u + sin(θ)*v, tol=dtol)
 
     γ(plane) = EmpiricalVariogram(partition(plane, dir),
                                   var₁, var₂; kwargs...)
