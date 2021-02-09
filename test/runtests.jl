@@ -6,7 +6,7 @@ using LinearAlgebra
 using DelimitedFiles
 using Plots; gr(size=(600,400))
 using VisualRegressionTests
-using Test, Pkg, Random
+using Test, Random
 
 # workaround for GR warnings
 ENV["GKSwstype"] = "100"
@@ -15,10 +15,6 @@ ENV["GKSwstype"] = "100"
 isCI = "CI" ∈ keys(ENV)
 islinux = Sys.islinux()
 visualtests = !isCI || (isCI && islinux)
-if !isCI
-  Pkg.add("Gtk")
-  using Gtk
-end
 datadir = joinpath(@__DIR__,"data")
 
 # list of tests
