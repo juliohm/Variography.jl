@@ -55,6 +55,6 @@
     TI = reshape(wl[:Z], size(domain(wl)))[1:20,1:20]
     d = georef((z=TI,))
     γ = EmpiricalVariogram(d, :z, maxlag=15.)
-    @plottest plot(γ) joinpath(datadir,"empirical.png") !isCI
+    @test_ref_plot "data/empirical.png" plot(γ)
   end
 end

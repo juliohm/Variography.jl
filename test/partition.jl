@@ -10,13 +10,12 @@
     @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
 
     if visualtests
-      @plottest begin
-        p1 = plot(γhor, showbins=false, label="horizontal")
-        plot!(γver, showbins=false, label="vertical")
-        p2 = plot(γₕ, 0., 50., label="horizontal")
-        plot!(γᵥ, 0., 50., label="vertical")
-        plot(p1, p2, layout=(2,1))
-      end joinpath(datadir,"directional.png") !isCI
+      p1 = plot(γhor, showbins=false, label="horizontal")
+      plot!(γver, showbins=false, label="vertical")
+      p2 = plot(γₕ, 0., 50., label="horizontal")
+      plot!(γᵥ, 0., 50., label="vertical")
+      plt = plot(p1, p2, layout=(2,1))
+      @test_ref_plot "data/directional.png" plt
     end
   end
 
@@ -47,13 +46,12 @@
     @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
 
     if visualtests
-      @plottest begin
-        p1 = plot(γhor, showbins=false, label="horizontal")
-        plot!(γver, showbins=false, label="vertical")
-        p2 = plot(γₕ, 0., 50., label="horizontal")
-        plot!(γᵥ, 0., 50., label="vertical")
-        plot(p1, p2, layout=(2,1))
-      end joinpath(datadir,"planar.png") !isCI
+      p1 = plot(γhor, showbins=false, label="horizontal")
+      plot!(γver, showbins=false, label="vertical")
+      p2 = plot(γₕ, 0., 50., label="horizontal")
+      plot!(γᵥ, 0., 50., label="vertical")
+      plt = plot(p1, p2, layout=(2,1))
+      @test_ref_plot "data/planar.png" plt
     end
   end
 end

@@ -61,18 +61,17 @@
   @test cond(C) < 100.
 
   if visualtests
-    @plottest begin
-      plt1 = plot()
-      for γ ∈ γs
-        plot!(plt1, γ)
-      end
-      plt2 = plot()
-      for γ ∈ γn
-        plot!(plt2, γ)
-      end
-      plot(plt1, plt2, size=(600,800), layout=(2,1))
-    end joinpath(datadir,"theoretical.png") !isCI
+    plt1 = plot()
+    for γ ∈ γs
+      plot!(plt1, γ)
+    end
+    plt2 = plot()
+    for γ ∈ γn
+      plot!(plt2, γ)
+    end
+    plt = plot(plt1, plt2, size=(600,800), layout=(2,1))
+    @test_ref_plot "data/theoretical.png" plt
 
-    @plottest plot(NuggetEffect(0.1),ylim=(0,1)) joinpath(datadir,"nugget.png") !isCI
+    @test_ref_plot "data/nugget.png" plot(NuggetEffect(0.1),ylim=(0,1))
   end
 end

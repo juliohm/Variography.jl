@@ -20,14 +20,10 @@
   @test isapprox(sill(γbest), 0.054, atol=1e-3)
 
   if visualtests
-    @plottest begin
-      plts = []
-      for γ in γs
-        plt = plot(γwalker, legend=false)
-        plot!(γ, 0., 15.)
-        push!(plts, plt)
-      end
-      plot(plts...)
-    end joinpath(datadir,"fitting.png") !isCI
+    plts = map(γs) do γ
+      plot(γwalker, legend=false)
+      plot!(γ, 0., 15.)
+    end
+    @test_ref_plot "data/fitting.png" plot(plts...)
   end
 end
