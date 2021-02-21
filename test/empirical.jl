@@ -43,15 +43,6 @@
   γ = EmpiricalVariogram(sdata, :z, distance=Haversine(6371.), algo=:full)
   @test distance(γ) == Haversine(6371.)
 
-  # merge operation does not produce NaN
-  dir = (0.286788, -0.496732, -0.819152)
-  𝒟 = readgeotable(joinpath(datadir,"nanlags.csv"), coordnames=(:X,:Y,:Z))
-  γ = DirectionalVariogram(dir, 𝒟, :Cu, dtol=45, maxlag=150, nlags=20)
-  x, y, n = values(γ)
-  @test !any(isnan.(x))
-  @test !any(isnan.(y))
-  @test !any(isnan.(n))
-
   # print methods
   Random.seed!(123)
   d = georef((z=rand(100,100),))
@@ -64,6 +55,6 @@
     TI = reshape(wl[:Z], size(domain(wl)))[1:20,1:20]
     d = georef((z=TI,))
     γ = EmpiricalVariogram(d, :z, maxlag=15.)
-    @test_ref_plot "data/empirical.png" plot(γ)
+    @test_reference "data/empirical.png" plot(γ)
   end
 end

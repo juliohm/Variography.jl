@@ -24,6 +24,6 @@
       plot(γwalker, legend=false)
       plot!(γ, 0., 15.)
     end
-    @test_ref_plot "data/fitting.png" plot(plts...)
+    @test_reference "data/fitting.png" plot(plts...)
   end
 end
