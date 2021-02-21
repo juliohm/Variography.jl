@@ -137,6 +137,9 @@ function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {
   n = nα + nβ
   x = @. (xα*nα + xβ*nβ) / n
   y = @. (yα*nα + yβ*nβ) / n
+
+  # adjust empty bins
+  x[n .== 0] .= xα[n .== 0]
   y[n .== 0] .= 0
 
   d = γα.distance
