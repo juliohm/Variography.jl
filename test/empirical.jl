@@ -48,11 +48,11 @@
   d = georef((z=rand(100,100),))
   γ = EmpiricalVariogram(d, :z)
   @test sprint(show, γ) == "EmpiricalVariogram"
-  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.35001785668734103, 13.631423424599443)\n  ordinate: (0.0, 0.083920131066808)\n  N° pairs: 2706158\n"
+  @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.3535533905932738, 13.84261778461484)\n  ordinate: (0.0, 0.08323850196902784)\n  N° pairs: 2790126"
 
   if visualtests
     wl = geostatsimage("WalkerLake")
-    TI = reshape(wl[:Z], size(domain(wl)))[1:20,1:20]
+    TI = asarray(wl, :Z)[1:20,1:20]
     d = georef((z=TI,))
     γ = EmpiricalVariogram(d, :z, maxlag=15.)
     @test_reference "data/empirical.png" plot(γ)

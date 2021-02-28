@@ -4,6 +4,7 @@
 
 module Variography
 
+using Meshes
 using GeoStatsBase
 
 using Optim
