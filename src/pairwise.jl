@@ -44,7 +44,7 @@ Evaluate variogram `γ` between all `inds` in `domain`.
 """
 function pairwise(γ::Variogram, domain,
                   inds::AbstractVector{Int})
-  N = ncoords(domain)
+  N = embeddim(domain)
   T = coordtype(domain)
   xi = MVector{N,T}(undef)
   xj = MVector{N,T}(undef)
@@ -74,7 +74,7 @@ Evaluate variogram `γ` between `inds₁` and `inds₂` in `domain`.
 function pairwise(γ::Variogram, domain,
                   inds₁::AbstractVector{Int},
                   inds₂::AbstractVector{Int})
-  N = ncoords(domain)
+  N = embeddim(domain)
   T = coordtype(domain)
   xi = MVector{N,T}(undef)
   xj = MVector{N,T}(undef)

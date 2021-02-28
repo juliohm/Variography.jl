@@ -8,7 +8,7 @@ const MinkowskiMetric = Union{Euclidean,Chebyshev,Cityblock,Minkowski,
                               WeightedMinkowski}
 
 # default maximum lag to be used in various methods
-default_maxlag(sdata) = 0.1diagonal(boundbox(sdata))
+default_maxlag(sdata) = 0.1diagonal(boundingbox(sdata))
 
 """
     EmpiricalVariogram(sdata, var₁, var₂=var₁; [optional parameters])
@@ -62,9 +62,9 @@ function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
                             nlags=20, maxlag=default_maxlag(sdata),
                             distance=Euclidean(), algo=:ball)
   # relevant parameters
-  N = ncoords(sdata)
+  N = embeddim(sdata)
   T = coordtype(sdata)
-  npts = nelms(sdata)
+  npts = nelements(sdata)
   hmax = maxlag
 
   # sanity checks
@@ -158,7 +158,7 @@ function Base.show(io::IO, ::MIME"text/plain", γ::EmpiricalVariogram)
   println(io, γ)
   println(io, "  abscissa: ", extrema(γ.abscissa))
   println(io, "  ordinate: ", extrema(γ.ordinate))
-  println(io, "  N° pairs: ", sum(γ.counts))
+  print(  io, "  N° pairs: ", sum(γ.counts))
 end
 
 # ------------------------
@@ -166,9 +166,9 @@ end
 # ------------------------
 function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   # retrieve relevant parameters
-  N = ncoords(sdata)
+  N = embeddim(sdata)
   T = coordtype(sdata)
-  npts = nelms(sdata)
+  npts = nelements(sdata)
   δh = hmax / nlags
 
   # lag sums and counts
@@ -213,9 +213,9 @@ end
 
 function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   # retrieve relevant parameters
-  N = ncoords(sdata)
+  N = embeddim(sdata)
   T = coordtype(sdata)
-  npts = nelms(sdata)
+  npts = nelements(sdata)
   δh = hmax / nlags
 
   # lag sums and counts
@@ -231,13 +231,13 @@ function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   Z₁, Z₂ = sdata[var₁], sdata[var₂]
 
   # fast ball search
-  ball = BallNeighborhood(hmax, distance)
+  ball = NormBall(hmax, distance)
   searcher = NeighborhoodSearch(sdata, ball)
 
   # loop over points inside norm ball
   @inbounds for j in 1:npts
     coordinates!(xj, sdata, j)
-    for i in search(xj, searcher)
+    for i in search(Point(xj), searcher)
       i ≤ j && continue # avoid double counting
       coordinates!(xi, sdata, i)
 

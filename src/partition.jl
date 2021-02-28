@@ -13,10 +13,9 @@ variables `var₁` and `var₂`.
 * Hoffimann, J and Zadrozny, B. 2019. [Efficient variography with partition variograms]
   (https://www.sciencedirect.com/science/article/pii/S0098300419302936)
 """
-function EmpiricalVariogram(partition::SpatialPartition,
-                            var₁::Symbol, var₂::Symbol=var₁; kwargs...)
+function EmpiricalVariogram(partition::Partition, var₁::Symbol, var₂::Symbol=var₁; kwargs...)
   # retain spatial data with at least 2 points
-  filtered = Iterators.filter(d -> nelms(d) > 1, partition)
+  filtered = Iterators.filter(d -> nelements(d) > 1, partition)
 
   @assert !isempty(filtered) "invalid partition of spatial data"
 
