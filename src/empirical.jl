@@ -61,18 +61,12 @@ EmpiricalVariogram(abscissa, ordinate, counts, distance) =
 function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
                             nlags=20, maxlag=default_maxlag(sdata),
                             distance=Euclidean(), algo=:ball)
-  # relevant parameters
-  N = embeddim(sdata)
-  T = coordtype(sdata)
-  npts = nelements(sdata)
-  hmax = maxlag
-
   # sanity checks
+  @assert nelements(sdata) > 1 "variogram requires at least 2 elements"
   @assert (var₁, var₂) ⊆ name.(variables(sdata)) "invalid variable names"
   @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
-  @assert nlags > 0 "number of lags must be positive"
-  @assert npts  > 1 "variogram requires at least 2 points"
-  @assert hmax  > 0 "maximum lag distance must be positive"
+  @assert nlags  > 0 "number of lags must be positive"
+  @assert maxlag > 0 "maximum lag distance must be positive"
 
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
@@ -85,14 +79,14 @@ function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
 
   # choose accumulation algorithm
   if algo == :ball && isfloat && isminkowski
-    xsums, ysums, counts = ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+    xsums, ysums, counts = ball_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
   else
-    xsums, ysums, counts = full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
+    xsums, ysums, counts = full_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
   end
 
   # bin (or lag) size
-  δh = hmax / nlags
-  lags = range(δh/2, stop=hmax - δh/2, length=nlags)
+  δh = maxlag / nlags
+  lags = range(δh/2, stop=maxlag - δh/2, length=nlags)
 
   # variogram abscissa
   abscissa = @. xsums / counts
@@ -164,34 +158,27 @@ end
 # ------------------------
 # ACCUMULATION ALGORITHMS
 # ------------------------
-function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
-  # retrieve relevant parameters
-  N = embeddim(sdata)
-  T = coordtype(sdata)
-  npts = nelements(sdata)
-  δh = hmax / nlags
+function full_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
+  # lag size
+  δh = maxlag / nlags
 
   # lag sums and counts
   xsums = zeros(nlags)
   ysums = zeros(nlags)
   counts = zeros(Int, nlags)
 
-  # preallocate memory for coordinates
-  xi = MVector{N,T}(undef)
-  xj = MVector{N,T}(undef)
-
   # collect vectors for variables
   Z₁, Z₂ = sdata[var₁], sdata[var₂]
 
   # loop over all pairs of points
-  @inbounds for j in 1:npts
-    coordinates!(xj, sdata, j)
-    for i in j+1:npts
-      coordinates!(xi, sdata, i)
+  @inbounds for j in 1:nelements(sdata)
+    xj = coordinates(centroid(sdata, j))
+    for i in j+1:nelements(sdata)
+      xi = coordinates(centroid(sdata, i))
 
       # evaluate spatial lag
       h = evaluate(distance, xi, xj)
-      h > hmax && continue # early exit if out of range
+      h > maxlag && continue # early exit if out of range
 
       # evaluate (cross-)variance
       v = (Z₁[i] - Z₁[j]) * (Z₂[i] - Z₂[j])
@@ -211,35 +198,28 @@ function full_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
   xsums, ysums, counts
 end
 
-function ball_search_accum(sdata, var₁, var₂, hmax, nlags, distance)
-  # retrieve relevant parameters
-  N = embeddim(sdata)
-  T = coordtype(sdata)
-  npts = nelements(sdata)
-  δh = hmax / nlags
+function ball_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
+  # lag size
+  δh = maxlag / nlags
 
   # lag sums and counts
   xsums = zeros(nlags)
   ysums = zeros(nlags)
   counts = zeros(Int, nlags)
 
-  # preallocate memory for coordinates
-  xi = MVector{N,T}(undef)
-  xj = MVector{N,T}(undef)
-
   # collect vectors for variables
   Z₁, Z₂ = sdata[var₁], sdata[var₂]
 
   # fast ball search
-  ball = NormBall(hmax, distance)
+  ball = NormBall(maxlag, distance)
   searcher = NeighborhoodSearch(sdata, ball)
 
   # loop over points inside norm ball
-  @inbounds for j in 1:npts
-    coordinates!(xj, sdata, j)
+  @inbounds for j in 1:nelements(sdata)
+    xj = coordinates(centroid(sdata, j))
     for i in search(Point(xj), searcher)
       i ≤ j && continue # avoid double counting
-      coordinates!(xi, sdata, i)
+      xi = coordinates(centroid(sdata, i))
 
       # evaluate spatial lag
       h = evaluate(distance, xi, xj)
