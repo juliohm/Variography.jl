@@ -12,7 +12,7 @@ using Distances
 using InteractiveUtils: subtypes
 using SpecialFunctions: gamma, besselk
 using Transducers: Map, foldxt
-using StaticArrays: SVector, MVector
+using StaticArrays: SVector
 using LinearAlgebra
 using RecipesBase
 using Parameters
