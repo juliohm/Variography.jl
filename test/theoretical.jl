@@ -45,17 +45,17 @@
 
   # ill-conditioned models and nugget regularization
   # see https://github.com/JuliaEarth/GeoStats.jl/issues/29
-  X = [93.0 90.0 89.0 94.0 93.0 97.0 95.0 88.0 96.0 98.0
-       40.0 33.0 34.0 36.0 30.0 39.0 39.0 28.0 25.0 35.0]
+  pset = PointSet([93.0 90.0 89.0 94.0 93.0 97.0 95.0 88.0 96.0 98.0
+                   40.0 33.0 34.0 36.0 30.0 39.0 39.0 28.0 25.0 35.0])
 
   # ill-conditioned covariance
   γ = GaussianVariogram(range=20.)
-  C = sill(γ) .- Variography.pairwise(γ, X)
+  C = sill(γ) .- Variography.pairwise(γ, pset)
   @test cond(C) > 1000.
 
   # nugget regularization
   γ = GaussianVariogram(range=20., nugget=0.1)
-  C = sill(γ) .- Variography.pairwise(γ, X)
+  C = sill(γ) .- Variography.pairwise(γ, pset)
   @test γ(0) == 0
   @test γ(1e-6) > 0
   @test cond(C) < 100.
