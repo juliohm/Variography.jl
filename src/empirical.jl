@@ -2,20 +2,15 @@
 # Licensed under the MIT License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
-# KD-tree search is only valid for Minkowski metric
-const MinkowskiMetric = Union{Euclidean,Chebyshev,Cityblock,Minkowski,
-                              WeightedEuclidean,WeightedCityblock,
-                              WeightedMinkowski}
-
 # default maximum lag to be used in various methods
-default_maxlag(sdata) = 0.1diagonal(boundingbox(sdata))
+default_maxlag(data) = 0.1diagonal(boundingbox(data))
 
 """
-    EmpiricalVariogram(sdata, var₁, var₂=var₁; [optional parameters])
+    EmpiricalVariogram(data, var₁, var₂=var₁; [optional parameters])
 
 Computes the empirical (a.k.a. experimental) omnidirectional
 (cross-)variogram for variables `var₁` and `var₂` stored in
-spatial data `sdata`.
+spatial `data`.
 
     EmpiricalVariogram(partition, var₁, var₂=var₁; [optional parameters])
 
@@ -58,19 +53,19 @@ end
 EmpiricalVariogram(abscissa, ordinate, counts, distance) =
   EmpiricalVariogram{typeof(distance)}(abscissa, ordinate, counts, distance)
 
-function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
-                            nlags=20, maxlag=default_maxlag(sdata),
+function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
+                            nlags=20, maxlag=default_maxlag(data),
                             distance=Euclidean(), algo=:ball)
   # sanity checks
-  @assert nelements(sdata) > 1 "variogram requires at least 2 elements"
-  @assert (var₁, var₂) ⊆ name.(variables(sdata)) "invalid variable names"
+  @assert nelements(data) > 1 "variogram requires at least 2 elements"
+  @assert (var₁, var₂) ⊆ name.(variables(data)) "invalid variable names"
   @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
   @assert nlags  > 0 "number of lags must be positive"
   @assert maxlag > 0 "maximum lag distance must be positive"
 
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
-  isfloat     = coordtype(sdata) <: AbstractFloat
+  isfloat     = coordtype(data) <: AbstractFloat
   isminkowski = distance isa MinkowskiMetric
 
   # warn users requesting :ball option with invalid parameters
@@ -79,9 +74,9 @@ function EmpiricalVariogram(sdata, var₁::Symbol, var₂::Symbol=var₁;
 
   # choose accumulation algorithm
   if algo == :ball && isfloat && isminkowski
-    xsums, ysums, counts = ball_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
+    xsums, ysums, counts = ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   else
-    xsums, ysums, counts = full_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
+    xsums, ysums, counts = full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   end
 
   # bin (or lag) size
@@ -158,7 +153,7 @@ end
 # ------------------------
 # ACCUMULATION ALGORITHMS
 # ------------------------
-function full_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
+function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   # lag size
   δh = maxlag / nlags
 
@@ -168,16 +163,16 @@ function full_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
   counts = zeros(Int, nlags)
 
   # collect vectors for variables
-  Z₁, Z₂ = sdata[var₁], sdata[var₂]
+  Z₁, Z₂ = data[var₁], data[var₂]
 
   # loop over all pairs of points
-  @inbounds for j in 1:nelements(sdata)
-    xj = coordinates(centroid(sdata, j))
-    for i in j+1:nelements(sdata)
-      xi = coordinates(centroid(sdata, i))
+  @inbounds for j in 1:nelements(data)
+    pⱼ = centroid(data, j)
+    for i in j+1:nelements(data)
+      pᵢ = centroid(data, i)
 
       # evaluate spatial lag
-      h = evaluate(distance, xi, xj)
+      h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
       h > maxlag && continue # early exit if out of range
 
       # evaluate (cross-)variance
@@ -198,7 +193,7 @@ function full_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
   xsums, ysums, counts
 end
 
-function ball_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
+function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   # lag size
   δh = maxlag / nlags
 
@@ -208,21 +203,21 @@ function ball_search_accum(sdata, var₁, var₂, maxlag, nlags, distance)
   counts = zeros(Int, nlags)
 
   # collect vectors for variables
-  Z₁, Z₂ = sdata[var₁], sdata[var₂]
+  Z₁, Z₂ = data[var₁], data[var₂]
 
   # fast ball search
   ball = NormBall(maxlag, distance)
-  searcher = NeighborhoodSearch(sdata, ball)
+  searcher = NeighborhoodSearch(data, ball)
 
   # loop over points inside norm ball
-  @inbounds for j in 1:nelements(sdata)
-    xj = coordinates(centroid(sdata, j))
-    for i in search(Point(xj), searcher)
+  @inbounds for j in 1:nelements(data)
+    pⱼ = centroid(data, j)
+    for i in search(pⱼ, searcher)
       i ≤ j && continue # avoid double counting
-      xi = coordinates(centroid(sdata, i))
+      pᵢ = centroid(data, i)
 
       # evaluate spatial lag
-      h = evaluate(distance, xi, xj)
+      h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
 
       # evaluate (cross-)variance
       v = (Z₁[i] - Z₁[j]) * (Z₂[i] - Z₂[j])

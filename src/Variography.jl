@@ -11,6 +11,7 @@ using Optim
 using Distances
 using InteractiveUtils: subtypes
 using SpecialFunctions: gamma, besselk
+using NearestNeighbors: MinkowskiMetric
 using Transducers: Map, foldxt
 using LinearAlgebra
 using RecipesBase
