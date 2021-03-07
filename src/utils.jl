@@ -7,7 +7,7 @@
 
 Return 2D basis vectors in the plane with given 3D `normal`.
 """
-function planebasis(normal::SVector{3,T}) where {T}
+function planebasis(normal::Vec{3,T}) where {T}
   # normalize input
   n = normal ./ sqrt(sum(normal[i]^2 for i in 1:3))
 
@@ -36,7 +36,7 @@ function planebasis(normal::SVector{3,T}) where {T}
   u = u ./ sqrt(sum(u[i]^2 for i in 1:3))
   v = v ./ sqrt(sum(v[i]^2 for i in 1:3))
 
-  SVector(u), SVector(v)
+  Vec(u), Vec(v)
 end
 
-planebasis(normal::NTuple{3,T}) where {T} = planebasis(SVector(normal))
+planebasis(normal::NTuple{3,T}) where {T} = planebasis(Vec(normal))

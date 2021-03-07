@@ -9,11 +9,11 @@
   @test eltype(Γ_f) == Float32
   @test issymmetric(Γ_f)
 
-  grid = CartesianGrid(10, 10)
-  Γ = Variography.pairwise(GaussianVariogram(), view(grid, 1:5))
+  𝒟 = CartesianGrid(10, 10)
+  Γ = Variography.pairwise(GaussianVariogram(), view(𝒟, 1:5))
   @test size(Γ) == (5, 5)
   @test issymmetric(Γ)
-  Γ = Variography.pairwise(GaussianVariogram(), view(grid, 1:3), view(grid, 7:10))
+  Γ = Variography.pairwise(GaussianVariogram(), view(𝒟, 1:3), view(𝒟, 7:10))
   @test size(Γ) == (3, 4)
   @test all(Γ .> 0)
 end

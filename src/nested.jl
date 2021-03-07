@@ -27,12 +27,12 @@ end
 NestedVariogram(cs, γs) = NestedVariogram{length(cs)}(cs, γs)
 
 # variogram interface
-(g::NestedVariogram)(h)          = raw(sum(c*γ(h) for (c, γ) in zip(g.cs, g.γs)))
-(g::NestedVariogram)(x, y)       = raw(sum(c*γ(x, y) for (c, γ) in zip(g.cs, g.γs)))
-sill(g::NestedVariogram)         = raw(sum(c*sill(γ) for (c, γ) in zip(g.cs, g.γs)))
-nugget(g::NestedVariogram)       = raw(sum(c*nugget(γ) for (c, γ) in zip(g.cs, g.γs)))
-Base.range(g::NestedVariogram)   = maximum(range(γ) for γ in g.γs)
-isstationary(g::NestedVariogram) = all(isstationary(γ) for γ in g.γs)
+(g::NestedVariogram)(h)                  = raw(sum(c*γ(h) for (c, γ) in zip(g.cs, g.γs)))
+(g::NestedVariogram)(x::Point, y::Point) = raw(sum(c*γ(x, y) for (c, γ) in zip(g.cs, g.γs)))
+sill(g::NestedVariogram)                 = raw(sum(c*sill(γ) for (c, γ) in zip(g.cs, g.γs)))
+nugget(g::NestedVariogram)               = raw(sum(c*nugget(γ) for (c, γ) in zip(g.cs, g.γs)))
+Base.range(g::NestedVariogram)           = maximum(range(γ) for γ in g.γs)
+isstationary(g::NestedVariogram)         = all(isstationary(γ) for γ in g.γs)
 
 # algebraic structure
 *(c, γ::Variogram)                          = NestedVariogram((c,), (γ,))
@@ -81,9 +81,10 @@ function structures(γ::NestedVariogram)
   cₒ, cs, γs
 end
 
-# ------------
-# IO methods
-# ------------
+# -----------
+# IO METHODS
+# -----------
+
 function Base.show(io::IO, ::NestedVariogram{N}) where N
   print(io, "NestedVariogram{$N}")
 end

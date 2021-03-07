@@ -1,7 +1,7 @@
 @testset "Theoretical" begin
   Random.seed!(123)
   h = range(0, stop=10, length=50)
-  x, y = rand(3), rand(3)
+  x, y = rand(Point3), rand(Point3)
 
   # stationary variogram models
   γs = [NuggetEffect(), GaussianVariogram(), ExponentialVariogram(),

@@ -29,7 +29,7 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
   # basis for variogram plane
   if embeddim(sdata) == 2
     planes = [sdata]
-    u, v = SVector(1.,0.), SVector(0.,1.)
+    u, v = Vec(1.,0.), Vec(0.,1.)
   elseif embeddim(sdata) == 3
     planes = partition(sdata, PlanePartition(normal, tol=ptol))
     u, v = planebasis(normal)

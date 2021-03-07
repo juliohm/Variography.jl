@@ -27,9 +27,9 @@
   # result type is defined for nested models
   # see https://github.com/JuliaEarth/GeoStats.jl/issues/121 
   γ = GaussianVariogram() + ExponentialVariogram()
-  @test Variography.result_type(γ, rand(3), rand(3)) == Float64
+  @test Variography.result_type(γ, rand(Point3), rand(Point3)) == Float64
   γ = GaussianVariogram(sill=1.0f0,range=1.0f0,nugget=0.1f0)
-  @test Variography.result_type(γ, rand(Float32, 3), rand(Float32, 3)) == Float32
+  @test Variography.result_type(γ, rand(Point3f), rand(Point3f)) == Float32
 
   # nested model with matrix coefficients
   C₁ = [1.0 0.5; 0.5 2.0]
@@ -38,7 +38,7 @@
   @test range(γ) ≈ 2.0
   @test sill(γ)  ≈ C₁ .+ C₂
   @test γ(10.0) ≈ sill(γ)
-  @test γ([10.,0.], [0.,0.]) ≈ sill(γ)
+  @test γ(Point(10.,0.), Point(0.,0.)) ≈ sill(γ)
   @test isstationary(γ)
 
   # nested model with mixed coefficients
@@ -46,7 +46,7 @@
   @test range(γ) ≈ 1.0
   @test sill(γ) ≈ [3. 0.; 0. 3.]
   @test γ(10.0) ≈ sill(γ)
-  @test γ([10.,0.], [0.,0.]) ≈ sill(γ)
+  @test γ(Point(10.,0.), Point(0.,0.)) ≈ sill(γ)
   @test isstationary(γ)
 
   # test constructor explicitly

@@ -11,11 +11,11 @@ with parameters of type `T` and distance of type `D`.
 abstract type Variogram{T,D} end
 
 """
-    result_type(γ, x₁, x₂)
+    result_type(γ, x, y)
 
-Return result type of γ(x₁, x₂).
+Return result type of γ(x, y).
 """
-result_type(γ::Variogram, x₁::AbstractArray, x₂::AbstractArray) = typeof(γ(x₁, x₂))
+result_type(γ::Variogram, x, y) = typeof(γ(x, y))
 
 """
     isstationary(γ)
@@ -57,7 +57,8 @@ distance(γ::Variogram) = γ.distance
 
 Evaluate the variogram at points `x` and `y`.
 """
-(γ::Variogram)(x, y) = γ(evaluate(γ.distance, x, y))
+(γ::Variogram)(x::Point, y::Point) =
+  γ(evaluate(γ.distance, coordinates(x), coordinates(y)))
 
 #------------------
 # IMPLEMENTATIONS
