@@ -37,9 +37,9 @@ isstationary(g::NestedVariogram)         = all(isstationary(γ) for γ in g.γs)
 # algebraic structure
 *(c, γ::Variogram)                          = NestedVariogram((c,), (γ,))
 *(c, γ::NestedVariogram)                    = NestedVariogram(map(x->c.*x, γ.cs), γ.γs)
-+(γ₁::Variogram, γ₂::Variogram)             = NestedVariogram((I, I), (γ₁, γ₂))
-+(γ₁::NestedVariogram, γ₂::Variogram)       = NestedVariogram((γ₁.cs..., I), (γ₁.γs..., γ₂))
-+(γ₁::Variogram, γ₂::NestedVariogram)       = NestedVariogram((I, γ₂.cs...), (γ₁, γ₂.γs...))
++(γ₁::Variogram, γ₂::Variogram)             = NestedVariogram((1, 1), (γ₁, γ₂))
++(γ₁::NestedVariogram, γ₂::Variogram)       = NestedVariogram((γ₁.cs..., 1), (γ₁.γs..., γ₂))
++(γ₁::Variogram, γ₂::NestedVariogram)       = NestedVariogram((1, γ₂.cs...), (γ₁, γ₂.γs...))
 +(γ₁::NestedVariogram, γ₂::NestedVariogram) = NestedVariogram((γ₁.cs..., γ₂.cs...), (γ₁.γs..., γ₂.γs...))
 
 """
