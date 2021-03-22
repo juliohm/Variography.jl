@@ -33,6 +33,7 @@
   @test all(iszero.(n))
 
   # accumulation algorithms give the same result
+  Random.seed!(2021)
   sdata = georef((z=rand(1000),), rand(3,1000))
   γ₁ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algo=:full)
   γ₂ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algo=:ball)
