@@ -5,12 +5,15 @@
   @test sill(γ) ≈ 1.0
   @test range(γ) ≈ 50.0
   @test (@elapsed sill(γ)) < 1e-6
+  @test (@elapsed nugget(γ)) < 32
   @test (@allocated sill(γ)) < 32
+  @test (@allocated nugget(γ)) < 32
   γ = 2.0*NuggetEffect(0.2)
   @test nugget(γ) ≈ 0.4
   @test sill(γ) ≈ 0.4
   @test range(γ) ≈ 0.0
   @test (@elapsed sill(γ)) < 1e-6
+  @test (@elapsed nugget(γ)) < 32
   @test (@allocated sill(γ)) < 32
   @test (@allocated nugget(γ)) < 32
 
@@ -18,6 +21,7 @@
   γ = GaussianVariogram(sill=1.) + ExponentialVariogram(sill=2.)
   @test sill(γ) == 3.0
   @test (@elapsed sill(γ)) < 1e-6
+  @test (@elapsed nugget(γ)) < 32
   @test (@allocated sill(γ)) < 32
   @test (@allocated nugget(γ)) < 32
 
@@ -32,6 +36,7 @@
   @test sill(γ) == 3.0
   @test !isstationary(γ + PowerVariogram())
   @test (@elapsed sill(γ)) < 1e-6
+  @test (@elapsed nugget(γ)) < 32
   @test (@allocated sill(γ)) < 32
   @test (@allocated nugget(γ)) < 32
 
@@ -67,6 +72,7 @@
   @test range(γ) == 1.0
   @test nugget(γ) == 0.0
   @test (@elapsed sill(γ)) < 1e-6
+  @test (@elapsed nugget(γ)) < 32
   @test (@allocated sill(γ)) < 32
   @test (@allocated nugget(γ)) < 32
 
@@ -74,12 +80,14 @@
   γ = SphericalVariogram() + 2ExponentialVariogram() + NuggetEffect(10.0)
   @test structures(γ) == (10.0, (1.0, 2.0), (SphericalVariogram(), ExponentialVariogram()))
   @test (@elapsed sill(γ)) < 1e-6
+  @test (@elapsed nugget(γ)) < 32
   @test (@allocated sill(γ)) < 32
   @test (@allocated nugget(γ)) < 32
   γ = SphericalVariogram(sill=2.0) + ExponentialVariogram(nugget=0.1)
   @test structures(γ) == (0.1, (2.0, 0.9), (SphericalVariogram(), ExponentialVariogram()))
   @test structures(SphericalVariogram()) == (0.0, (1.0,), (SphericalVariogram(),))
   @test (@elapsed sill(γ)) < 1e-6
+  @test (@elapsed nugget(γ)) < 32
   @test (@allocated sill(γ)) < 32
   @test (@allocated nugget(γ)) < 32
 end
