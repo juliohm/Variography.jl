@@ -19,6 +19,12 @@
   @test γbest isa GaussianVariogram
   @test isapprox(sill(γbest), 0.054, atol=1e-3)
 
+  # make sure convenient methods work
+  γ₁ = fit(GaussianVariogram, γwalker, h -> 1/h)
+  γ₂ = fit(Variogram, γwalker, h -> 1/h)
+  @test sill(γ₁) > 0
+  @test sill(γ₂) > 0
+
   if visualtests
     plts = map(γs) do γ
       plot(γwalker, legend=false)
