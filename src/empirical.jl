@@ -207,7 +207,7 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
 
   # fast ball search
   ball = NormBall(maxlag, distance)
-  searcher = NeighborhoodSearch(data, ball)
+  searcher = BallSearch(data, ball)
 
   # loop over points inside norm ball
   @inbounds for j in 1:nelements(data)
