@@ -24,30 +24,30 @@ function EmpiricalVariogram(partition::Partition, var₁::Symbol, var₂::Symbol
 end
 
 """
-    DirectionalVariogram(direction, sdata, var₁, var₂=var₁; dtol=1e-6, [parameters])
+    DirectionalVariogram(direction, data, var₁, var₂=var₁; dtol=1e-6, [parameters])
 
 Computes the empirical (cross-)variogram for the variables `var₁` and `var₂` stored in
-spatial data `sdata` along a given `direction` with band tolerance `dtol`.
+geospatial `data` along a given `direction` with band tolerance `dtol`.
 
 Optional parameters include the parameters for [`EmpiricalVariogram`](@ref) and the
 parameters for [`DirectionPartition`](@ref).
 """
-function DirectionalVariogram(dir, sdata, var₁, var₂=var₁; dtol=1e-6, kwargs...)
-  p = partition(sdata, DirectionPartition(dir; tol=dtol))
+function DirectionalVariogram(dir, data, var₁, var₂=var₁; dtol=1e-6, kwargs...)
+  p = partition(data, DirectionPartition(dir; tol=dtol))
   EmpiricalVariogram(p, var₁, var₂; kwargs...)
 end
 
 """
-    PlanarVariogram(normal, sdata, var₁, var₂=var₁; ntol=1e-6, [parameters])
+    PlanarVariogram(normal, data, var₁, var₂=var₁; ntol=1e-6, [parameters])
 
 Computes the empirical (cross-)variogram for the variables `var₁` and `var₂` stored in
-spatial data `sdata` along a plane perpendicular to a `normal` direction with plane
+geospatial `data` along a plane perpendicular to a `normal` direction with plane
 tolerance `ntol`.
 
 Optional parameters include the parameters for [`EmpiricalVariogram`](@ref) and the
 parameters for [`PlanePartition`](@ref).
 """
-function PlanarVariogram(normal, sdata, var₁, var₂=var₁; ntol=1e-6, kwargs...)
-  p = partition(sdata, PlanePartition(normal; tol=ntol))
+function PlanarVariogram(normal, data, var₁, var₂=var₁; ntol=1e-6, kwargs...)
+  p = partition(data, PlanePartition(normal; tol=ntol))
   EmpiricalVariogram(p, var₁, var₂; kwargs...)
 end

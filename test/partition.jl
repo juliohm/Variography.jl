@@ -2,7 +2,7 @@
   @testset "Directional" begin
     # merge operation does not produce NaN
     dir = (0.286788, -0.496732, -0.819152)
-    𝒟 = readgeotable(joinpath(datadir,"nanlags.csv"), coordnames=(:X,:Y,:Z))
+    𝒟 = georef(CSV.File(joinpath(datadir,"nanlags.csv")), (:X,:Y,:Z))
     γ = DirectionalVariogram(dir, 𝒟, :Cu, dtol=45, maxlag=150, nlags=20)
     x, y, n = values(γ)
     @test !any(isnan.(x))

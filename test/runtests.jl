@@ -4,7 +4,7 @@ using GeoStatsBase
 using GeoStatsImages
 using Distances
 using LinearAlgebra
-using DelimitedFiles
+using CSV, DelimitedFiles
 using Plots; gr(size=(600,400))
 using ReferenceTests, ImageIO
 using Test, Random
