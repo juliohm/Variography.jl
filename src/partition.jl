@@ -24,10 +24,12 @@ function EmpiricalVariogram(partition::Partition, var₁::Symbol, var₂::Symbol
 end
 
 """
-    DirectionalVariogram(direction, data, var₁, var₂=var₁; dtol=1e-6, [parameters])
+    DirectionalVariogram(direction, data, var₁::Symbol, var₂=var₁; dtol=1e-6, [parameters])
 
 Computes the empirical (cross-)variogram for the variables `var₁` and `var₂` stored in
 geospatial `data` along a given `direction` with band tolerance `dtol`.
+`data` is the output of [`georef`](@ref). The `var`s are symbols
+that reference which variables of `data` to use.
 
 Optional parameters include the parameters for [`EmpiricalVariogram`](@ref) and the
 parameters for [`DirectionPartition`](@ref).
