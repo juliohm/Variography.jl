@@ -10,7 +10,8 @@ default_maxlag(data) = 0.1diagonal(boundingbox(data))
 
 Computes the empirical (a.k.a. experimental) omnidirectional
 (cross-)variogram for variables `var₁` and `var₂` stored in
-spatial `data`.
+spatial `data` (output of [`georef`](@ref)). The `var`s are symbols
+that reference which variables of `data` to use.
 
     EmpiricalVariogram(partition, var₁, var₂=var₁; [optional parameters])
 
