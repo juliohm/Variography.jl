@@ -6,7 +6,7 @@
     EmpiricalVariogram(partition, var₁, var₂=var₁; [parameters])
 
 Compute the empirical (cross-)variogram of the spatial `partition` for
-variables `var₁` and `var₂`.
+variables `var₁` and `var₂` as described in Hoffimann & Zadrozny 2019.
 
 ## References
 

@@ -12,11 +12,6 @@ Computes the empirical (a.k.a. experimental) omnidirectional
 (cross-)variogram for variables `var₁` and `var₂` stored in
 spatial `data`.
 
-    EmpiricalVariogram(partition, var₁, var₂=var₁; [optional parameters])
-
-Alternatively, compute the (cross-)variogram on a `partition` of the data
-as described in Hoffimann & Zadrozny 2019.
-
 ## Parameters
 
   * nlags    - number of lags (default to `20`)
@@ -33,6 +28,14 @@ All implemented algorithms produce the exact same result.
 The `:ball` algorithm is considerably faster when the
 maximum lag is much smaller than the bounding box of
 the data.
+
+The function [`values`](@ref) can be used to retrieve
+the abscissa, ordinate and bin count of an empirical
+variogram:
+
+```julia
+julia> x, y, n = values(γ)
+```
 
 See also: [`DirectionalVariogram`](@ref)
 
