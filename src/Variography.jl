@@ -27,7 +27,7 @@ include("empirical.jl")
 include("partition.jl")
 include("varioplane.jl")
 include("theoretical.jl")
-include("nested.jl")
+include("nesting.jl")
 include("pairwise.jl")
 include("fitting.jl")
 
