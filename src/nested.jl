@@ -27,12 +27,12 @@ end
 NestedVariogram(cs, γs) = NestedVariogram{typeof(cs),typeof(γs)}(cs, γs)
 
 # variogram interface
-(g::NestedVariogram)(h)                  = raw(sum(g.cs .* map(γ -> γ(h), g.γs)))
-(g::NestedVariogram)(x::Point, y::Point) = raw(sum(g.cs .* map(γ -> γ(x, y), g.γs)))
-sill(g::NestedVariogram)                 = raw(sum(g.cs .* map(sill, g.γs)))
-nugget(g::NestedVariogram)               = raw(sum(g.cs .* map(nugget, g.γs)))
-Base.range(g::NestedVariogram)           = maximum(range(γ) for γ in g.γs)
-isstationary(g::NestedVariogram)         = all(isstationary(γ) for γ in g.γs)
+(g::NestedVariogram)(h)          = raw(sum(g.cs .* map(γ -> γ(h), g.γs)))
+(g::NestedVariogram)(u, v)       = raw(sum(g.cs .* map(γ -> γ(u, v), g.γs)))
+sill(g::NestedVariogram)         = raw(sum(g.cs .* map(sill, g.γs)))
+nugget(g::NestedVariogram)       = raw(sum(g.cs .* map(nugget, g.γs)))
+Base.range(g::NestedVariogram)   = maximum(range(γ) for γ in g.γs)
+isstationary(g::NestedVariogram) = all(isstationary(γ) for γ in g.γs)
 
 # algebraic structure
 *(c, γ::Variogram)                          = NestedVariogram((c,), (γ,))

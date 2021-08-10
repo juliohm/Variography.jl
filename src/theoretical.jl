@@ -53,12 +53,12 @@ Return the distance of the variogram `γ`.
 distance(γ::Variogram) = γ.distance
 
 """
-    γ(x, y)
+    γ(u, v)
 
-Evaluate the variogram at points `x` and `y`.
+Evaluate the variogram at points `u` and `v`.
 """
-(γ::Variogram)(x::Point, y::Point) =
-  γ(evaluate(γ.distance, coordinates(x), coordinates(y)))
+(γ::Variogram)(u, v) =
+  γ(evaluate(γ.distance, coordinates(u), coordinates(v)))
 
 #------------------
 # IMPLEMENTATIONS
