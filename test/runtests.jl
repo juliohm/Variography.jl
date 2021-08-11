@@ -25,6 +25,7 @@ testfiles = [
   "varioplane.jl",
   "theoretical.jl",
   "nesting.jl",
+  "regularization.jl",
   "pairwise.jl",
   "fitting.jl"
 ]
