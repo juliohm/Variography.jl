@@ -24,7 +24,7 @@ testfiles = [
   "partition.jl",
   "varioplane.jl",
   "theoretical.jl",
-  "nested.jl",
+  "nesting.jl",
   "pairwise.jl",
   "fitting.jl"
 ]
