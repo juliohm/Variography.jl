@@ -16,14 +16,15 @@ function pairwise(γ::Variogram, domain)
 end
 
 function pairwise!(Γ, γ::Variogram, domain)
-  @inbounds for j=1:nelements(domain)
-    xj = centroid(domain, j)
-    for i=j+1:nelements(domain)
-      xi = centroid(domain, i)
-      Γ[i,j] = γ(xi, xj)
+  n = nelements(domain)
+  @inbounds for j in 1:n
+    vj = domain[j]
+    for i in j+1:n
+      ui = domain[i]
+      Γ[i,j] = γ(ui, vj)
     end
-    Γ[j,j] = γ(xj, xj)
-    for i=1:j-1
+    Γ[j,j] = γ(vj, vj)
+    for i in 1:j-1
       Γ[i,j] = Γ[j,i] # leverage the symmetry
     end
   end
@@ -46,11 +47,13 @@ function pairwise(γ::Variogram, domain₁, domain₂)
 end
 
 function pairwise!(Γ, γ::Variogram, domain₁, domain₂)
-  @inbounds for j=1:nelements(domain₂)
-    xj = centroid(domain₂, j)
-    for i=1:nelements(domain₁)
-      xi = centroid(domain₁, i)
-      Γ[i,j] = γ(xi, xj)
+  m = nelements(domain₁)
+  n = nelements(domain₂)
+  @inbounds for j in 1:n
+    vj = domain₂[j]
+    for i in 1:m
+      ui = domain₁[i]
+      Γ[i,j] = γ(ui, vj)
     end
   end
   Γ
