@@ -8,11 +8,9 @@
 Evaluate variogram `γ` between all elements in the `domain`.
 """
 function pairwise(γ::Variogram, domain)
-  Dim = embeddim(domain)
-  T = coordtype(domain)
+  u = first(domain)
   n = nelements(domain)
-  x = rand(Point{Dim,T})
-  R = result_type(γ, x, x)
+  R = result_type(γ, u, u)
   Γ = Matrix{R}(undef, n, n)
   pairwise!(Γ, γ, domain)
 end
@@ -38,13 +36,12 @@ end
 Evaluate variogram `γ` between all elements of `domain₁` and `domain₂`.
 """
 function pairwise(γ::Variogram, domain₁, domain₂)
-  Dim = embeddim(domain₁)
-  T = coordtype(domain₁)
+  u = first(domain₁)
+  v = first(domain₂)
   m = nelements(domain₁)
   n = nelements(domain₂)
-  x = rand(Point{Dim,T})
-  R = result_type(γ, x, x)
-  Γ = Array{R}(undef, m, n)
+  R = result_type(γ, u, v)
+  Γ = Matrix{R}(undef, m, n)
   pairwise!(Γ, γ, domain₁, domain₂)
 end
 
