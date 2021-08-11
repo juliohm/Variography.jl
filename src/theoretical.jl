@@ -11,13 +11,6 @@ with parameters of type `T` and distance of type `D`.
 abstract type Variogram{T,D} end
 
 """
-    result_type(γ, x, y)
-
-Return result type of γ(x, y).
-"""
-result_type(γ::Variogram, x, y) = typeof(γ(x, y))
-
-"""
     isstationary(γ)
 
 Check if variogram `γ` possesses the 2nd-order stationary property.
@@ -58,7 +51,14 @@ distance(γ::Variogram) = γ.distance
 Evaluate the variogram at points `u` and `v`.
 """
 (γ::Variogram)(u, v) =
-  γ(evaluate(γ.distance, coordinates(u), coordinates(v)))
+  γ(evaluate(distance(γ), coordinates(u), coordinates(v)))
+
+"""
+    result_type(γ, u, v)
+
+Return result type of γ(u, v).
+"""
+result_type(γ::Variogram, u, v) = typeof(γ(u, v))
 
 #------------------
 # IMPLEMENTATIONS
