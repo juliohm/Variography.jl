@@ -37,3 +37,13 @@ function _reg_maxpoints(g::Geometry)
   paramdim(g) == 2 && return 6*6
   paramdim(g) == 3 && return 4*4*4
 end
+
+
+# --------------
+# SPECIAL CASES
+# --------------
+
+function _reg_sample(s::Segment)
+  s′ = Segment(s(0.05), s(0.95))
+  sample(s′, RegularSampling(10))
+end
