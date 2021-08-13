@@ -2,7 +2,12 @@
   segment = Segment((0.,0.),(1.,1.))
   ps = Variography._reg_sample(segment)
   @test all(p -> Point(0.,0.) ⪯ p ⪯ Point(1.,1.), ps)
-  @test length(ps) == 10
+  @test length(ps) == 9
+
+  quad = Quadrangle((0.,0.), (1.,0.), (1.,1.), (0.,1.))
+  ps = Variography._reg_sample(quad)
+  @test all(p -> Point(0.,0.) ⪯ p ⪯ Point(1.,1.), ps)
+  @test length(ps) == 9
 
   γ = GaussianVariogram()
   u = Point(0., 0.)

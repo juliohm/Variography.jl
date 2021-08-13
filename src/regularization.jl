@@ -44,6 +44,11 @@ end
 # --------------
 
 function _reg_sample(s::Segment)
-  s′ = Segment(s(0.05), s(0.95))
-  sample(s′, RegularSampling(10))
+  s′ = Segment(s(.05), s(.95))
+  sample(s′, RegularSampling(9))
+end
+
+function _reg_sample(q::Quadrangle)
+  q′ = Quadrangle(q(.05,.05), q(.95,.05), q(.95,.95), q(.05,.95))
+  sample(q′, RegularSampling(3, 3))
 end
