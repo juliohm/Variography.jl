@@ -52,3 +52,9 @@ function _reg_sample(q::Quadrangle)
   q′ = Quadrangle(q(.05,.05), q(.95,.05), q(.95,.95), q(.05,.95))
   sample(q′, RegularSampling(3, 3))
 end
+
+function _reg_sample(h::Hexahedron)
+  h′ = Hexahedron(h(.05,.05,.05), h(.95,.05,.05), h(.95,.95,.05), h(.05,.95,.05),
+                  h(.05,.05,.95), h(.95,.05,.95), h(.95,.95,.95), h(.05,.95,.95))
+  sample(h′, RegularSampling(3, 3, 3))
+end

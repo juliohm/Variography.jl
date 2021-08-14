@@ -1,6 +1,6 @@
 @testset "Regularization" begin
-  segment = Segment((0.,0.),(1.,1.))
-  ps = Variography._reg_sample(segment)
+  seg = Segment((0.,0.),(1.,1.))
+  ps = Variography._reg_sample(seg)
   @test all(p -> Point(0.,0.) ⪯ p ⪯ Point(1.,1.), ps)
   @test length(ps) == 9
 
@@ -8,6 +8,12 @@
   ps = Variography._reg_sample(quad)
   @test all(p -> Point(0.,0.) ⪯ p ⪯ Point(1.,1.), ps)
   @test length(ps) == 9
+
+  hex = Hexahedron((0.,0.,0.), (1.,0.,0.), (1.,1.,0.), (0.,1.,0.),
+                   (0.,0.,1.), (1.,0.,1.), (1.,1.,1.), (0.,1.,1.))
+  ps = Variography._reg_sample(hex)
+  @test all(p -> Point(0.,0.,0.) ⪯ p ⪯ Point(1.,1.,1.), ps)
+  @test length(ps) == 3*3*3
 
   γ = GaussianVariogram()
   u = Point(0., 0.)
