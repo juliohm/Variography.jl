@@ -16,4 +16,14 @@
   Γ = Variography.pairwise(GaussianVariogram(), view(𝒟, 1:3), view(𝒟, 7:10))
   @test size(Γ) == (3, 4)
   @test all(Γ .> 0)
+
+  # arbitrary collections
+  𝒟 = CartesianGrid(10, 10)
+  𝒫 = centroid.(𝒟)
+  Γ = Variography.pairwise(GaussianVariogram(), 𝒫)
+  @test size(Γ) == (100, 100)
+  @test issymmetric(Γ)
+  Γ = Variography.pairwise(GaussianVariogram(), view(𝒫, 1:3), view(𝒫, 7:10))
+  @test size(Γ) == (3, 4)
+  @test all(Γ .> 0)
 end

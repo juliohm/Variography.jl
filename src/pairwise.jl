@@ -9,14 +9,14 @@ Evaluate variogram `γ` between all elements in the `domain`.
 """
 function pairwise(γ::Variogram, domain)
   u = first(domain)
-  n = nelements(domain)
+  n = length(domain)
   R = result_type(γ, u, u)
   Γ = Matrix{R}(undef, n, n)
   pairwise!(Γ, γ, domain)
 end
 
 function pairwise!(Γ, γ::Variogram, domain)
-  n = nelements(domain)
+  n = length(domain)
   @inbounds for j in 1:n
     vj = domain[j]
     for i in j+1:n
@@ -39,16 +39,16 @@ Evaluate variogram `γ` between all elements of `domain₁` and `domain₂`.
 function pairwise(γ::Variogram, domain₁, domain₂)
   u = first(domain₁)
   v = first(domain₂)
-  m = nelements(domain₁)
-  n = nelements(domain₂)
+  m = length(domain₁)
+  n = length(domain₂)
   R = result_type(γ, u, v)
   Γ = Matrix{R}(undef, m, n)
   pairwise!(Γ, γ, domain₁, domain₂)
 end
 
 function pairwise!(Γ, γ::Variogram, domain₁, domain₂)
-  m = nelements(domain₁)
-  n = nelements(domain₂)
+  m = length(domain₁)
+  n = length(domain₂)
   @inbounds for j in 1:n
     vj = domain₂[j]
     for i in 1:m
