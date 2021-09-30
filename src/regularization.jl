@@ -38,7 +38,6 @@ function _reg_maxpoints(g::Geometry)
   paramdim(g) == 3 && return 4*4*4
 end
 
-
 # --------------
 # SPECIAL CASES
 # --------------
