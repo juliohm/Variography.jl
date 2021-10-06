@@ -18,12 +18,14 @@ end
 function pairwise!(Γ, γ::Variogram, domain)
   n = length(domain)
   @inbounds for j in 1:n
-    vj = domain[j]
+    vⱼ = domain[j]
+    sⱼ = _reg_sample(vⱼ)
     for i in j+1:n
-      ui = domain[i]
-      Γ[i,j] = γ(ui, vj)
+      vᵢ = domain[i]
+      sᵢ = _reg_sample(vᵢ)
+      Γ[i,j] = mean(γ(pᵢ, pⱼ) for pᵢ in sᵢ, pⱼ in sⱼ)
     end
-    Γ[j,j] = γ(vj, vj)
+    Γ[j,j] = mean(γ(pⱼ, pⱼ) for pⱼ in sⱼ, pⱼ in sⱼ)
     for i in 1:j-1
       Γ[i,j] = Γ[j,i] # leverage the symmetry
     end
@@ -50,10 +52,12 @@ function pairwise!(Γ, γ::Variogram, domain₁, domain₂)
   m = length(domain₁)
   n = length(domain₂)
   @inbounds for j in 1:n
-    vj = domain₂[j]
+    vⱼ = domain₂[j]
+    sⱼ = _reg_sample(vⱼ)
     for i in 1:m
-      ui = domain₁[i]
-      Γ[i,j] = γ(ui, vj)
+      vᵢ = domain₁[i]
+      sᵢ = _reg_sample(vᵢ)
+      Γ[i,j] = mean(γ(pᵢ, pⱼ) for pᵢ in sᵢ, pⱼ in sⱼ)
     end
   end
   Γ

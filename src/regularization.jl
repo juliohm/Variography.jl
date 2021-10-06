@@ -42,6 +42,8 @@ end
 # SPECIAL CASES
 # --------------
 
+_reg_sample(p::Point) = [p]
+
 function _reg_sample(s::Segment)
   s′ = Segment(s(.05), s(.95))
   sample(s′, RegularSampling(9))
