@@ -1,19 +1,21 @@
 @testset "Regularization" begin
+  γ = GaussianVariogram(range=1.0)
+
   seg = Segment((0.,0.),(1.,1.))
-  ps = Variography._reg_sample(seg)
+  ps = Variography._reg_sample(γ, seg)
   @test all(p -> Point(0.,0.) ⪯ p ⪯ Point(1.,1.), ps)
-  @test length(ps) == 9
+  @test length(ps) == 2
 
   quad = Quadrangle((0.,0.), (1.,0.), (1.,1.), (0.,1.))
-  ps = Variography._reg_sample(quad)
+  ps = Variography._reg_sample(γ, quad)
   @test all(p -> Point(0.,0.) ⪯ p ⪯ Point(1.,1.), ps)
-  @test length(ps) == 9
+  @test length(ps) == 2*2
 
   hex = Hexahedron((0.,0.,0.), (1.,0.,0.), (1.,1.,0.), (0.,1.,0.),
                    (0.,0.,1.), (1.,0.,1.), (1.,1.,1.), (0.,1.,1.))
-  ps = Variography._reg_sample(hex)
+  ps = Variography._reg_sample(γ, hex)
   @test all(p -> Point(0.,0.,0.) ⪯ p ⪯ Point(1.,1.,1.), ps)
-  @test length(ps) == 3*3*3
+  @test length(ps) == 2*2*2
 
   γ = GaussianVariogram()
   u = Point(0., 0.)

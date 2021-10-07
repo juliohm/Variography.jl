@@ -3,59 +3,59 @@
 # ------------------------------------------------------------------
 
 function (γ::Variogram)(U::Geometry, v::Point)
-  us = _reg_sample(U)
+  us = _reg_sample(γ, U)
   mean(γ(u, v) for u in us)
 end
 
 (γ::Variogram)(u::Point, V::Geometry) = γ(V, u)
 
 function (γ::Variogram)(U::Geometry, V::Geometry)
-  us = _reg_sample(U)
-  vs = _reg_sample(V)
+  us = _reg_sample(γ, U)
+  vs = _reg_sample(γ, V)
   mean(γ(u, v) for u in us, v in vs)
 end
 
 # helper function to sample points within a geometry
-function _reg_sample(g::Geometry)
-  α = _reg_spacing(g)
-  sample(g, MinDistanceSampling(α))
+# given a variogram model with well-defined range
+function _reg_sample(γ::Variogram, V::Geometry)
+  α = _reg_spacing(γ, V)
+  sample(V, MinDistanceSampling(α))
 end
 
-# helper function to compute the spacing of points within
-# a given geometry based on a maximum number of points
-function _reg_spacing(g::Geometry)
-  μ = measure(g)
-  d = paramdim(g)
-  n = _reg_maxpoints(g)
-  (μ / n) ^ (1 / d)
+function _reg_spacing(γ::Variogram, V::Geometry)
+  s = sides(boundingbox(V))
+  l = filter(>(0), s)
+  min(range(γ), minimum(l)) / 2
 end
 
-# recommended maximum number of points inside a geometry
-# Journel, A. & Huijbregts, Ch.J. Mining Geostatistics page 97
-function _reg_maxpoints(g::Geometry)
-  paramdim(g) == 1 && return 10
-  paramdim(g) == 2 && return 6*6
-  paramdim(g) == 3 && return 4*4*4
+function _reg_dims(γ::Variogram, V::Geometry)
+  s = sides(boundingbox(V))
+  α = _reg_spacing(γ, V)
+  n = ceil.(Int, s ./ α)
+  replace(n, 0 => 1)
 end
 
 # --------------
 # SPECIAL CASES
 # --------------
 
-_reg_sample(p::Point) = [p]
+_reg_sample(::Variogram, p::Point) = [p]
 
-function _reg_sample(s::Segment)
+function _reg_sample(γ::Variogram, s::Segment)
   s′ = Segment(s(.05), s(.95))
-  sample(s′, RegularSampling(9))
+  n  = _reg_dims(γ, s)
+  sample(s′, RegularSampling(n...))
 end
 
-function _reg_sample(q::Quadrangle)
+function _reg_sample(γ::Variogram, q::Quadrangle)
   q′ = Quadrangle(q(.05,.05), q(.95,.05), q(.95,.95), q(.05,.95))
-  sample(q′, RegularSampling(3, 3))
+  n  = _reg_dims(γ, q)
+  sample(q′, RegularSampling(n...))
 end
 
-function _reg_sample(h::Hexahedron)
+function _reg_sample(γ::Variogram, h::Hexahedron)
   h′ = Hexahedron(h(.05,.05,.05), h(.95,.05,.05), h(.95,.95,.05), h(.05,.95,.05),
                   h(.05,.05,.95), h(.95,.05,.95), h(.95,.95,.95), h(.05,.95,.95))
-  sample(h′, RegularSampling(3, 3, 3))
+  n  = _reg_dims(γ, h)
+  sample(h′, RegularSampling(n...))
 end
