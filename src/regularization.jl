@@ -25,7 +25,7 @@ end
 function _reg_spacing(γ::Variogram, V::Geometry)
   s = sides(boundingbox(V))
   l = filter(>(0), s)
-  min(range(γ), minimum(l)) / 2
+  min(range(γ), minimum(l)) / 3
 end
 
 function _reg_dims(γ::Variogram, V::Geometry)
