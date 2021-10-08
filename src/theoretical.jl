@@ -48,10 +48,38 @@ distance(γ::Variogram) = γ.distance
 """
     γ(u, v)
 
-Evaluate the variogram at points or geometries `u` and `v`.
+Evaluate the variogram at points `u` and `v`.
 """
 (γ::Variogram)(u, v) =
   γ(evaluate(distance(γ), coordinates(u), coordinates(v)))
+
+"""
+    γ(U, v)
+
+Evaluate the variogram at geometry `U` and point `v`.
+"""
+function (γ::Variogram)(U::Geometry, v::Point)
+  us = _sample(γ, U)
+  mean(γ(u, v) for u in us)
+end
+
+"""
+    γ(u, V)
+
+Evaluate the variogram at point `u` and geometry `V`.
+"""
+(γ::Variogram)(u::Point, V::Geometry) = γ(V, u)
+
+"""
+    γ(U, V)
+
+Evaluate the variogram at geometries `U` and `V`.
+"""
+function (γ::Variogram)(U::Geometry, V::Geometry)
+  us = _sample(γ, U)
+  vs = _sample(γ, V)
+  mean(γ(u, v) for u in us, v in vs)
+end
 
 """
     result_type(γ, u, v)
