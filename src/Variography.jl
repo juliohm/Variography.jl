@@ -17,6 +17,7 @@ using LinearAlgebra
 using RecipesBase
 using Parameters
 using Setfield
+using Random
 using Printf
 
 import Base: merge, +, *

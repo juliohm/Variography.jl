@@ -6,7 +6,8 @@ _sample(::Variogram, p::Point) = [p]
 
 function _sample(γ::Variogram, g::Geometry)
   α = _spacing(γ, g)
-  sample(g, MinDistanceSampling(α))
+  rng = MersenneTwister(123)
+  sample(rng, g, MinDistanceSampling(α))
 end
 
 function _sample(γ::Variogram, s::Segment)
