@@ -30,9 +30,10 @@ function _sample(γ::Variogram, h::Hexahedron)
 end
 
 function _spacing(γ::Variogram, g::Geometry)
+  r = range(γ)
   s = sides(boundingbox(g))
-  l = filter(>(0), s)
-  min(range(γ), minimum(l)) / 3
+  l = minimum(filter(>(0), s))
+  r > 0 ? min(r, l) / 3 : l / 3
 end
 
 function _dims(γ::Variogram, g::Geometry)

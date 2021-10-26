@@ -37,4 +37,11 @@
   ps1 = Variography._sample(γ, G)
   ps2 = Variography._sample(γ, G)
   @test ps1 == ps2
+
+  # samples with nugget effect model
+  γ = NuggetEffect()
+  h = Hexahedron((0.,0.,0.), (1.,0.,0.), (1.,1.,0.), (0.,1.,0.),
+                 (0.,0.,1.), (1.,0.,1.), (1.,1.,1.), (0.,1.,1.))
+  ps = Variography._sample(γ, h) |> collect
+  @test length(ps) == 3*3*3
 end
