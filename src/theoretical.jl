@@ -50,7 +50,7 @@ distance(γ::Variogram) = γ.distance
 
 Evaluate the variogram at points `u` and `v`.
 """
-(γ::Variogram)(u, v) =
+(γ::Variogram)(u::Point, v::Point) =
   γ(evaluate(distance(γ), coordinates(u), coordinates(v)))
 
 """
