@@ -90,4 +90,11 @@
   @test (@elapsed nugget(γ)) < 1e-5
   @test (@allocated sill(γ)) < 32
   @test (@allocated nugget(γ)) < 32
+
+  # nested model with change of support
+  γ = GaussianVariogram() + SphericalVariogram()
+  p = Point(1., 2., 3.)
+  h = CartesianGrid(10,10,10)[1]
+  @test γ(p, h) == γ(h, p)
+  @test γ(h, h) < γ(p, h)
 end

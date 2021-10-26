@@ -26,9 +26,15 @@ end
 
 NestedVariogram(cs, γs) = NestedVariogram{typeof(cs),typeof(γs)}(cs, γs)
 
-# variogram interface
 (g::NestedVariogram)(h)          = raw(sum(g.cs .* map(γ -> γ(h), g.γs)))
-(g::NestedVariogram)(u, v)       = raw(sum(g.cs .* map(γ -> γ(u, v), g.γs)))
+
+(g::NestedVariogram)(u::Point, v::Point)       = _eval(g, u, v)
+(g::NestedVariogram)(u::Point, v::Geometry)    = _eval(g, u, v)
+(g::NestedVariogram)(u::Geometry, v::Point)    = _eval(g, u, v)
+(g::NestedVariogram)(u::Geometry, v::Geometry) = _eval(g, u, v)
+
+_eval(g, u, v) = raw(sum(g.cs .* map(γ -> γ(u, v), g.γs)))
+
 sill(g::NestedVariogram)         = raw(sum(g.cs .* map(sill, g.γs)))
 nugget(g::NestedVariogram)       = raw(sum(g.cs .* map(nugget, g.γs)))
 Base.range(g::NestedVariogram)   = maximum(range(γ) for γ in g.γs)
