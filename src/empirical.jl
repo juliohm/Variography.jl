@@ -209,7 +209,7 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   Z₁, Z₂ = data[var₁], data[var₂]
 
   # fast ball search
-  ball = NormBall(maxlag, distance)
+  ball = MetricBall(maxlag, distance)
   searcher = BallSearch(data, ball)
 
   # loop over points inside norm ball
