@@ -5,7 +5,7 @@
 """
     spheredir(θ, φ)
 
-Returns the 3D direction given polar angle `θ` and
+Return the 3D direction given polar angle `θ` and
 azimuthal angle `φ` in degrees according to the ISO
 convention.
 """
