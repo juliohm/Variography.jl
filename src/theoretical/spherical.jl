@@ -22,7 +22,7 @@ SphericalVariogram(; range=1.0, sill=1.0, nugget=0.0) =
   SphericalVariogram(sill, nugget, MetricBall(range))
 
 function (γ::SphericalVariogram)(h::T) where {T}
-  r = boundaryvalue(γ.ball)
+  r = radius(γ.ball)
   s = γ.sill
   n = γ.nugget
 

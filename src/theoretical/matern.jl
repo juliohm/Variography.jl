@@ -24,7 +24,7 @@ MaternVariogram(; range=1.0, sill=1.0, nugget=0.0, order=1.0) =
   MaternVariogram(sill, nugget, order, MetricBall(range))
 
 function (γ::MaternVariogram)(h::T) where {T}
-  r = boundaryvalue(γ.ball)
+  r = radius(γ.ball)
   s = γ.sill
   n = γ.nugget
   ν = γ.order
