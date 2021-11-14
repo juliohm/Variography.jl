@@ -66,30 +66,32 @@ end
 
 function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
                   algo::WeightedLeastSquares)
-  # values and distance
+  # values of empirical variogram
   x, y, n = values(γ)
-  d = distance(γ)
+
+  # custom ball of given radius
+  ball(r) = MetricBall(r, distance(γ))
 
   # discard invalid bins
   x = x[n .> 0]
   y = y[n .> 0]
   n = n[n .> 0]
 
+  # auxiliary variables
+  xmax, ymax = maximum(x), maximum(y)
+
   # evaluate weights
   f = algo.weightfun
   w = f ≠ nothing ? map(f, x) : n / sum(n)
 
   # objective function
-  J(p) = begin
-    g = V(range=p[1], sill=p[2], nugget=p[3], distance=d)
+  function J(p) # p = [range, sill, nugget]
+    g = V(ball(p[1]), sill=p[2], nugget=p[3])
     sum(w[i]*(g(x[i]) - y[i])^2 for i in eachindex(x))
   end
 
-  # auxiliary variables
-  xmax, ymax = maximum(x), maximum(y)
-
   # initial guess
-  pₒ = [xmax/3, .95*ymax, 1e-6]
+  pₒ = [xmax/3, 0.95*ymax, 1e-6]
 
   # box constraints
   l  = [0., 0., 0.]
@@ -101,7 +103,7 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
   p   = Optim.minimizer(sol)
 
   # optimal variogram
-  vario = V(range=p[1], sill=p[2], nugget=p[3], distance=d)
+  vario = V(ball(p[1]), sill=p[2], nugget=p[3])
 
   vario, err
 end

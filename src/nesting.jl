@@ -14,7 +14,7 @@ A nested variogram model `γ = c₁γ₁ + c₂γ₂ + ⋯ + cₙγₙ` with
 coefficients `cs = (c₁, c₂, ..., cₙ)` and variogram models
 `γs = (γ₁, γ₂, ..., γₙ)`.
 """
-struct NestedVariogram{CS,GS} <: Variogram{Number,Metric}
+struct NestedVariogram{CS,GS} <: Variogram
   cs::CS
   γs::GS
 

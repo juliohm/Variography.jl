@@ -15,7 +15,6 @@ using NearestNeighbors: MinkowskiMetric
 using Transducers: Map, foldxt
 using LinearAlgebra
 using RecipesBase
-using Parameters
 using Setfield
 using Random
 using Printf
@@ -61,7 +60,6 @@ export
   isstationary,
   sill, nugget,
   structures,
-  distance,
   pairwise,
   pairwise!,
 
