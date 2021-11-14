@@ -22,7 +22,7 @@ ExponentialVariogram(; range=1.0, sill=1.0, nugget=0.0) =
   ExponentialVariogram(sill, nugget, MetricBall(range))
 
 function (γ::ExponentialVariogram)(h)
-  r = range(γ)
+  r = boundaryvalue(γ.ball)
   s = γ.sill
   n = γ.nugget
   (s - n) * (1 - exp(-3(h/r))) + (h > 0) * n

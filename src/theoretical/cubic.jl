@@ -22,7 +22,7 @@ CubicVariogram(; range=1.0, sill=1.0, nugget=0.0) =
   CubicVariogram(sill, nugget, MetricBall(range))
 
 function (γ::CubicVariogram)(h::T) where {T}
-  r = range(γ)
+  r = boundaryvalue(γ.ball)
   s = γ.sill
   n = γ.nugget
 

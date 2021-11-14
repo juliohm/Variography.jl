@@ -24,7 +24,7 @@ GaussianVariogram(; range=1.0, sill=1.0, nugget=0.0) =
 function (γ::GaussianVariogram)(h)
   # add small eps to nugget
   # for numerical stability
-  r = range(γ)
+  r = boundaryvalue(γ.ball)
   s = γ.sill
   n = γ.nugget + typeof(s)(1e-6)
   (s - n) * (1 - exp(-3(h/r)^2)) + (h > 0) * n

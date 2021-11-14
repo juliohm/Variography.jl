@@ -22,7 +22,7 @@ SineHoleVariogram(; range=1.0, sill=1.0, nugget=0.0) =
   SineHoleVariogram(sill, nugget, MetricBall(range))
 
 function (γ::SineHoleVariogram)(h::T) where {T}
-  r = range(γ)
+  r = boundaryvalue(γ.ball)
   s = γ.sill
   n = γ.nugget
 
