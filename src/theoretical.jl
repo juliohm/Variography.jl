@@ -35,8 +35,13 @@ Base.range(γ::Variogram) = maximum(radii(γ.ball))
 
 Evaluate the variogram at points `u` and `v`.
 """
-(γ::Variogram)(u::Point, v::Point) =
-  γ(evaluate(metric(γ.ball), coordinates(u), coordinates(v)))
+function (γ::Variogram)(u::Point, v::Point)
+  d = metric(γ.ball)
+  x = coordinates(u)
+  y = coordinates(v)
+  h = evaluate(d, x, y)
+  γ(h)
+end
 
 """
     γ(U, v)

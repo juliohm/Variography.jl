@@ -23,7 +23,12 @@ function (γ::PowerVariogram)(h)
   s * h^a + (h > 0) * n
 end
 
-(γ::PowerVariogram)(u::Point, v::Point) =
-  γ(evaluate(Euclidean(), coordinates(u), coordinates(v)))
+function (γ::PowerVariogram)(u::Point, v::Point)
+  d = Euclidean()
+  x = coordinates(u)
+  y = coordinates(v)
+  h = evaluate(d, x, y)
+  γ(h)
+end
 
 isstationary(::Type{<:PowerVariogram}) = false
