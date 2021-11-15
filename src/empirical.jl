@@ -66,6 +66,10 @@ function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
   @assert nlags  > 0 "number of lags must be positive"
   @assert maxlag > 0 "maximum lag distance must be positive"
 
+  # retrieve table and domain
+  𝒯 = values(data)
+  𝒟 = domain(data)
+
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
   isfloat     = coordtype(data) <: AbstractFloat
@@ -75,11 +79,15 @@ function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
   (algo == :ball && !isfloat) && @warn ":ball algorithm requires floating point coordinates"
   (algo == :ball && !isminkowski) && @warn ":ball algorithm requires Minkowski metric"
 
+  # empirical variograms are defined on point sets
+  𝒫 = PointSet([centroid(𝒟, i) for i in 1:nelements(𝒟)])
+  𝒮 = georef(𝒯, 𝒫)
+
   # choose accumulation algorithm
   if algo == :ball && isfloat && isminkowski
-    xsums, ysums, counts = ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
+    xsums, ysums, counts = ball_search_accum(𝒮, var₁, var₂, maxlag, nlags, distance)
   else
-    xsums, ysums, counts = full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
+    xsums, ysums, counts = full_search_accum(𝒮, var₁, var₂, maxlag, nlags, distance)
   end
 
   # bin (or lag) size
