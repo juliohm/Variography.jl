@@ -99,7 +99,7 @@ isisotropic(γ::Variogram) = isisotropic(γ.ball)
 function Base.show(io::IO, γ::Variogram)
   T = typeof(γ)
   O = IOContext(io, :compact => true)
-  name = string(nameof(T))
+  name   = string(nameof(T))
   params = String[]
   for fn in fieldnames(T)
     val = getfield(γ, fn)
@@ -123,22 +123,27 @@ end
 function Base.show(io::IO, ::MIME"text/plain", γ::Variogram)
   T = typeof(γ)
   O = IOContext(io, :compact => true)
-  name = string(nameof(T))
+  name   = string(nameof(T))
   header = isisotropic(γ) ? name : name*" (anisotropic)"
-  println(O, header)
+  params = String[]
   for fn in fieldnames(T)
     val = getfield(γ, fn)
     if val isa MetricBall
       if isisotropic(val)
-        println(O, "  └─", "range", " ⇨ ", first(radii(val)))
+        r = first(radii(val))
+        push!(params, "  └─range ⇨ $r")
       else
-        println(O, "  └─", "ranges", " ⇨ ", Tuple(radii(val)))
+        r = Tuple(radii(val))
+        push!(params, "  └─ranges ⇨ $r")
       end
-      println(O, "  └─", "metric", " ⇨ ", nameof(typeof(metric(val))))
+      m = nameof(typeof(metric(val)))
+      push!(params, "  └─metric ⇨ $m")
     else
-      println(O, "  └─", fn, " ⇨ ", val)
+      push!(params, "  └─$fn ⇨ $val")
     end
   end
+  println(O, header)
+  print(O, join(params, "\n"))
 end
 
 # ----------------

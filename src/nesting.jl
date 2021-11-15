@@ -87,19 +87,26 @@ end
 # -----------
 
 function Base.show(io::IO, g::NestedVariogram)
-  N = length(g.cs)
-  print(io, "NestedVariogram{$N}")
+  O = IOContext(io, :compact => true)
+  coeffs = 1 .* raw.(g.cs)
+  models = nameof.(typeof.(g.γs))
+  lines  = ["$c × $γ" for (c, γ) in zip(coeffs, models)]
+  print(O, join(lines, " + "))
 end
 
 function Base.show(io::IO, ::MIME"text/plain", g::NestedVariogram)
+  O = IOContext(io, :compact => true)
   coeffs = 1 .* raw.(g.cs)
-  models = [nameof(typeof(γ)) for γ in g.γs]
-  params = ["range=$(range(γ)), sill=$(sill(γ)), nugget=$(nugget(γ))" for γ in g.γs]
-  println(io, g)
-  println(io, "  structures")
-  lines  = ["    └─$γ($p)" for (γ, p) in zip(models, params)]
-  println(io, join(lines, "\n"))
-  println(io, "  coefficients")
-  lines  = ["    └─$c" for c in coeffs]
-  print(io, join(lines, "\n"))
+  models = g.γs
+  nstruc = length(models)
+  name   = "NestedVariogram{$nstruc}"
+  header = isisotropic(g) ? name : name*" (anisotropic)"
+  println(O, header)
+  println(O, "  structures")
+  lines = ["    └─$γ" for γ in models]
+  print(O, join(lines, "\n"))
+  println(O)
+  println(O, "  coefficients")
+  lines = ["    └─$c" for c in coeffs]
+  print(O, join(lines, "\n"))
 end
