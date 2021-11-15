@@ -8,6 +8,7 @@ using Meshes
 using GeoStatsBase
 
 using Optim
+using Tables
 using Distances
 using InteractiveUtils: subtypes
 using SpecialFunctions: gamma, besselk

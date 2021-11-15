@@ -157,6 +157,10 @@ end
 # ACCUMULATION ALGORITHMS
 # ------------------------
 function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
+  # retrieve table and domain
+  𝒯 = values(data)
+  𝒟 = domain(data)
+
   # lag size
   δh = maxlag / nlags
 
@@ -166,13 +170,15 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   counts = zeros(Int, nlags)
 
   # collect vectors for variables
-  Z₁, Z₂ = data[var₁], data[var₂]
+  cols = Tables.columns(𝒯)
+  Z₁   = Tables.getcolumn(cols, var₁)
+  Z₂   = Tables.getcolumn(cols, var₂)
 
   # loop over all pairs of points
-  @inbounds for j in 1:nelements(data)
-    pⱼ = centroid(data, j)
-    for i in j+1:nelements(data)
-      pᵢ = centroid(data, i)
+  @inbounds for j in 1:nelements(𝒟)
+    pⱼ = centroid(𝒟, j)
+    for i in j+1:nelements(𝒟)
+      pᵢ = centroid(𝒟, i)
 
       # evaluate spatial lag
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
@@ -197,6 +203,10 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
 end
 
 function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
+  # retrieve table and domain
+  𝒯 = values(data)
+  𝒟 = domain(data)
+
   # lag size
   δh = maxlag / nlags
 
@@ -206,19 +216,20 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   counts = zeros(Int, nlags)
 
   # collect vectors for variables
-  Z₁, Z₂ = data[var₁], data[var₂]
+  cols = Tables.columns(𝒯)
+  Z₁   = Tables.getcolumn(cols, var₁)
+  Z₂   = Tables.getcolumn(cols, var₂)
 
   # fast ball search
-  dom = domain(data)
   ball = MetricBall(maxlag, distance)
-  searcher = BallSearch(dom, ball)
+  searcher = BallSearch(𝒟, ball)
 
   # loop over points inside norm ball
-  @inbounds for j in 1:nelements(dom)
-    pⱼ = centroid(dom, j)
+  @inbounds for j in 1:nelements(𝒟)
+    pⱼ = centroid(𝒟, j)
     for i in search(pⱼ, searcher)
       i ≤ j && continue # avoid double counting
-      pᵢ = centroid(dom, i)
+      pᵢ = centroid(𝒟, i)
 
       # evaluate spatial lag
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
