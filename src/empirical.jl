@@ -147,10 +147,11 @@ function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {
   EmpiricalVariogram(x, y, n, d)
 end
 
-# ------------
-# IO methods
-# ------------
-function Base.show(io::IO, γ::EmpiricalVariogram)
+# -----------
+# IO METHODS
+# -----------
+
+function Base.show(io::IO, ::EmpiricalVariogram)
   print(io, "EmpiricalVariogram")
 end
 
@@ -164,10 +165,11 @@ end
 # ------------------------
 # ACCUMULATION ALGORITHMS
 # ------------------------
+
 function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
-  # retrieve table and domain
+  # retrieve table and point set
   𝒯 = values(data)
-  𝒟 = domain(data)
+  𝒫 = domain(data)
 
   # lag size
   δh = maxlag / nlags
@@ -183,17 +185,21 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   Z₂   = Tables.getcolumn(cols, var₂)
 
   # loop over all pairs of points
-  @inbounds for j in 1:nelements(𝒟)
-    pⱼ = centroid(𝒟, j)
-    for i in j+1:nelements(𝒟)
-      pᵢ = centroid(𝒟, i)
+  @inbounds for j in 1:nelements(𝒫)
+    pⱼ  = 𝒫[j]
+    z₁ⱼ = Z₁[j]
+    z₂ⱼ = Z₂[j]
+    for i in j+1:nelements(𝒫)
+      pᵢ  = 𝒫[i]
+      z₁ᵢ = Z₁[i]
+      z₂ᵢ = Z₂[i]
 
       # evaluate spatial lag
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
       h > maxlag && continue # early exit if out of range
 
       # evaluate (cross-)variance
-      v = (Z₁[i] - Z₁[j]) * (Z₂[i] - Z₂[j])
+      v = (z₁ᵢ - z₁ⱼ) * (z₂ᵢ - z₂ⱼ)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
@@ -211,9 +217,9 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
 end
 
 function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
-  # retrieve table and domain
+  # retrieve table and point set
   𝒯 = values(data)
-  𝒟 = domain(data)
+  𝒫 = domain(data)
 
   # lag size
   δh = maxlag / nlags
@@ -230,20 +236,24 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
 
   # fast ball search
   ball = MetricBall(maxlag, distance)
-  searcher = BallSearch(𝒟, ball)
+  searcher = BallSearch(𝒫, ball)
 
-  # loop over points inside norm ball
-  @inbounds for j in 1:nelements(𝒟)
-    pⱼ = centroid(𝒟, j)
+  # loop over points inside ball
+  @inbounds for j in 1:nelements(𝒫)
+    pⱼ  = 𝒫[j]
+    z₁ⱼ = Z₁[j]
+    z₂ⱼ = Z₂[j]
     for i in search(pⱼ, searcher)
       i ≤ j && continue # avoid double counting
-      pᵢ = centroid(𝒟, i)
+      pᵢ  = 𝒫[i]
+      z₁ᵢ = Z₁[i]
+      z₂ᵢ = Z₂[i]
 
       # evaluate spatial lag
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
 
       # evaluate (cross-)variance
-      v = (Z₁[i] - Z₁[j]) * (Z₂[i] - Z₂[j])
+      v = (z₁ᵢ - z₁ⱼ) * (z₂ᵢ - z₂ⱼ)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
