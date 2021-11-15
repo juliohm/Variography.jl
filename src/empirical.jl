@@ -209,15 +209,16 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   Z₁, Z₂ = data[var₁], data[var₂]
 
   # fast ball search
+  dom = domain(data)
   ball = MetricBall(maxlag, distance)
-  searcher = BallSearch(data, ball)
+  searcher = BallSearch(dom, ball)
 
   # loop over points inside norm ball
-  @inbounds for j in 1:nelements(data)
-    pⱼ = centroid(data, j)
+  @inbounds for j in 1:nelements(dom)
+    pⱼ = centroid(dom, j)
     for i in search(pⱼ, searcher)
       i ≤ j && continue # avoid double counting
-      pᵢ = centroid(data, i)
+      pᵢ = centroid(dom, i)
 
       # evaluate spatial lag
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
