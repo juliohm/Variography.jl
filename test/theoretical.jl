@@ -18,9 +18,20 @@
          SphericalVariogram(range=2.), CubicVariogram(),
          PentasphericalVariogram(), PowerVariogram()]
 
+  # anisotropic variogram models
+  γa = [GaussianVariogram(MetricBall((2.,1.))),
+        MaternVariogram(MetricBall((3.,2.,1.)))]
+
   # check stationarity
-  @test all(isstationary(γ) for γ ∈ γs)
-  @test all(!isstationary(γ) for γ ∈ γn)
+  @test all(isstationary, γs)
+  @test all(!isstationary, γn)
+
+  # check isotropy
+  @test all(isisotropic, γs)
+  @test all(isisotropic, γn)
+  @test all(isisotropic, γnd)
+  @test isisotropic(sum(γs) + sum(γn) + sum(γnd))
+  @test all(!isisotropic, γa)
 
   # variograms are symmetric under Euclidean distance
   for γ in (γs ∪ γn ∪ γnd ∪ [sum(γs) + sum(γn) + sum(γnd)])

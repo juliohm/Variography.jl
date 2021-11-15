@@ -22,6 +22,7 @@ using Printf
 
 import Base: merge, +, *
 import GeoStatsBase: fit
+import Meshes: isisotropic
 
 include("utils.jl")
 include("empirical.jl")
@@ -58,8 +59,9 @@ export
   PowerVariogram,
   SineHoleVariogram,
   NestedVariogram,
-  isstationary,
   sill, nugget,
+  isstationary,
+  isisotropic,
   structures,
   pairwise,
   pairwise!,

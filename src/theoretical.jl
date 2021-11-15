@@ -85,17 +85,60 @@ Check if variogram `γ` possesses the 2nd-order stationary property.
 """
 isstationary(γ::Variogram) = isstationary(typeof(γ))
 
+"""
+    isisotropic(γ)
+
+Tells whether or not variogram `γ` is isotropic.
+"""
+isisotropic(γ::Variogram) = isisotropic(γ.ball)
+
 # -----------
 # IO METHODS
 # -----------
 
 function Base.show(io::IO, γ::Variogram)
-  Base.show_default(IOContext(io, :limit => true), γ)
+  T = typeof(γ)
+  O = IOContext(io, :compact => true)
+  name = string(nameof(T))
+  params = String[]
+  for fn in fieldnames(T)
+    val = getfield(γ, fn)
+    if val isa MetricBall
+      if isisotropic(val)
+        r = first(radii(val))
+        push!(params, "range=$r")
+      else
+        r = Tuple(radii(val))
+        push!(params, "ranges=$r")
+      end
+      m = nameof(typeof(metric(val)))
+      push!(params, "metric=$m")
+    else
+      push!(params, "$fn=$val")
+    end
+  end
+  print(O, name, "(", join(params, ", "), ")")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", γ::Variogram)
-  # just dumping seems to give ok output
-  dump(IOContext(io, :limit => true), γ, maxdepth=1)
+  T = typeof(γ)
+  O = IOContext(io, :compact => true)
+  name = string(nameof(T))
+  header = isisotropic(γ) ? name : name*" (anisotropic)"
+  println(O, header)
+  for fn in fieldnames(T)
+    val = getfield(γ, fn)
+    if val isa MetricBall
+      if isisotropic(val)
+        println(O, "  └─", "range", " ⇨ ", first(radii(val)))
+      else
+        println(O, "  └─", "ranges", " ⇨ ", Tuple(radii(val)))
+      end
+      println(O, "  └─", "metric", " ⇨ ", nameof(typeof(metric(val))))
+    else
+      println(O, "  └─", fn, " ⇨ ", val)
+    end
+  end
 end
 
 # ----------------

@@ -32,3 +32,5 @@ function (γ::PowerVariogram)(u::Point, v::Point)
 end
 
 isstationary(::Type{<:PowerVariogram}) = false
+
+isisotropic(::PowerVariogram) = true
