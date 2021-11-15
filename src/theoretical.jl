@@ -85,9 +85,22 @@ Check if variogram `γ` possesses the 2nd-order stationary property.
 """
 isstationary(γ::Variogram) = isstationary(typeof(γ))
 
-#------------------
+# -----------
+# IO METHODS
+# -----------
+
+function Base.show(io::IO, γ::Variogram)
+  Base.show_default(IOContext(io, :limit => true), γ)
+end
+
+function Base.show(io::IO, ::MIME"text/plain", γ::Variogram)
+  # just dumping seems to give ok output
+  dump(IOContext(io, :limit => true), γ, maxdepth=1)
+end
+
+# ----------------
 # IMPLEMENTATIONS
-#------------------
+# ----------------
 
 include("theoretical/gaussian.jl")
 include("theoretical/exponential.jl")
