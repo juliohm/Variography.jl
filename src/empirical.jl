@@ -59,16 +59,20 @@ EmpiricalVariogram(abscissa, ordinate, counts, distance) =
 function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
                             nlags=20, maxlag=default_maxlag(data),
                             distance=Euclidean(), algo=:ball)
-  # sanity checks
-  @assert nelements(data) > 1 "variogram requires at least 2 elements"
-  @assert (var₁, var₂) ⊆ name.(variables(data)) "invalid variable names"
-  @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
-  @assert nlags  > 0 "number of lags must be positive"
-  @assert maxlag > 0 "maximum lag distance must be positive"
 
   # retrieve table and domain
   𝒯 = values(data)
   𝒟 = domain(data)
+
+  # retrieve the column names of data values
+  vars = Tables.columnnames(𝒯)
+  
+  # sanity checks
+  @assert nelements(data) > 1 "variogram requires at least 2 elements"
+  @assert (var₁, var₂) ⊆ vars "invalid variable names"
+  @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
+  @assert nlags  > 0 "number of lags must be positive"
+  @assert maxlag > 0 "maximum lag distance must be positive"
 
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
@@ -199,7 +203,7 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
       h > maxlag && continue # early exit if out of range
 
       # evaluate (cross-)variance
-      v = (z₁ᵢ - z₁ⱼ) * (z₂ᵢ - z₂ⱼ)
+      v = (z₁ᵢ - z₁ⱼ) ⋅ (z₂ᵢ - z₂ⱼ)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
@@ -253,7 +257,7 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
 
       # evaluate (cross-)variance
-      v = (z₁ᵢ - z₁ⱼ) * (z₂ᵢ - z₂ⱼ)
+      v = (z₁ᵢ - z₁ⱼ) ⋅ (z₂ᵢ - z₂ⱼ)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
@@ -269,3 +273,7 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
 
   xsums, ysums, counts
 end
+
+# temporary fix for ⋅ with missing values
+# https://github.com/JuliaLang/julia/issues/40743
+⋅(::Missing, ::Missing) = missing

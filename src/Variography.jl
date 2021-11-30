@@ -23,6 +23,7 @@ using Printf
 import Base: merge, +, *
 import GeoStatsBase: fit
 import Meshes: isisotropic
+import LinearAlgebra: ⋅
 
 include("utils.jl")
 include("empirical.jl")

@@ -58,4 +58,12 @@
     γ = EmpiricalVariogram(d, :z, maxlag=15.)
     @test_reference "data/empirical.png" plot(γ)
   end
+
+  # test variography with compositional data
+  sdata = georef((z=rand(Composition{3}, 100),), rand(2, 100))
+  γ = EmpiricalVariogram(sdata, :z, maxlag = 1.0, algo=:full)
+  x, y, n = values(γ)
+  @test all(≥(0), x)
+  @test all(≥(0), y)
+  @test all(>(0), n)
 end
