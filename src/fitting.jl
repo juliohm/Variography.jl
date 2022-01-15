@@ -85,8 +85,8 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
   w = f ≠ nothing ? map(f, x) : n / sum(n)
 
   # objective function
-  function J(p) # p = [range, sill, nugget]
-    g = V(ball(p[1]), sill=p[2], nugget=p[3])
+  function J(p)
+    g = V(ball(p[1]), sill=p[2]+p[3], nugget=p[3])
     sum(w[i]*(g(x[i]) - y[i])^2 for i in eachindex(x))
   end
 
@@ -103,7 +103,7 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
   p   = Optim.minimizer(sol)
 
   # optimal variogram
-  vario = V(ball(p[1]), sill=p[2], nugget=p[3])
+  vario = V(ball(p[1]), sill=p[2]+p[3], nugget=p[3])
 
   vario, err
 end
