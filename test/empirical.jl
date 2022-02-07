@@ -45,8 +45,8 @@
   @test distance(γ) == Haversine(6371.)
 
   # print methods
-  Random.seed!(123)
-  d = georef((z=rand(100,100),))
+  rng = MersenneTwister(123)
+  d = georef((z=rand(rng,100,100),))
   γ = EmpiricalVariogram(d, :z)
   @test sprint(show, γ) == "EmpiricalVariogram"
   @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.3535533905932738, 13.84261778461484)\n  ordinate: (0.0, 0.08323850196902784)\n  N° pairs: 2790126"

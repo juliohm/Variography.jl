@@ -3,35 +3,39 @@
 # ------------------------------------------------------------------
 
 """
-    EmpiricalVarioplane(sdata, var₁, var₂=var₁;
-                        normal=spheredir(0,0), nangs=50,
-                        ptol=0.5, dtol=0.5, kwargs...)
+    EmpiricalVarioplane(data, var₁, var₂=var₁;
+                        normal=spheredir(0,0),
+                        nangs=50, ptol=0.5, dtol=0.5,
+                        [parameters])
 
 Given a `normal` direction, estimate the (cross-)variogram of variables
 `var₁` and `var₂` along all directions in the corresponding plane of variation.
 
-Optionally, specify the tolerance `ptol` for the [`PlanePartition`](@ref)
-the tolerance `dtol` for the [`DirectionPartition`](@ref), the number of
-angles `nangs` in the plane, and forward the keyword arguments `kwargs` to
-the various [`EmpiricalVariogram`](@ref) calls.
+Optionally, specify the tolerance `ptol` for the plane partition, the tolerance
+`dtol` for the direction partition, the number of angles `nangs` in the plane,
+and forward the `parameters` to the underlying [`EmpiricalVariogram`](@ref).
 """
 struct EmpiricalVarioplane{T,V}
   θs::Vector{T}
   γs::Vector{V}
 end
 
-function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
-                             normal=spheredir(0,0), nangs=50,
-                             ptol=0.5, dtol=0.5, kwargs...)
+function EmpiricalVarioplane(data, var₁::Symbol, var₂::Symbol=var₁;
+                             normal=spheredir(0,0),
+                             nangs=50, ptol=0.5, dtol=0.5,
+                             kwargs...)
   # sanity checks
   @assert nangs > 1 "nangs must be greater than one"
 
+  # deterministic results
+  rng = MersenneTwister(123)
+
   # basis for variogram plane
-  if embeddim(sdata) == 2
-    planes = [sdata]
+  if embeddim(data) == 2
+    planes = [data]
     u, v = Vec(1.,0.), Vec(0.,1.)
-  elseif embeddim(sdata) == 3
-    planes = partition(sdata, PlanePartition(normal, tol=ptol))
+  elseif embeddim(data) == 3
+    planes = partition(rng, data, PlanePartition(normal, tol=ptol))
     u, v = planebasis(normal)
   else
     @error "varioplane only supported in 2D or 3D"
@@ -42,7 +46,7 @@ function EmpiricalVarioplane(sdata, var₁::Symbol, var₂::Symbol=var₁;
   γs = map(θs) do θ
     dir = DirectionPartition(cos(θ)*u + sin(θ)*v, tol=dtol)
 
-    γ(plane) = EmpiricalVariogram(partition(plane, dir),
+    γ(plane) = EmpiricalVariogram(partition(rng, plane, dir),
                                   var₁, var₂; kwargs...)
     foldxt(merge, Map(γ), collect(planes))
   end
