@@ -2,6 +2,7 @@ using Variography
 using Meshes
 using GeoStatsBase
 using GeoStatsImages
+using Unitful
 using Distances
 using LinearAlgebra
 using CSV, DelimitedFiles
