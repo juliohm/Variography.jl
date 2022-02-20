@@ -46,15 +46,12 @@ See also: [`DirectionalVariogram`](@ref)
 * Hoffimann, J and Zadrozny, B. 2019. [Efficient variography with partition variograms]
   (https://www.sciencedirect.com/science/article/pii/S0098300419302936)
 """
-struct EmpiricalVariogram{D}
+struct EmpiricalVariogram{V,D}
   abscissa::Vector{Float64}
-  ordinate::Vector{Float64}
+  ordinate::Vector{V}
   counts::Vector{Int}
   distance::D
 end
-
-EmpiricalVariogram(abscissa, ordinate, counts, distance) =
-  EmpiricalVariogram{typeof(distance)}(abscissa, ordinate, counts, distance)
 
 function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
                             nlags=20, maxlag=default_maxlag(data),
@@ -104,7 +101,7 @@ function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
 
   # variogram ordinate
   ordinate = @. (ysums / counts) / 2
-  ordinate[counts .== 0] .= 0
+  ordinate[counts .== 0] .= zero(eltype(ordinate))
 
   EmpiricalVariogram(abscissa, ordinate, counts, distance)
 end
@@ -175,18 +172,21 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   𝒯 = values(data)
   𝒫 = domain(data)
 
-  # lag size
-  δh = maxlag / nlags
-
-  # lag sums and counts
-  xsums = zeros(nlags)
-  ysums = zeros(nlags)
-  counts = zeros(Int, nlags)
-
   # collect vectors for variables
   cols = Tables.columns(𝒯)
   Z₁   = Tables.getcolumn(cols, var₁)
   Z₂   = Tables.getcolumn(cols, var₂)
+
+  # lag size
+  δh = maxlag / nlags
+
+  # accumulation type
+  V = typeof((Z₁[1] - Z₂[1]) ⋅ (Z₁[1] - Z₂[1]))
+
+  # lag sums and counts
+  xsums  = zeros(nlags)
+  ysums  = zeros(V, nlags)
+  counts = zeros(Int, nlags)
 
   # loop over all pairs of points
   @inbounds for j in 1:nelements(𝒫)
@@ -225,18 +225,21 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   𝒯 = values(data)
   𝒫 = domain(data)
 
-  # lag size
-  δh = maxlag / nlags
-
-  # lag sums and counts
-  xsums = zeros(nlags)
-  ysums = zeros(nlags)
-  counts = zeros(Int, nlags)
-
   # collect vectors for variables
   cols = Tables.columns(𝒯)
   Z₁   = Tables.getcolumn(cols, var₁)
   Z₂   = Tables.getcolumn(cols, var₂)
+
+  # lag size
+  δh = maxlag / nlags
+
+  # accumulation type
+  V = typeof((Z₁[1] - Z₂[1]) ⋅ (Z₁[1] - Z₂[1]))
+
+  # lag sums and counts
+  xsums  = zeros(nlags)
+  ysums  = zeros(V, nlags)
+  counts = zeros(Int, nlags)
 
   # fast ball search
   ball = MetricBall(maxlag, distance)
