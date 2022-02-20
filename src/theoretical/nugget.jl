@@ -7,8 +7,8 @@
 
 A pure nugget effect variogram with nugget `n`.
 """
-struct NuggetEffect{T} <: Variogram
-  nugget::T
+struct NuggetEffect{V} <: Variogram
+  nugget::V
 end
 
 NuggetEffect(; nugget=1.0) = NuggetEffect(nugget)

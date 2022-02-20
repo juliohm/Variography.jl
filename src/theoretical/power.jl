@@ -7,13 +7,13 @@
 
 A power variogram with scaling `s`, exponent `a` and nugget `n`.
 """
-struct PowerVariogram{T} <: Variogram
-  scaling::T
-  nugget::T
-  exponent::T
+struct PowerVariogram{V,E} <: Variogram
+  scaling::V
+  nugget::V
+  exponent::E
 end
 
-PowerVariogram(; scaling=1.0, nugget=0.0, exponent=1.0) =
+PowerVariogram(; scaling=1.0, nugget=zero(typeof(scaling)), exponent=1.0) =
   PowerVariogram(scaling, nugget, exponent)
 
 function (γ::PowerVariogram)(h)

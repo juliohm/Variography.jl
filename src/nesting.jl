@@ -19,7 +19,7 @@ struct NestedVariogram{CS,GS} <: Variogram
   γs::GS
 
   function NestedVariogram{CS,GS}(cs, γs) where {CS,GS}
-    @assert all(issymmetric.(cs)) "coefficients must be symmetric"
+    @assert all(issymmetric, cs) "coefficients must be symmetric"
     new(cs, γs)
   end
 end

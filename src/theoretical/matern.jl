@@ -10,17 +10,17 @@ A Matérn variogram with range `r`, sill `s` and nugget `n`.
 The parameter `ν` is the order of the Bessel function.
 Optionally, use a custom metric `ball`.
 """
-struct MaternVariogram{T,B} <: Variogram
-  sill::T
-  nugget::T
-  order::T
+struct MaternVariogram{V,O,B} <: Variogram
+  sill::V
+  nugget::V
+  order::O
   ball::B
 end
 
-MaternVariogram(ball; sill=1.0, nugget=0.0, order=1.0) =
+MaternVariogram(ball; sill=1.0, nugget=zero(typeof(sill)), order=1.0) =
   MaternVariogram(sill, nugget, order, ball)
 
-MaternVariogram(; range=1.0, sill=1.0, nugget=0.0, order=1.0) =
+MaternVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill)), order=1.0) =
   MaternVariogram(sill, nugget, order, MetricBall(range))
 
 function (γ::MaternVariogram)(h::T) where {T}

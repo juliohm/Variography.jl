@@ -32,4 +32,13 @@
   γ₂ = fit(Variogram, g, h -> 1/h)
   @test sill(γ₁) > 0
   @test sill(γ₂) > 0
+
+  # unitful types
+  wl = geostatsimage("WalkerLake")
+  TI = asarray(wl, :Z)[1:20,1:20]
+  d = georef((z=TI*u"K",))
+  g = EmpiricalVariogram(d, :z, maxlag=15.)
+  γ = fit(Variogram, g)
+  @test unit(sill(γ)) == u"K^2"
+  @test unit(nugget(γ)) == u"K^2"
 end

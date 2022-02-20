@@ -9,16 +9,16 @@
 A cubic variogram with range `r`, sill `s` and nugget `n`.
 Optionally, use a custom metric `ball`.
 """
-struct CubicVariogram{T,B} <: Variogram
-  sill::T
-  nugget::T
+struct CubicVariogram{V,B} <: Variogram
+  sill::V
+  nugget::V
   ball::B
 end
 
-CubicVariogram(ball; sill=1.0, nugget=0.0) =
+CubicVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
   CubicVariogram(sill, nugget, ball)
 
-CubicVariogram(; range=1.0, sill=1.0, nugget=0.0) =
+CubicVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
   CubicVariogram(sill, nugget, MetricBall(range))
 
 function (γ::CubicVariogram)(h::T) where {T}

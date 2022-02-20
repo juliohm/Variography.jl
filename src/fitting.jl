@@ -77,6 +77,10 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
   y = y[n .> 0]
   n = n[n .> 0]
 
+  # strip units if necessary
+  𝓊 = unit(first(y))
+  y = ustrip.(y)
+
   # auxiliary variables
   xmax, ymax = maximum(x), maximum(y)
 
@@ -102,8 +106,8 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
   err = Optim.minimum(sol)
   p   = Optim.minimizer(sol)
 
-  # optimal variogram
-  vario = V(ball(p[1]), sill=p[2]+p[3], nugget=p[3])
+  # optimal variogram (with units)
+  vario = V(ball(p[1]), sill=(p[2]+p[3])*𝓊, nugget=p[3]*𝓊)
 
   vario, err
 end

@@ -9,16 +9,16 @@
 A sine hole variogram with range `r`, sill `s` and nugget `n`.
 Optionally, use a custom metric `ball`.
 """
-struct SineHoleVariogram{T,B} <: Variogram
-  sill::T
-  nugget::T
+struct SineHoleVariogram{V,B} <: Variogram
+  sill::V
+  nugget::V
   ball::B
 end
 
-SineHoleVariogram(ball; sill=1.0, nugget=0.0) =
+SineHoleVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
   SineHoleVariogram(sill, nugget, ball)
 
-SineHoleVariogram(; range=1.0, sill=1.0, nugget=0.0) =
+SineHoleVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
   SineHoleVariogram(sill, nugget, MetricBall(range))
 
 function (γ::SineHoleVariogram)(h::T) where {T}

@@ -9,16 +9,16 @@
 A pentaspherical variogram with range `r`, sill `s` and nugget `n`.
 Optionally, use a custom metric `ball`.
 """
-struct PentasphericalVariogram{T,B} <: Variogram
-  sill::T
-  nugget::T
+struct PentasphericalVariogram{V,B} <: Variogram
+  sill::V
+  nugget::V
   ball::B
 end
 
-PentasphericalVariogram(ball; sill=1.0, nugget=0.0) =
+PentasphericalVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
   PentasphericalVariogram(sill, nugget, ball)
 
-PentasphericalVariogram(; range=1.0, sill=1.0, nugget=0.0) =
+PentasphericalVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
   PentasphericalVariogram(sill, nugget, MetricBall(range))
 
 function (γ::PentasphericalVariogram)(h::T) where {T}

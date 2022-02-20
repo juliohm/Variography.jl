@@ -9,16 +9,16 @@
 A spherical variogram with range `r`, sill `s` and nugget `n`.
 Optionally, use a custom metric `ball`.
 """
-struct SphericalVariogram{T,B} <: Variogram
-  sill::T
-  nugget::T
+struct SphericalVariogram{V,B} <: Variogram
+  sill::V
+  nugget::V
   ball::B
 end
 
-SphericalVariogram(ball; sill=1.0, nugget=0.0) =
+SphericalVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
   SphericalVariogram(sill, nugget, ball)
 
-SphericalVariogram(; range=1.0, sill=1.0, nugget=0.0) =
+SphericalVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
   SphericalVariogram(sill, nugget, MetricBall(range))
 
 function (γ::SphericalVariogram)(h::T) where {T}

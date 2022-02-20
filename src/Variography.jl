@@ -17,6 +17,7 @@ using Transducers: Map, foldxt
 using LinearAlgebra
 using RecipesBase
 using Setfield
+using Unitful
 using Random
 using Printf
 

@@ -9,16 +9,16 @@
 An exponential variogram with range `r`, sill `s` and nugget `n`.
 Optionally, use a custom metric `ball`.
 """
-struct ExponentialVariogram{T,B} <: Variogram
-  sill::T
-  nugget::T
+struct ExponentialVariogram{V,B} <: Variogram
+  sill::V
+  nugget::V
   ball::B
 end
 
-ExponentialVariogram(ball; sill=1.0, nugget=0.0) =
+ExponentialVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
   ExponentialVariogram(sill, nugget, ball)
 
-ExponentialVariogram(; range=1.0, sill=1.0, nugget=0.0) =
+ExponentialVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
   ExponentialVariogram(sill, nugget, MetricBall(range))
 
 function (γ::ExponentialVariogram)(h)

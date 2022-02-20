@@ -71,6 +71,15 @@
   @test γ(1e-6) > 0
   @test cond(C) < 100.
 
+  # sill and nugget in single precision
+  for G in [GaussianVariogram, SphericalVariogram,
+            ExponentialVariogram, MaternVariogram]
+    γ = G(sill=1.0f0)
+    @test typeof(range(γ)) == Float64
+    @test typeof(sill(γ)) == Float32
+    @test typeof(nugget(γ)) == Float32
+  end
+
   if visualtests
     plt1 = plot()
     for γ ∈ γs
@@ -84,5 +93,18 @@
     @test_reference "data/theoretical.png" plt
 
     @test_reference "data/nugget.png" plot(NuggetEffect(0.1),ylim=(0,1))
+  end
+
+  # unitful stationary types
+  γs = [NuggetEffect(1.0u"K^2"), GaussianVariogram(sill=1.0u"K^2"),
+        ExponentialVariogram(sill=1.0u"K^2"), MaternVariogram(sill=1.0u"K^2"),
+        SphericalVariogram(sill=1.0u"K^2"), SphericalVariogram(sill=1.0u"K^2"),
+        CubicVariogram(sill=1.0u"K^2"), PentasphericalVariogram(sill=1.0u"K^2"),
+        SineHoleVariogram(sill=1.0u"K^2")]
+
+  # unitful non-stationary types
+  γn = [PowerVariogram(scaling=1.0u"K^2")]
+  for γ in γs
+    @test unit(γ(1.0)) == u"K^2"
   end
 end
