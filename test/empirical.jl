@@ -61,7 +61,7 @@
 
   # test variography with compositional data
   data = georef((z=rand(Composition{3}, 100),), rand(2, 100))
-  γ = EmpiricalVariogram(data, :z, maxlag = 1.0, algo=:full)
+  γ = EmpiricalVariogram(data, :z, maxlag=1.0, algo=:full)
   x, y, n = values(γ)
   @test all(≥(0), x)
   @test all(≥(0), y)
