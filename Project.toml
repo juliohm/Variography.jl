@@ -1,7 +1,7 @@
 name = "Variography"
 uuid = "04a0146e-e6df-5636-8d7f-62fa9eb0b20c"
 author = "Júlio Hoffimann <julio.hoffimann@gmail.com>"
-version = "0.14.6"
+version = "0.14.7"
 
 [deps]
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
@@ -23,7 +23,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 [compat]
 Distances = "0.8, 0.9, 0.10"
 GeoStatsBase = "0.26"
-Meshes = "0.22"
+Meshes = "0.22, 0.23"
 NearestNeighbors = "0.4"
 Optim = "1.0, 1.1, 1.2"
 RecipesBase = "1.0"
