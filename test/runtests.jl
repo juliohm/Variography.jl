@@ -7,6 +7,7 @@ using Distances
 using LinearAlgebra
 using CSV, DelimitedFiles
 using Plots; gr(size=(600,400))
+using MeshPlots # TODO: replace by MeshViz
 using ReferenceTests, ImageIO
 using Test, Random
 import CoDa: Composition
