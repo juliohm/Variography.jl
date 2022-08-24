@@ -23,7 +23,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 [compat]
 Distances = "0.8, 0.9, 0.10"
 GeoStatsBase = "0.26"
-Meshes = "0.22, 0.23"
+Meshes = "0.22, 0.23, 0.24"
 NearestNeighbors = "0.4"
 Optim = "1.0, 1.1, 1.2"
 RecipesBase = "1.0"
