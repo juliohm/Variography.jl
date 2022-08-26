@@ -51,14 +51,6 @@
   @test sprint(show, γ) == "EmpiricalVariogram"
   @test sprint(show, MIME"text/plain"(), γ) == "EmpiricalVariogram\n  abscissa: (0.3535533905932738, 13.84261778461484)\n  ordinate: (0.0, 0.08323850196902784)\n  N° pairs: 2790126"
 
-  if visualtests
-    wl = geostatsimage("WalkerLake")
-    TI = asarray(wl, :Z)[1:20,1:20]
-    d = georef((z=TI,))
-    γ = EmpiricalVariogram(d, :z, maxlag=15.)
-    @test_reference "data/empirical.png" plot(γ)
-  end
-
   # test variography with compositional data
   data = georef((z=rand(Composition{3}, 100),), rand(2, 100))
   γ = EmpiricalVariogram(data, :z, maxlag=1.0, algo=:full)

@@ -15,7 +15,6 @@ using SpecialFunctions: gamma, besselk
 using NearestNeighbors: MinkowskiMetric
 using Transducers: Map, foldxt
 using LinearAlgebra
-using RecipesBase
 using Setfield
 using Unitful
 using Random
@@ -35,11 +34,6 @@ include("nesting.jl")
 include("sampling.jl")
 include("pairwise.jl")
 include("fitting.jl")
-
-# plot recipes
-include("plotrecipes/empirical.jl")
-include("plotrecipes/varioplane.jl")
-include("plotrecipes/theoretical.jl")
 
 export
   # empirical variograms

@@ -17,15 +17,6 @@
     γₕ = fit(GaussianVariogram, γhor)
     γᵥ = fit(GaussianVariogram, γver)
     @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
-
-    if visualtests
-      p1 = plot(γhor, showbins=false, label="horizontal")
-      plot!(γver, showbins=false, label="vertical")
-      p2 = plot(γₕ, 0., 50., label="horizontal")
-      plot!(γᵥ, 0., 50., label="vertical")
-      plt = plot(p1, p2, layout=(2,1))
-      @test_reference "data/directional.png" plt
-    end
   end
 
   @testset "Planar" begin
@@ -53,14 +44,5 @@
     γₕ = fit(GaussianVariogram, γhor)
     γᵥ = fit(GaussianVariogram, γver)
     @test range(γₕ) / range(γᵥ) ≈ 3. atol=.1
-
-    if visualtests
-      p1 = plot(γhor, showbins=false, label="horizontal")
-      plot!(γver, showbins=false, label="vertical")
-      p2 = plot(γₕ, 0., 50., label="horizontal")
-      plot!(γᵥ, 0., 50., label="vertical")
-      plt = plot(p1, p2, layout=(2,1))
-      @test_reference "data/planar.png" plt
-    end
   end
 end

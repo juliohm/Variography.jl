@@ -19,14 +19,6 @@
   @test γ isa GaussianVariogram
   @test isapprox(sill(γ), 0.054, atol=1e-3)
 
-  if visualtests
-    plts = map([γ₁,γ₂,γ₃,γ₄]) do γ
-      plot(g, legend=false)
-      plot!(γ, 0., 15.)
-    end
-    @test_reference "data/fitting.png" plot(plts...)
-  end
-
   # make sure convenient methods work
   γ₁ = fit(GaussianVariogram, g, h -> 1/h)
   γ₂ = fit(Variogram, g, h -> 1/h)
