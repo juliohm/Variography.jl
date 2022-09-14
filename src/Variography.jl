@@ -10,8 +10,8 @@ using GeoStatsBase
 using Optim
 using Tables
 using Distances
+using Bessels: gamma, besselk
 using InteractiveUtils: subtypes
-using SpecialFunctions: gamma, besselk
 using NearestNeighbors: MinkowskiMetric
 using Transducers: Map, foldxt
 using LinearAlgebra
