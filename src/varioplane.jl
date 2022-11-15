@@ -30,11 +30,13 @@ function EmpiricalVarioplane(data, var₁::Symbol, var₂::Symbol=var₁;
   # deterministic results
   rng = MersenneTwister(123)
 
+  Dim = embeddim(domain(data))
+
   # basis for variogram plane
-  if embeddim(data) == 2
+  if Dim == 2
     planes = [data]
     u, v = Vec(1.,0.), Vec(0.,1.)
-  elseif embeddim(data) == 3
+  elseif Dim == 3
     planes = partition(rng, data, PlanePartition(normal, tol=ptol))
     u, v = planebasis(normal)
   else
@@ -57,7 +59,7 @@ end
 # ------------
 # IO methods
 # ------------
-function Base.show(io::IO, γ::EmpiricalVarioplane)
+function Base.show(io::IO, ::EmpiricalVarioplane)
   print(io, "EmpiricalVarioplane")
 end
 

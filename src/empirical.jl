@@ -65,7 +65,7 @@ function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
   vars = Tables.columnnames(𝒯)
   
   # sanity checks
-  @assert nelements(data) > 1 "variogram requires at least 2 elements"
+  @assert nelements(𝒟) > 1 "variogram requires at least 2 elements"
   @assert (var₁, var₂) ⊆ vars "invalid variable names"
   @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
   @assert nlags  > 0 "number of lags must be positive"
@@ -73,7 +73,7 @@ function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
 
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
-  isfloat     = coordtype(data) <: AbstractFloat
+  isfloat     = coordtype(𝒟) <: AbstractFloat
   isminkowski = distance isa MinkowskiMetric
 
   # warn users requesting :ball option with invalid parameters
