@@ -16,7 +16,7 @@ For examples of usage, please check the main documentation.
 
 If you have any questions, please [contact our community](https://juliaearth.github.io/GeoStats.jl/stable/about/community.html).
 
-[build-img]: https://img.shields.io/github/workflow/status/JuliaEarth/Variography.jl/CI?style=flat-square
+[build-img]: https://img.shields.io/github/actions/workflow/status/JuliaEarth/Variography.jl/CI.yml?branch=master&style=flat-square"
 [build-url]: https://github.com/JuliaEarth/Variography.jl/actions
 
 [codecov-img]: https://codecov.io/gh/JuliaEarth/Variography.jl/branch/master/graph/badge.svg
