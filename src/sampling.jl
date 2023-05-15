@@ -40,5 +40,5 @@ function _dims(γ::Variogram, g::Geometry)
   s = sides(boundingbox(g))
   α = _spacing(γ, g)
   n = ceil.(Int, s ./ α)
-  replace(n, 0 => 1)
+  ntuple(i -> iszero(n[i]) ? 1 : n[i], length(n))
 end
