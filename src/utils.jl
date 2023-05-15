@@ -11,7 +11,7 @@ convention.
 """
 function spheredir(theta, phi)
   θ, φ = deg2rad(theta), deg2rad(phi)
-  Vec(sin(θ)*cos(φ), sin(θ)*sin(φ), cos(θ))
+  Vec(sin(θ) * cos(φ), sin(θ) * sin(φ), cos(θ))
 end
 
 """
@@ -35,14 +35,14 @@ function planebasis(normal::Vec{3,T}) where {T}
   @assert idx > 0 "invalid normal vector"
 
   # first basis vector (perturb and subtract projection)
-  u = ntuple(i -> i == idx%3 + 1 ? n[i] + one(T) : n[i], 3)
-  l = sum(u[i]*n[i] for i in 1:3)
-  u = ntuple(i -> u[i] - l*n[i], 3)
+  u = ntuple(i -> i == idx % 3 + 1 ? n[i] + one(T) : n[i], 3)
+  l = sum(u[i] * n[i] for i in 1:3)
+  u = ntuple(i -> u[i] - l * n[i], 3)
 
   # second basis vector (cross product)
   nx, ny, nz = n
   ux, uy, uz = u
-  v = (ny*uz - nz*uz, nz*ux - nx*uz, nx*uy - ny*ux)
+  v = (ny * uz - nz * uz, nz * ux - nx * uz, nx * uy - ny * ux)
 
   # normalize output
   u = u ./ sqrt(sum(u[i]^2 for i in 1:3))

@@ -17,8 +17,7 @@ struct MaternVariogram{V,O,B} <: Variogram
   ball::B
 end
 
-MaternVariogram(ball; sill=1.0, nugget=zero(typeof(sill)), order=1.0) =
-  MaternVariogram(sill, nugget, order, ball)
+MaternVariogram(ball; sill=1.0, nugget=zero(typeof(sill)), order=1.0) = MaternVariogram(sill, nugget, order, ball)
 
 MaternVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill)), order=1.0) =
   MaternVariogram(sill, nugget, order, MetricBall(range))
@@ -31,9 +30,9 @@ function (γ::MaternVariogram)(h::T) where {T}
 
   # shift lag by machine precision to
   # avoid explosion at the origin
-  h′ = sqrt(2ν)*(h + eps(T)) / r
-  Β  = besselk(ν, h′)
-  Γ  = gamma(ν)
+  h′ = sqrt(2ν) * (h + eps(T)) / r
+  Β = besselk(ν, h′)
+  Γ = gamma(ν)
 
   (s - n) * (1 - 2^(1 - ν) / Γ * h′^ν * Β) + (h′ > 0) * n
 end

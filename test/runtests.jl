@@ -10,7 +10,7 @@ using Test, Random
 import CoDa: Composition
 
 # environment settings
-datadir = joinpath(@__DIR__,"data")
+datadir = joinpath(@__DIR__, "data")
 
 # list of tests
 testfiles = [

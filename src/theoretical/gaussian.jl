@@ -15,11 +15,9 @@ struct GaussianVariogram{V,B} <: Variogram
   ball::B
 end
 
-GaussianVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
-  GaussianVariogram(sill, nugget, ball)
+GaussianVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) = GaussianVariogram(sill, nugget, ball)
 
-GaussianVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
-  GaussianVariogram(sill, nugget, MetricBall(range))
+GaussianVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) = GaussianVariogram(sill, nugget, MetricBall(range))
 
 function (γ::GaussianVariogram)(h)
   # add small eps to nugget
@@ -27,7 +25,7 @@ function (γ::GaussianVariogram)(h)
   r = radius(γ.ball)
   s = γ.sill
   n = γ.nugget + typeof(s)(1e-6)
-  (s - n) * (1 - exp(-3(h/r)^2)) + (h > 0) * n
+  (s - n) * (1 - exp(-3(h / r)^2)) + (h > 0) * n
 end
 
 isstationary(::Type{<:GaussianVariogram}) = true

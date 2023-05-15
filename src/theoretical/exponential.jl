@@ -15,8 +15,7 @@ struct ExponentialVariogram{V,B} <: Variogram
   ball::B
 end
 
-ExponentialVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
-  ExponentialVariogram(sill, nugget, ball)
+ExponentialVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) = ExponentialVariogram(sill, nugget, ball)
 
 ExponentialVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
   ExponentialVariogram(sill, nugget, MetricBall(range))
@@ -25,7 +24,7 @@ function (γ::ExponentialVariogram)(h)
   r = radius(γ.ball)
   s = γ.sill
   n = γ.nugget
-  (s - n) * (1 - exp(-3(h/r))) + (h > 0) * n
+  (s - n) * (1 - exp(-3(h / r))) + (h > 0) * n
 end
 
 isstationary(::Type{<:ExponentialVariogram}) = true

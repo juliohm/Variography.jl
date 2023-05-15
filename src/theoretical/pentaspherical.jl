@@ -15,8 +15,7 @@ struct PentasphericalVariogram{V,B} <: Variogram
   ball::B
 end
 
-PentasphericalVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
-  PentasphericalVariogram(sill, nugget, ball)
+PentasphericalVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) = PentasphericalVariogram(sill, nugget, ball)
 
 PentasphericalVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
   PentasphericalVariogram(sill, nugget, MetricBall(range))
@@ -28,14 +27,12 @@ function (γ::PentasphericalVariogram)(h::T) where {T}
 
   # constants
   c1 = T(15) / T(8)
-  c2 = T(5)  / T(4)
-  c3 = T(3)  / T(8)
-  s1 = c1*(h/r) - c2*(h/r)^3 + c3*(h/r)^5
+  c2 = T(5) / T(4)
+  c3 = T(3) / T(8)
+  s1 = c1 * (h / r) - c2 * (h / r)^3 + c3 * (h / r)^5
   s2 = T(1)
 
-  (h < r) * (s - n) * s1 +
-  (h ≥ r) * (s - n) * s2 +
-  (h > 0) * n
+  (h < r) * (s - n) * s1 + (h ≥ r) * (s - n) * s2 + (h > 0) * n
 end
 
 isstationary(::Type{<:PentasphericalVariogram}) = true

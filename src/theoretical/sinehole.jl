@@ -15,11 +15,9 @@ struct SineHoleVariogram{V,B} <: Variogram
   ball::B
 end
 
-SineHoleVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
-  SineHoleVariogram(sill, nugget, ball)
+SineHoleVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) = SineHoleVariogram(sill, nugget, ball)
 
-SineHoleVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
-  SineHoleVariogram(sill, nugget, MetricBall(range))
+SineHoleVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) = SineHoleVariogram(sill, nugget, MetricBall(range))
 
 function (γ::SineHoleVariogram)(h::T) where {T}
   r = radius(γ.ball)
@@ -29,9 +27,9 @@ function (γ::SineHoleVariogram)(h::T) where {T}
   # shift lag by machine precision to
   # avoid explosion at the origin
   h′ = h + eps(T)
-  c  = T(π)
+  c = T(π)
 
-  (s - n) * (1 - sin(c*h′/r)/(c*h′/r)) + (h′ > 0) * n
+  (s - n) * (1 - sin(c * h′ / r) / (c * h′ / r)) + (h′ > 0) * n
 end
 
 isstationary(::Type{<:SineHoleVariogram}) = true
