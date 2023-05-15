@@ -15,11 +15,9 @@ struct CubicVariogram{V,B} <: Variogram
   ball::B
 end
 
-CubicVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) =
-  CubicVariogram(sill, nugget, ball)
+CubicVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) = CubicVariogram(sill, nugget, ball)
 
-CubicVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) =
-  CubicVariogram(sill, nugget, MetricBall(range))
+CubicVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) = CubicVariogram(sill, nugget, MetricBall(range))
 
 function (γ::CubicVariogram)(h::T) where {T}
   r = radius(γ.ball)
@@ -28,14 +26,12 @@ function (γ::CubicVariogram)(h::T) where {T}
 
   # constants
   c1 = T(35) / T(4)
-  c2 = T(7)  / T(2)
-  c3 = T(3)  / T(4)
-  s1 = 7*(h/r)^2 - c1*(h/r)^3 + c2*(h/r)^5 - c3*(h/r)^7
+  c2 = T(7) / T(2)
+  c3 = T(3) / T(4)
+  s1 = 7 * (h / r)^2 - c1 * (h / r)^3 + c2 * (h / r)^5 - c3 * (h / r)^7
   s2 = T(1)
 
-  (h < r) * (s - n) * s1 +
-  (h ≥ r) * (s - n) * s2 +
-  (h > 0) * n
+  (h < r) * (s - n) * s1 + (h ≥ r) * (s - n) * s2 + (h > 0) * n
 end
 
 isstationary(::Type{<:CubicVariogram}) = true

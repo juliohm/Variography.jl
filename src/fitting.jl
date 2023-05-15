@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 
 # models that can be fitted currently
-const FITTABLE = filter(isstationary, setdiff(subtypes(Variogram), (NuggetEffect,NestedVariogram)))
+const FITTABLE = filter(isstationary, setdiff(subtypes(Variogram), (NuggetEffect, NestedVariogram)))
 
 """
     VariogramFitAlgo
@@ -36,8 +36,7 @@ using algorithm `algo`. Default algorithm is `WeightedLeastSquares`.
 Alternatively pass the weighting function `weightfun` directly
 to the fitting procedure.
 """
-function fit(V::Type{<:Variogram}, γ::EmpiricalVariogram,
-             algo::VariogramFitAlgo=WeightedLeastSquares())
+function fit(V::Type{<:Variogram}, γ::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
   # dispatch appropriate implementation
   vario, err = fit_impl(V, γ, algo)
 
@@ -54,8 +53,7 @@ return the one with minimum error as defined by the algorithm `algo`.
 Alternatively pass the weighting function `weightfun` directly
 to the fitting procedure.
 """
-function fit(::Type{Variogram}, γ::EmpiricalVariogram,
-             algo::VariogramFitAlgo=WeightedLeastSquares())
+function fit(::Type{Variogram}, γ::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
   # fit each variogram type
   res = [fit_impl(V, γ, algo) for V in FITTABLE]
   γs, es = first.(res), last.(res)
@@ -64,8 +62,7 @@ function fit(::Type{Variogram}, γ::EmpiricalVariogram,
   γs[argmin(es)]
 end
 
-function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
-                  algo::WeightedLeastSquares)
+function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram, algo::WeightedLeastSquares)
   # values of empirical variogram
   x, y, n = values(γ)
 
@@ -90,31 +87,29 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram,
 
   # objective function
   function J(p)
-    g = V(ball(p[1]), sill=p[2]+p[3], nugget=p[3])
-    sum(w[i]*(g(x[i]) - y[i])^2 for i in eachindex(x))
+    g = V(ball(p[1]), sill=p[2] + p[3], nugget=p[3])
+    sum(w[i] * (g(x[i]) - y[i])^2 for i in eachindex(x))
   end
 
   # initial guess
-  pₒ = [xmax/3, 0.95*ymax, 1e-6]
+  pₒ = [xmax / 3, 0.95 * ymax, 1e-6]
 
   # box constraints
-  l  = [0., 0., 0.]
-  u  = [xmax, ymax, ymax]
+  l = [0.0, 0.0, 0.0]
+  u = [xmax, ymax, ymax]
 
   # solve optimization problem
   sol = Optim.optimize(J, l, u, pₒ)
   err = Optim.minimum(sol)
-  p   = Optim.minimizer(sol)
+  p = Optim.minimizer(sol)
 
   # optimal variogram (with units)
-  vario = V(ball(p[1]), sill=(p[2]+p[3])*𝓊, nugget=p[3]*𝓊)
+  vario = V(ball(p[1]), sill=(p[2] + p[3]) * 𝓊, nugget=p[3] * 𝓊)
 
   vario, err
 end
 
 # convenient methods with weighting function as third argument
-fit(V::Type{<:Variogram}, γ::EmpiricalVariogram, weightfun::Function) =
-  fit(V, γ, WeightedLeastSquares(weightfun))
+fit(V::Type{<:Variogram}, γ::EmpiricalVariogram, weightfun::Function) = fit(V, γ, WeightedLeastSquares(weightfun))
 
-fit(V::Type{Variogram}, γ::EmpiricalVariogram, weightfun::Function) =
-  fit(V, γ, WeightedLeastSquares(weightfun))
+fit(V::Type{Variogram}, γ::EmpiricalVariogram, weightfun::Function) = fit(V, γ, WeightedLeastSquares(weightfun))

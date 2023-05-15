@@ -13,8 +13,7 @@ struct PowerVariogram{V,E} <: Variogram
   exponent::E
 end
 
-PowerVariogram(; scaling=1.0, nugget=zero(typeof(scaling)), exponent=1.0) =
-  PowerVariogram(scaling, nugget, exponent)
+PowerVariogram(; scaling=1.0, nugget=zero(typeof(scaling)), exponent=1.0) = PowerVariogram(scaling, nugget, exponent)
 
 function (γ::PowerVariogram)(h)
   s = γ.scaling

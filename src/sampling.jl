@@ -11,21 +11,29 @@ function _sample(γ::Variogram, g::Geometry)
 end
 
 function _sample(γ::Variogram, s::Segment)
-  s′ = Segment(s(.05), s(.95))
-  n  = _dims(γ, s)
+  s′ = Segment(s(0.05), s(0.95))
+  n = _dims(γ, s)
   sample(s′, RegularSampling(n...))
 end
 
 function _sample(γ::Variogram, q::Quadrangle)
-  q′ = Quadrangle(q(.05,.05), q(.95,.05), q(.95,.95), q(.05,.95))
-  n  = _dims(γ, q)
+  q′ = Quadrangle(q(0.05, 0.05), q(0.95, 0.05), q(0.95, 0.95), q(0.05, 0.95))
+  n = _dims(γ, q)
   sample(q′, RegularSampling(n...))
 end
 
 function _sample(γ::Variogram, h::Hexahedron)
-  h′ = Hexahedron(h(.05,.05,.05), h(.95,.05,.05), h(.95,.95,.05), h(.05,.95,.05),
-                  h(.05,.05,.95), h(.95,.05,.95), h(.95,.95,.95), h(.05,.95,.95))
-  n  = _dims(γ, h)
+  h′ = Hexahedron(
+    h(0.05, 0.05, 0.05),
+    h(0.95, 0.05, 0.05),
+    h(0.95, 0.95, 0.05),
+    h(0.05, 0.95, 0.05),
+    h(0.05, 0.05, 0.95),
+    h(0.95, 0.05, 0.95),
+    h(0.95, 0.95, 0.95),
+    h(0.05, 0.95, 0.95)
+  )
+  n = _dims(γ, h)
   sample(h′, RegularSampling(n...))
 end
 

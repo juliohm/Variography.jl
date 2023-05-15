@@ -5,7 +5,7 @@
   @test issymmetric(Γ)
 
   𝒟 = PointSet(Matrix(1.0f0I, 3, 3))
-  Γ_f = Variography.pairwise(GaussianVariogram(range=1f0, sill=1f0, nugget=0f0), 𝒟)
+  Γ_f = Variography.pairwise(GaussianVariogram(range=1.0f0, sill=1.0f0, nugget=0.0f0), 𝒟)
   @test eltype(Γ_f) == Float32
   @test issymmetric(Γ_f)
 

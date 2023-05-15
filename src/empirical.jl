@@ -53,9 +53,15 @@ struct EmpiricalVariogram{V,D}
   distance::D
 end
 
-function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
-                            nlags=20, maxlag=default_maxlag(data),
-                            distance=Euclidean(), algo=:ball)
+function EmpiricalVariogram(
+  data,
+  var₁::Symbol,
+  var₂::Symbol=var₁;
+  nlags=20,
+  maxlag=default_maxlag(data),
+  distance=Euclidean(),
+  algo=:ball
+)
 
   # retrieve table and domain
   𝒯 = values(data)
@@ -63,17 +69,17 @@ function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
 
   # retrieve the column names of data values
   vars = Tables.columnnames(𝒯)
-  
+
   # sanity checks
   @assert nelements(𝒟) > 1 "variogram requires at least 2 elements"
   @assert (var₁, var₂) ⊆ vars "invalid variable names"
   @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
-  @assert nlags  > 0 "number of lags must be positive"
+  @assert nlags > 0 "number of lags must be positive"
   @assert maxlag > 0 "maximum lag distance must be positive"
 
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
-  isfloat     = coordtype(𝒟) <: AbstractFloat
+  isfloat = coordtype(𝒟) <: AbstractFloat
   isminkowski = distance isa MinkowskiMetric
 
   # warn users requesting :ball option with invalid parameters
@@ -93,7 +99,7 @@ function EmpiricalVariogram(data, var₁::Symbol, var₂::Symbol=var₁;
 
   # bin (or lag) size
   δh = maxlag / nlags
-  lags = range(δh/2, stop=maxlag - δh/2, length=nlags)
+  lags = range(δh / 2, stop=maxlag - δh / 2, length=nlags)
 
   # variogram abscissa
   abscissa = @. xsums / counts
@@ -136,8 +142,8 @@ function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {
   nβ = γβ.counts
 
   n = nα + nβ
-  x = @. (xα*nα + xβ*nβ) / n
-  y = @. (yα*nα + yβ*nβ) / n
+  x = @. (xα * nα + xβ * nβ) / n
+  y = @. (yα * nα + yβ * nβ) / n
 
   # adjust empty bins
   x[n .== 0] .= xα[n .== 0]
@@ -160,7 +166,7 @@ function Base.show(io::IO, ::MIME"text/plain", γ::EmpiricalVariogram)
   println(io, γ)
   println(io, "  abscissa: ", extrema(γ.abscissa))
   println(io, "  ordinate: ", extrema(γ.ordinate))
-  print(  io, "  N° pairs: ", sum(γ.counts))
+  print(io, "  N° pairs: ", sum(γ.counts))
 end
 
 # ------------------------
@@ -174,8 +180,8 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
 
   # collect vectors for variables
   cols = Tables.columns(𝒯)
-  Z₁   = Tables.getcolumn(cols, var₁)
-  Z₂   = Tables.getcolumn(cols, var₂)
+  Z₁ = Tables.getcolumn(cols, var₁)
+  Z₂ = Tables.getcolumn(cols, var₂)
 
   # lag size
   δh = maxlag / nlags
@@ -184,17 +190,17 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   V = typeof((Z₁[1] - Z₂[1]) ⋅ (Z₁[1] - Z₂[1]))
 
   # lag sums and counts
-  xsums  = zeros(nlags)
-  ysums  = zeros(V, nlags)
+  xsums = zeros(nlags)
+  ysums = zeros(V, nlags)
   counts = zeros(Int, nlags)
 
   # loop over all pairs of points
   @inbounds for j in 1:nelements(𝒫)
-    pⱼ  = 𝒫[j]
+    pⱼ = 𝒫[j]
     z₁ⱼ = Z₁[j]
     z₂ⱼ = Z₂[j]
-    for i in j+1:nelements(𝒫)
-      pᵢ  = 𝒫[i]
+    for i in (j + 1):nelements(𝒫)
+      pᵢ = 𝒫[i]
       z₁ᵢ = Z₁[i]
       z₂ᵢ = Z₂[i]
 
@@ -227,8 +233,8 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
 
   # collect vectors for variables
   cols = Tables.columns(𝒯)
-  Z₁   = Tables.getcolumn(cols, var₁)
-  Z₂   = Tables.getcolumn(cols, var₂)
+  Z₁ = Tables.getcolumn(cols, var₁)
+  Z₂ = Tables.getcolumn(cols, var₂)
 
   # lag size
   δh = maxlag / nlags
@@ -237,8 +243,8 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   V = typeof((Z₁[1] - Z₂[1]) ⋅ (Z₁[1] - Z₂[1]))
 
   # lag sums and counts
-  xsums  = zeros(nlags)
-  ysums  = zeros(V, nlags)
+  xsums = zeros(nlags)
+  ysums = zeros(V, nlags)
   counts = zeros(Int, nlags)
 
   # fast ball search
@@ -247,12 +253,12 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
 
   # loop over points inside ball
   @inbounds for j in 1:nelements(𝒫)
-    pⱼ  = 𝒫[j]
+    pⱼ = 𝒫[j]
     z₁ⱼ = Z₁[j]
     z₂ⱼ = Z₂[j]
     for i in search(pⱼ, searcher)
       i ≤ j && continue # avoid double counting
-      pᵢ  = 𝒫[i]
+      pᵢ = 𝒫[i]
       z₁ᵢ = Z₁[i]
       z₂ᵢ = Z₂[i]
 
