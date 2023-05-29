@@ -55,6 +55,7 @@ export
   PowerVariogram,
   SineHoleVariogram,
   NestedVariogram,
+  CircularVariogram,
   sill,
   nugget,
   isstationary,
