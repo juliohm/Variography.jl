@@ -13,7 +13,8 @@
     SphericalVariogram(range=2.0),
     CubicVariogram(),
     PentasphericalVariogram(),
-    SineHoleVariogram()
+    SineHoleVariogram(),
+    CircularVariogram()
   ]
 
   # non-stationary variogram models
@@ -103,7 +104,8 @@
     SphericalVariogram(sill=1.0u"K^2"),
     CubicVariogram(sill=1.0u"K^2"),
     PentasphericalVariogram(sill=1.0u"K^2"),
-    SineHoleVariogram(sill=1.0u"K^2")
+    SineHoleVariogram(sill=1.0u"K^2"),
+    CircularVariogram(sill=1.0u"K^2")
   ]
 
   # unitful non-stationary types

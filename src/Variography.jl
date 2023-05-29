@@ -54,6 +54,7 @@ export
   PentasphericalVariogram,
   PowerVariogram,
   SineHoleVariogram,
+  CircularVariogram,
   NestedVariogram,
   sill,
   nugget,
