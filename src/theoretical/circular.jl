@@ -20,8 +20,8 @@ function (γ::CircularVariogram)(h)
   r = radius(γ.ball)
   s = γ.sill
   n = γ.nugget
-  y = h ≤ r ? 1 - (2 / π) * acos(h / r) + (2h / (π * r)) * sqrt(1 - (h^2 / r^2)) : one(h)
-  (s - n) * y + (h > 0) * n
+  v = h ≤ r ? 1 - (2 / π) * acos(h / r) + (2h / (π * r)) * sqrt(1 - (h^2 / r^2)) : one(h)
+  (s - n) * v + (h > zero(h)) * n
 end
 
 isstationary(::Type{<:CircularVariogram}) = true
