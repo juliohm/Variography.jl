@@ -13,8 +13,7 @@ end
 
 CircularVariogram(ball; sill=1.0, nugget=zero(typeof(sill))) = CircularVariogram(sill, nugget, ball)
 
-CircularVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) = 
-  CircularVariogram(sill, nugget, MetricBall(range))
+CircularVariogram(; range=1.0, sill=1.0, nugget=zero(typeof(sill))) = CircularVariogram(sill, nugget, MetricBall(range))
 
 function (γ::CircularVariogram)(h)
   r = radius(γ.ball)
