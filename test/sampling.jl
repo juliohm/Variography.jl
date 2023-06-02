@@ -40,7 +40,7 @@
 
   # deterministic samples in arbitrary geometries
   γ = GaussianVariogram()
-  G = PolyArea((0.0, 0.0), (0.5, -1.5), (1.0, 0.0), (1.5, 0.5), (1.0, 1.0), (0.5, 1.5), (-0.5, 0.5), (0.0, 0.0))
+  G = PolyArea((0.0, 0.0), (0.5, -1.5), (1.0, 0.0), (1.5, 0.5), (1.0, 1.0), (0.5, 1.5), (-0.5, 0.5))
   ps1 = Variography._sample(γ, G)
   ps2 = Variography._sample(γ, G)
   @test ps1 == ps2
