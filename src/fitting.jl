@@ -28,7 +28,7 @@ WeightedLeastSquares() = WeightedLeastSquares(nothing)
 
 """
     fit(V, γ, [algo])
-    fit(V, γ, [weigthfun])
+    fit(V, γ, [weightfun])
 
 Fit theoretical variogram type `V` to empirical variogram `γ`
 using algorithm `algo`. Default algorithm is `WeightedLeastSquares`.
