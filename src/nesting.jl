@@ -48,9 +48,20 @@ isisotropic(g::NestedVariogram) = all(isisotropic, g.γs)
 
 Return the individual structures of a (possibly nested)
 variogram as a tuple. The structures are the total nugget
-`cₒ`, and the coefficients (or contributions) `cs` for the
-remaining non-trivial structures `γs` after normalization
+`cₒ`, and the coefficients (or contributions) `c[i]` for the
+remaining non-trivial structures `g[i]` after normalization
 (i.e. sill=1, nugget=0).
+
+## Examples
+
+```julia
+γ₁ = GaussianVariogram(nugget=1, sill=2)
+γ₂ = SphericalVariogram(nugget=2, sill=3)
+
+γ = 2γ₁ + 3γ₂
+
+cₒ, c, g = structures(γ)
+```
 """
 function structures(γ::Variogram)
   cₒ = nugget(γ)
