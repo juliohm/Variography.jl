@@ -48,9 +48,9 @@ struct EmpiricalVariogram{V,D,E}
 end
 
 function EmpiricalVariogram(
-  data,
-  var₁::Symbol,
-  var₂::Symbol=var₁;
+  data::Data,
+  var₁,
+  var₂=var₁;
   nlags=20,
   maxlag=0.1diagonal(boundingbox(data)),
   distance=Euclidean(),
@@ -62,12 +62,8 @@ function EmpiricalVariogram(
   𝒯 = values(data)
   𝒟 = domain(data)
 
-  # retrieve the column names of data values
-  vars = Tables.columnnames(𝒯)
-
   # sanity checks
   @assert nelements(𝒟) > 1 "variogram requires at least 2 elements"
-  @assert (var₁, var₂) ⊆ vars "invalid variable names"
   @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
   @assert nlags > 0 "number of lags must be positive"
   @assert maxlag > 0 "maximum lag distance must be positive"

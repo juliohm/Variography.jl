@@ -12,7 +12,7 @@ abstract type VariogramEstimator end
 include("estimators/matheron.jl")
 
 """
-    AccumAlgorithm
+    VariogramAccumAlgo
 
 An accumulation algorithm for estimating [`EmpiricalVariogram`](@ref).
 """

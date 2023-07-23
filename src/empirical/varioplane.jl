@@ -21,9 +21,9 @@ struct EmpiricalVarioplane{T,V}
 end
 
 function EmpiricalVarioplane(
-  data,
-  var₁::Symbol,
-  var₂::Symbol=var₁;
+  data::Data,
+  var₁,
+  var₂=var₁;
   normal=spheredir(0, 0),
   nangs=50,
   ptol=0.5,
