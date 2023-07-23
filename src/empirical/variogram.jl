@@ -103,19 +103,7 @@ function EmpiricalVariogram(
   𝒮 = georef(𝒯, 𝒫)
 
   # accumulate data with chosen algorithm
-  xsums, ysums, counts = accumulate(𝒮, var₁, var₂, estim, algo)
-
-  # bin (or lag) size
-  δh = maxlag / nlags
-  lags = range(δh / 2, stop=maxlag - δh / 2, length=nlags)
-
-  # variogram abscissa
-  abscissa = @. xsums / counts
-  abscissa[counts .== 0] .= lags[counts .== 0]
-
-  # variogram ordinate
-  ordinate = @. (ysums / counts) / 2
-  ordinate[counts .== 0] .= zero(eltype(ordinate))
+  abscissa, ordinate, counts = accumulate(𝒮, var₁, var₂, estim, algo)
 
   EmpiricalVariogram(abscissa, ordinate, counts, distance, estim)
 end

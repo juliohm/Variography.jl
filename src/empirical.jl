@@ -96,7 +96,18 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
     end
   end
 
-  xsums, ysums, counts
+  # bin (or lag) size
+  lags = range(δh / 2, stop=maxlag - δh / 2, length=nlags)
+
+  # variogram abscissa
+  abscissa = @. xsums / counts
+  abscissa[counts .== 0] .= lags[counts .== 0]
+
+  # variogram ordinate
+  ordinate = @. (ysums / counts) / 2
+  ordinate[counts .== 0] .= zero(eltype(ordinate))
+
+  abscissa, ordinate, counts
 end
 
 include("algorithms/fullsearch.jl")
