@@ -58,9 +58,9 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   V = result_type(estim, z₁, z₂)
 
   # lag sums and counts
-  xsums = zeros(nlags)
-  ysums = zeros(V, nlags)
-  counts = zeros(Int, nlags)
+  Σx = zeros(nlags)
+  Σy = zeros(V, nlags)
+  ns = zeros(Int, nlags)
 
   # loop over points inside ball
   @inbounds for j in 1:nelements(𝒫)
@@ -89,9 +89,9 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
       lag == 0 && @warn "duplicate coordinates found, consider using `UniqueCoords`"
 
       if 0 < lag ≤ nlags && !ismissing(v)
-        xsums[lag] += h
-        ysums[lag] += v
-        counts[lag] += 1
+        Σx[lag] += h
+        Σy[lag] += v
+        ns[lag] += 1
       end
     end
   end
@@ -100,17 +100,17 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   lags = range(δh / 2, stop=maxlag - δh / 2, length=nlags)
 
   # ordinate function
-  ordfun(ysum, count) = normsum(estim, ysum, count)
+  ordfun(Σy, n) = normsum(estim, Σy, n)
 
   # variogram abscissa
-  abscissa = @. xsums / counts
-  abscissa[counts .== 0] .= lags[counts .== 0]
+  abscissa = @. Σx / ns
+  abscissa[ns .== 0] .= lags[ns .== 0]
 
   # variogram ordinate
-  ordinate = @. ordfun(ysums, counts)
-  ordinate[counts .== 0] .= zero(eltype(ordinate))
+  ordinate = @. ordfun(Σy, ns)
+  ordinate[ns .== 0] .= zero(eltype(ordinate))
 
-  abscissa, ordinate, counts
+  abscissa, ordinate, ns
 end
 
 include("algorithms/fullsearch.jl")
