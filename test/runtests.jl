@@ -13,13 +13,7 @@ import CoDa: Composition
 datadir = joinpath(@__DIR__, "data")
 
 # list of tests
-testfiles = [
-  "empirical.jl",
-  "theoretical.jl",
-  "nesting.jl",
-  "fitting.jl",
-  "sampling.jl",
-]
+testfiles = ["empirical.jl", "theoretical.jl", "nesting.jl", "fitting.jl", "sampling.jl"]
 
 @testset "Variography.jl" begin
   for testfile in testfiles
