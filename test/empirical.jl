@@ -18,7 +18,7 @@
 
     # empirical variogram on integer coordinates
     sdata = georef((z=ones(3),), Matrix(1I, 3, 3))
-    γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2, algo=:full)
+    γ = EmpiricalVariogram(sdata, :z, nlags=2, maxlag=2, algorithm=:full)
     x, y, n = values(γ)
     @test x ≈ [1 / 2, √2]
     @test y[2] == 0.0
@@ -36,13 +36,13 @@
     # accumulation algorithms give the same result
     Random.seed!(2021)
     sdata = georef((z=rand(1000),), rand(3, 1000))
-    γ₁ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algo=:full)
-    γ₂ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algo=:ball)
+    γ₁ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algorithm=:full)
+    γ₂ = EmpiricalVariogram(sdata, :z, maxlag=0.01, algorithm=:ball)
     @test isequal(values(γ₁), values(γ₂))
 
     # custom distance is recorded
     sdata = georef((z=rand(1000),), rand(2, 1000))
-    γ = EmpiricalVariogram(sdata, :z, distance=Haversine(6371.0), algo=:full)
+    γ = EmpiricalVariogram(sdata, :z, distance=Haversine(6371.0), algorithm=:full)
     @test distance(γ) == Haversine(6371.0)
 
     # print methods
@@ -55,7 +55,7 @@
 
     # test variography with compositional data
     data = georef((z=rand(Composition{3}, 100),), rand(2, 100))
-    γ = EmpiricalVariogram(data, :z, maxlag=1.0, algo=:full)
+    γ = EmpiricalVariogram(data, :z, maxlag=1.0, algorithm=:full)
     x, y, n = values(γ)
     @test all(≥(0), x)
     @test all(≥(0), y)

@@ -14,8 +14,12 @@ geospatial `data`.
   * nlags     - number of lags (default to `20`)
   * maxlag    - maximum lag (default to 1/10 of maximum lag of data)
   * distance  - custom distance function (default to `Euclidean` distance)
-  * estimator - variogram estimator (default to `Matheron` estimator)
-  * algo      - accumulation algorithm (default to `:ball`)
+  * estimator - variogram estimator (default to `:matheron` estimator)
+  * algorithm - accumulation algorithm (default to `:ball`)
+
+Available estimators:
+
+  * `:matheron` - simple estimator based on squared differences
 
 Available algorithms:
 
@@ -54,8 +58,8 @@ function EmpiricalVariogram(
   nlags=20,
   maxlag=0.1diagonal(boundingbox(data)),
   distance=Euclidean(),
-  estimator=Matheron(),
-  algo=:ball
+  estimator=:matheron,
+  algorithm=:ball
 )
 
   # retrieve table and domain
@@ -69,7 +73,8 @@ function EmpiricalVariogram(
   @assert nelem > 1 "variogram requires at least 2 elements"
   @assert nlags > 0 "number of lags must be positive"
   @assert maxlag > 0 "maximum lag distance must be positive"
-  @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
+  @assert estimator ∈ (:matheron,) "invalid variogram estimator"
+  @assert algorithm ∈ (:full, :ball) "invalid accumulation algorithm"
 
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
@@ -77,22 +82,22 @@ function EmpiricalVariogram(
   isminkowski = distance isa MinkowskiMetric
 
   # warn users requesting :ball option with invalid parameters
-  (algo == :ball && !isfloat) && @warn ":ball algorithm requires floating point coordinates"
-  (algo == :ball && !isminkowski) && @warn ":ball algorithm requires Minkowski metric"
-
-  # empirical variograms are defined on point sets
-  𝒫 = PointSet([centroid(𝒟, i) for i in 1:nelem])
-  𝒮 = georef(𝒯, 𝒫)
+  (algorithm == :ball && !isfloat) && @warn ":ball algorithm requires floating point coordinates"
+  (algorithm == :ball && !isminkowski) && @warn ":ball algorithm requires Minkowski metric"
 
   # choose accumulation algorithm
-  accumalgo = if algo == :ball && isfloat && isminkowski
+  algo = if algorithm == :ball && isfloat && isminkowski
     BallSearchAccum(maxlag, nlags, distance, estimator)
   else
     FullSearchAccum(maxlag, nlags, distance, estimator)
   end
 
+  # empirical variograms are defined on point sets
+  𝒫 = PointSet([centroid(𝒟, i) for i in 1:nelem])
+  𝒮 = georef(𝒯, 𝒫)
+
   # accumulate data with chosen algorithm
-  xsums, ysums, counts = accumulate(𝒮, var₁, var₂, accumalgo)
+  xsums, ysums, counts = accumulate(𝒮, var₁, var₂, algo)
 
   # bin (or lag) size
   δh = maxlag / nlags
