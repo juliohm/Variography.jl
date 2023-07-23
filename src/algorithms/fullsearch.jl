@@ -3,16 +3,15 @@
 # ------------------------------------------------------------------
 
 """
-    FullSearchAccum(maxlag, nlags, distance, estimator)
+    FullSearchAccum(maxlag, nlags, distance)
 
 Accumulate pairs of points in geospatial data with
 exhaustive (or full) search.
 """
-struct FullSearchAccum{T,D,E} <: VariogramAccumAlgo
-  maxlag::T
+struct FullSearchAccum{T,D} <: VariogramAccumAlgo
   nlags::Int
+  maxlag::T
   distance::D
-  estimator::E
 end
 
 neighfun(pset, ::FullSearchAccum) = j -> (j + 1):nelements(pset)

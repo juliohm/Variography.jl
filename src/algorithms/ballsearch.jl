@@ -3,16 +3,15 @@
 # ------------------------------------------------------------------
 
 """
-    BallSearchAccum(maxlag, nlags, distance, estimator)
+    BallSearchAccum(maxlag, nlags, distance)
 
 Accumulate pairs of points in geospatial data with
 nearest neighbors inside metric ball.
 """
-struct BallSearchAccum{T,D,E} <: VariogramAccumAlgo
-  maxlag::T
+struct BallSearchAccum{T,D} <: VariogramAccumAlgo
   nlags::Int
+  maxlag::T
   distance::D
-  estimator::E
 end
 
 function neighfun(pset, algo::BallSearchAccum)

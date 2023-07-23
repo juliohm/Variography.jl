@@ -76,20 +76,26 @@ function EmpiricalVariogram(
   @assert estimator ∈ (:matheron,) "invalid variogram estimator"
   @assert algorithm ∈ (:full, :ball) "invalid accumulation algorithm"
 
+  estim = if estimator == :matheron
+    MatheronEstimator()
+  else
+    throw(AssertionError("invalid branch reached"))
+  end
+
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
   isfloat = coordtype(𝒟) <: AbstractFloat
   isminkowski = distance isa MinkowskiMetric
 
   # warn users requesting :ball option with invalid parameters
-  (algorithm == :ball && !isfloat) && @warn ":ball algorithm requires floating point coordinates"
-  (algorithm == :ball && !isminkowski) && @warn ":ball algorithm requires Minkowski metric"
+  (algorithm == :ball && !isfloat) && @warn ":ball algorithm requires floating point coordinates, falling back to :full"
+  (algorithm == :ball && !isminkowski) && @warn ":ball algorithm requires Minkowski metric, falling back to :full"
 
   # choose accumulation algorithm
   algo = if algorithm == :ball && isfloat && isminkowski
-    BallSearchAccum(maxlag, nlags, distance, estimator)
+    BallSearchAccum(nlags, maxlag, distance)
   else
-    FullSearchAccum(maxlag, nlags, distance, estimator)
+    FullSearchAccum(nlags, maxlag, distance)
   end
 
   # empirical variograms are defined on point sets
@@ -97,7 +103,7 @@ function EmpiricalVariogram(
   𝒮 = georef(𝒯, 𝒫)
 
   # accumulate data with chosen algorithm
-  xsums, ysums, counts = accumulate(𝒮, var₁, var₂, algo)
+  xsums, ysums, counts = accumulate(𝒮, var₁, var₂, estim, algo)
 
   # bin (or lag) size
   δh = maxlag / nlags
@@ -111,7 +117,7 @@ function EmpiricalVariogram(
   ordinate = @. (ysums / counts) / 2
   ordinate[counts .== 0] .= zero(eltype(ordinate))
 
-  EmpiricalVariogram(abscissa, ordinate, counts, distance, estimator)
+  EmpiricalVariogram(abscissa, ordinate, counts, distance, estim)
 end
 
 """

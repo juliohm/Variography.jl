@@ -25,12 +25,11 @@ abstract type VariogramAccumAlgo end
 Accumulate pairs of points in `data` for variables
 `var₁` and `var₂` with accumulation algorithm `algo`.
 """
-function accumulate(data, var₁, var₂, algo::VariogramAccumAlgo)
+function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::VariogramAccumAlgo)
   # retrieve algorithm parameters
-  maxlag = algo.maxlag
   nlags = algo.nlags
+  maxlag = algo.maxlag
   distance = algo.distance
-  estimator = algo.estimator
 
   # retrieve table and point set
   𝒯 = values(data)

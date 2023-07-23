@@ -3,8 +3,8 @@
 # ------------------------------------------------------------------
 
 """
-    Matheron()
+    MatheronEstimator()
 
 Matheron's variogram estimator.
 """
-struct Matheron <: VariogramEstimator end
+struct MatheronEstimator <: VariogramEstimator end

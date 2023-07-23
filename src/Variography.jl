@@ -68,7 +68,7 @@ export
 
   # variogram estimators
   VariogramEstimator,
-  Matheron,
+  MatheronEstimator,
 
   # accumulation algorithms
   VariogramAccumAlgo,
