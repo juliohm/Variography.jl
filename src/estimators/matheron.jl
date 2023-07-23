@@ -10,3 +10,5 @@ Matheron's variogram estimator.
 struct MatheronEstimator <: VariogramEstimator end
 
 formula(::MatheronEstimator, z₁ᵢ, z₁ⱼ, z₂ᵢ, z₂ⱼ) = (z₁ᵢ - z₁ⱼ) ⋅ (z₂ᵢ - z₂ⱼ)
+
+normsum(::MatheronEstimator, Σy, n) = Σy / (2n)

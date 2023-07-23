@@ -99,12 +99,15 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   # bin (or lag) size
   lags = range(δh / 2, stop=maxlag - δh / 2, length=nlags)
 
+  # ordinate function
+  ordfun(ysum, count) = normsum(estim, ysum, count)
+
   # variogram abscissa
   abscissa = @. xsums / counts
   abscissa[counts .== 0] .= lags[counts .== 0]
 
   # variogram ordinate
-  ordinate = @. (ysums / counts) / 2
+  ordinate = @. ordfun(ysums, counts)
   ordinate[counts .== 0] .= zero(eltype(ordinate))
 
   abscissa, ordinate, counts
