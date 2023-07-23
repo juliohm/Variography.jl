@@ -42,6 +42,11 @@ export
   DirectionalVariogram,
   PlanarVariogram,
   distance,
+  estimator,
+
+  # variogram estimators
+  VariogramEstimator,
+  Matheron,
 
   # theoretical variograms
   Variogram,

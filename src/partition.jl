@@ -5,7 +5,7 @@
 """
     EmpiricalVariogram(partition, var₁, var₂=var₁; [parameters])
 
-Compute the empirical (cross-)variogram of the spatial `partition` for
+Compute the empirical (cross-)variogram of the geospatial `partition` for
 variables `var₁` and `var₂` as described in Hoffimann & Zadrozny 2019.
 
 Optionally, forward `parameters` for the underlying [`EmpiricalVariogram`](@ref).
@@ -16,10 +16,10 @@ Optionally, forward `parameters` for the underlying [`EmpiricalVariogram`](@ref)
   (https://www.sciencedirect.com/science/article/pii/S0098300419302936)
 """
 function EmpiricalVariogram(partition::Partition, var₁::Symbol, var₂::Symbol=var₁; kwargs...)
-  # retain spatial data with at least 2 points
-  filtered = Iterators.filter(d -> nitems(d) > 1, partition)
+  # retain geospatial data with at least 2 points
+  filtered = Iterators.filter(d -> nelements(domain(d)) > 1, partition)
 
-  @assert !isempty(filtered) "invalid partition of spatial data"
+  @assert !isempty(filtered) "invalid partition of geospatial data"
 
   γ(d) = EmpiricalVariogram(d, var₁, var₂; kwargs...)
   foldxt(merge, Map(γ), collect(filtered))

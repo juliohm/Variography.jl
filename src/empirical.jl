@@ -6,18 +6,19 @@
 default_maxlag(data) = 0.1diagonal(boundingbox(data))
 
 """
-    EmpiricalVariogram(data, var₁, var₂=var₁; [optional parameters])
+    EmpiricalVariogram(data, var₁, var₂=var₁; [parameters])
 
 Computes the empirical (a.k.a. experimental) omnidirectional
 (cross-)variogram for variables `var₁` and `var₂` stored in
-spatial `data`.
+geospatial `data`.
 
 ## Parameters
 
-  * nlags    - number of lags (default to `20`)
-  * maxlag   - maximum lag (default to half of maximum lag of data)
-  * distance - custom distance function (default to `Euclidean` distance)
-  * algo     - accumulation algorithm (default to `:ball`)
+  * nlags     - number of lags (default to `20`)
+  * maxlag    - maximum lag (default to 1/10 of maximum lag of data)
+  * distance  - custom distance function (default to `Euclidean` distance)
+  * estimator - variogram estimator (default to `Matheron` estimator)
+  * algo      - accumulation algorithm (default to `:ball`)
 
 Available algorithms:
 
@@ -29,28 +30,24 @@ The `:ball` algorithm is considerably faster when the
 maximum lag is much smaller than the bounding box of
 the data.
 
-The function [`values`](@ref) can be used to retrieve
-the abscissa, ordinate and bin count of an empirical
-variogram:
-
-```julia
-julia> x, y, n = values(γ)
-```
-
-See also: [`DirectionalVariogram`](@ref)
+See also: [`DirectionalVariogram`](@ref), [`PlanarVariogram`](@ref),
+[`EmpiricalVarioplane`](@ref).
 
 ## References
 
 * Chilès, JP and Delfiner, P. 2012. [Geostatistics: Modeling Spatial Uncertainty]
   (https://onlinelibrary.wiley.com/doi/book/10.1002/9781118136188)
+* Webster, R and Oliver, MA. 2007. [Geostatistics for Environmental Scientists]
+  (https://onlinelibrary.wiley.com/doi/book/10.1002/9780470517277)
 * Hoffimann, J and Zadrozny, B. 2019. [Efficient variography with partition variograms]
   (https://www.sciencedirect.com/science/article/pii/S0098300419302936)
 """
-struct EmpiricalVariogram{V,D}
+struct EmpiricalVariogram{V,D,E}
   abscissa::Vector{Float64}
   ordinate::Vector{V}
   counts::Vector{Int}
   distance::D
+  estimator::E
 end
 
 function EmpiricalVariogram(
@@ -60,6 +57,7 @@ function EmpiricalVariogram(
   nlags=20,
   maxlag=default_maxlag(data),
   distance=Euclidean(),
+  estimator=Matheron(),
   algo=:ball
 )
 
@@ -92,9 +90,9 @@ function EmpiricalVariogram(
 
   # choose accumulation algorithm
   if algo == :ball && isfloat && isminkowski
-    xsums, ysums, counts = ball_search_accum(𝒮, var₁, var₂, maxlag, nlags, distance)
+    xsums, ysums, counts = ball_search_accum(𝒮, var₁, var₂, maxlag, nlags, distance, estimator)
   else
-    xsums, ysums, counts = full_search_accum(𝒮, var₁, var₂, maxlag, nlags, distance)
+    xsums, ysums, counts = full_search_accum(𝒮, var₁, var₂, maxlag, nlags, distance, estimator)
   end
 
   # bin (or lag) size
@@ -109,7 +107,7 @@ function EmpiricalVariogram(
   ordinate = @. (ysums / counts) / 2
   ordinate[counts .== 0] .= zero(eltype(ordinate))
 
-  EmpiricalVariogram(abscissa, ordinate, counts, distance)
+  EmpiricalVariogram(abscissa, ordinate, counts, distance, estimator)
 end
 
 """
@@ -123,9 +121,16 @@ Base.values(γ::EmpiricalVariogram) = γ.abscissa, γ.ordinate, γ.counts
 """
     distance(γ)
 
-Retun the distance used to compute the empirical variogram `γ`.
+Return the distance used to compute the empirical variogram `γ`.
 """
 distance(γ::EmpiricalVariogram) = γ.distance
+
+"""
+    estimator(γ)
+
+Return the estimator used to compute the empirical variogram `γ`.
+"""
+estimator(γ::EmpiricalVariogram) = γ.estimator
 
 """
     merge(γα, γβ)
@@ -133,13 +138,16 @@ distance(γ::EmpiricalVariogram) = γ.distance
 Merge the empirical variogram `γα` with the empirical variogram `γβ`
 assuming that both variograms have the same number of lags.
 """
-function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {D}
+function merge(γα::EmpiricalVariogram{V,D,E}, γβ::EmpiricalVariogram{V,D,E}) where {V,D,E}
   xα = γα.abscissa
   xβ = γβ.abscissa
   yα = γα.ordinate
   yβ = γβ.ordinate
   nα = γα.counts
   nβ = γβ.counts
+
+  d = γα.distance
+  e = γα.estimator
 
   n = nα + nβ
   x = @. (xα * nα + xβ * nβ) / n
@@ -149,9 +157,7 @@ function merge(γα::EmpiricalVariogram{D}, γβ::EmpiricalVariogram{D}) where {
   x[n .== 0] .= xα[n .== 0]
   y[n .== 0] .= 0
 
-  d = γα.distance
-
-  EmpiricalVariogram(x, y, n, d)
+  EmpiricalVariogram(x, y, n, d, e)
 end
 
 # -----------
@@ -169,11 +175,24 @@ function Base.show(io::IO, ::MIME"text/plain", γ::EmpiricalVariogram)
   print(io, "  N° pairs: ", sum(γ.counts))
 end
 
+# ---------------------
+# VARIOGRAM ESTIMATORS
+# ---------------------
+
+"""
+    VariogramEstimator
+
+A (robust) estimator of [`EmpiricalVariogram`](@ref).
+"""
+abstract type VariogramEstimator end
+
+include("estimators/matheron.jl")
+
 # ------------------------
 # ACCUMULATION ALGORITHMS
 # ------------------------
 
-function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
+function full_search_accum(data, var₁, var₂, maxlag, nlags, distance, estimator)
   # retrieve table and point set
   𝒯 = values(data)
   𝒫 = domain(data)
@@ -204,7 +223,7 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
       z₁ᵢ = Z₁[i]
       z₂ᵢ = Z₂[i]
 
-      # evaluate spatial lag
+      # evaluate geospatial lag
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
       h > maxlag && continue # early exit if out of range
 
@@ -226,7 +245,7 @@ function full_search_accum(data, var₁, var₂, maxlag, nlags, distance)
   xsums, ysums, counts
 end
 
-function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
+function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance, estimator)
   # retrieve table and point set
   𝒯 = values(data)
   𝒫 = domain(data)
@@ -262,7 +281,7 @@ function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance)
       z₁ᵢ = Z₁[i]
       z₂ᵢ = Z₂[i]
 
-      # evaluate spatial lag
+      # evaluate geospatial lag
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
 
       # evaluate (cross-)variance
