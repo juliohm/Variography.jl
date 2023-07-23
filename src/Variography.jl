@@ -66,16 +66,6 @@ export
   pairwise,
   pairwise!,
 
-  # variogram estimators
-  VariogramEstimator,
-  MatheronEstimator,
-
-  # accumulation algorithms
-  VariogramAccumAlgo,
-  FullSearchAccum,
-  BallSearchAccum,
-  accumulate,
-
   # fitting algorithms
   VariogramFitAlgo,
   WeightedLeastSquares

@@ -53,7 +53,7 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   exit = exitfun(algo)
 
   # accumulation type
-  V = typeof((z₁[1] - z₂[1]) ⋅ (z₁[1] - z₂[1]))
+  V = result_type(estim, z₁, z₂)
 
   # lag sums and counts
   xsums = zeros(nlags)
@@ -80,7 +80,7 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
       exit(h) && continue
 
       # evaluate (cross-)variance
-      v = (z₁ᵢ - z₁ⱼ) ⋅ (z₂ᵢ - z₂ⱼ)
+      v = formula(estim, z₁ᵢ, z₁ⱼ, z₂ᵢ, z₂ⱼ)
 
       # bin (or lag) where to accumulate result
       lag = ceil(Int, h / δh)
