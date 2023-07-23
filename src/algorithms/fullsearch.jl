@@ -14,7 +14,7 @@ struct FullSearchAccum{T,D} <: VariogramAccumAlgo
   distance::D
 end
 
-neighfun(pset, ::FullSearchAccum) = j -> (j + 1):nelements(pset)
+neighfun(::FullSearchAccum, pset) = j -> (j + 1):nelements(pset)
 
 skipfun(::FullSearchAccum) = (i, j) -> false
 

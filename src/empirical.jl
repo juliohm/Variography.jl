@@ -44,7 +44,7 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   z₂ = Tables.getcolumn(cols, var₂)
 
   # neighbors function
-  neighbors = neighfun(𝒫, algo)
+  neighbors = neighfun(algo, 𝒫)
 
   # skip condition
   skip = skipfun(algo)
