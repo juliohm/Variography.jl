@@ -35,6 +35,10 @@ include("sampling.jl")
 include("pairwise.jl")
 include("fitting.jl")
 
+# temporary fix for ⋅ with missing values
+# https://github.com/JuliaLang/julia/issues/40743
+⋅(::Missing, ::Missing) = missing
+
 export
   # empirical variograms
   EmpiricalVariogram,
