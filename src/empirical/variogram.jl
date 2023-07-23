@@ -62,11 +62,14 @@ function EmpiricalVariogram(
   𝒯 = values(data)
   𝒟 = domain(data)
 
+  # retrieve number of elements
+  nelem = nelements(𝒟)
+
   # sanity checks
-  @assert nelements(𝒟) > 1 "variogram requires at least 2 elements"
-  @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
+  @assert nelem > 1 "variogram requires at least 2 elements"
   @assert nlags > 0 "number of lags must be positive"
   @assert maxlag > 0 "maximum lag distance must be positive"
+  @assert algo ∈ (:full, :ball) "invalid accumulation algorithm"
 
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
@@ -78,7 +81,7 @@ function EmpiricalVariogram(
   (algo == :ball && !isminkowski) && @warn ":ball algorithm requires Minkowski metric"
 
   # empirical variograms are defined on point sets
-  𝒫 = PointSet([centroid(𝒟, i) for i in 1:nelements(𝒟)])
+  𝒫 = PointSet([centroid(𝒟, i) for i in 1:nelem])
   𝒮 = georef(𝒯, 𝒫)
 
   # choose accumulation algorithm
