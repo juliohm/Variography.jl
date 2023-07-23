@@ -31,29 +31,29 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   maxlag = algo.maxlag
   distance = algo.distance
 
-  # retrieve table and point set
+  # compute lag size
+  δh = maxlag / nlags
+
+  # table and point set
   𝒯 = values(data)
   𝒫 = domain(data)
 
-  # retrieve neighbors function
+  # vectors for variables
+  cols = Tables.columns(𝒯)
+  z₁ = Tables.getcolumn(cols, var₁)
+  z₂ = Tables.getcolumn(cols, var₂)
+
+  # neighbors function
   neighbors = neighfun(𝒫, algo)
 
-  # retrieve skip condition
+  # skip condition
   skip = skipfun(algo)
 
-  # retrieve early exit condition
+  # early exit condition
   exit = exitfun(algo)
 
-  # collect vectors for variables
-  cols = Tables.columns(𝒯)
-  Z₁ = Tables.getcolumn(cols, var₁)
-  Z₂ = Tables.getcolumn(cols, var₂)
-
-  # lag size
-  δh = maxlag / nlags
-
   # accumulation type
-  V = typeof((Z₁[1] - Z₂[1]) ⋅ (Z₁[1] - Z₂[1]))
+  V = typeof((z₁[1] - z₂[1]) ⋅ (z₁[1] - z₂[1]))
 
   # lag sums and counts
   xsums = zeros(nlags)
@@ -63,15 +63,15 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   # loop over points inside ball
   @inbounds for j in 1:nelements(𝒫)
     pⱼ = 𝒫[j]
-    z₁ⱼ = Z₁[j]
-    z₂ⱼ = Z₂[j]
+    z₁ⱼ = z₁[j]
+    z₂ⱼ = z₂[j]
     for i in neighbors(j)
       # skip to avoid double counting
       skip(i, j) && continue
 
       pᵢ = 𝒫[i]
-      z₁ᵢ = Z₁[i]
-      z₂ᵢ = Z₂[i]
+      z₁ᵢ = z₁[i]
+      z₂ᵢ = z₂[i]
 
       # evaluate geospatial lag
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
