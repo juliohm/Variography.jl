@@ -9,6 +9,8 @@ A (robust) estimator of [`EmpiricalVariogram`](@ref).
 """
 abstract type VariogramEstimator end
 
+result_type(estim::VariogramEstimator, z₁, z₂) = typeof(formula(estim, z₁[1], z₁[2], z₂[1], z₂[2]))
+
 include("estimators/matheron.jl")
 
 """
