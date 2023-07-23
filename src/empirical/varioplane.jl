@@ -61,9 +61,10 @@ function EmpiricalVarioplane(
   EmpiricalVarioplane(collect(θs), γs)
 end
 
-# ------------
-# IO methods
-# ------------
+# -----------
+# IO METHODS
+# -----------
+
 function Base.show(io::IO, ::EmpiricalVarioplane)
   print(io, "EmpiricalVarioplane")
 end

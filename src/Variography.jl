@@ -23,20 +23,17 @@ using Printf
 import Base: merge, +, *
 import GeoStatsBase: fit
 import Meshes: isisotropic
-import LinearAlgebra: ⋅
 
 include("utils.jl")
 include("empirical.jl")
-include("partition.jl")
-include("varioplane.jl")
 include("theoretical.jl")
 include("nesting.jl")
-include("sampling.jl")
-include("pairwise.jl")
 include("fitting.jl")
+include("sampling.jl")
 
 # temporary fix for ⋅ with missing values
 # https://github.com/JuliaLang/julia/issues/40743
+import LinearAlgebra: ⋅
 ⋅(::Missing, ::Missing) = missing
 
 export
@@ -47,10 +44,6 @@ export
   PlanarVariogram,
   distance,
   estimator,
-
-  # variogram estimators
-  VariogramEstimator,
-  Matheron,
 
   # theoretical variograms
   Variogram,
@@ -73,7 +66,14 @@ export
   pairwise,
   pairwise!,
 
-  # fitting methods
+  # variogram estimators
+  VariogramEstimator,
+  Matheron,
+
+  # accumulation algorithms
+  VariogramAccumAlgo,
+
+  # fitting algorithms
   VariogramFitAlgo,
   WeightedLeastSquares
 
