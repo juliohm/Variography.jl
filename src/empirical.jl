@@ -103,14 +103,14 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   ordfun(Σy, n) = normsum(estim, Σy, n)
 
   # variogram abscissa
-  abscissa = @. Σx / ns
-  abscissa[ns .== 0] .= lags[ns .== 0]
+  xs = @. Σx / ns
+  xs[ns .== 0] .= lags[ns .== 0]
 
   # variogram ordinate
-  ordinate = @. ordfun(Σy, ns)
-  ordinate[ns .== 0] .= zero(eltype(ordinate))
+  ys = @. ordfun(Σy, ns)
+  ys[ns .== 0] .= zero(eltype(ys))
 
-  abscissa, ordinate, ns
+  xs, ys, ns
 end
 
 include("algorithms/fullsearch.jl")
