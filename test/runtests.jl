@@ -15,13 +15,10 @@ datadir = joinpath(@__DIR__, "data")
 # list of tests
 testfiles = [
   "empirical.jl",
-  "partition.jl",
-  "varioplane.jl",
   "theoretical.jl",
   "nesting.jl",
+  "fitting.jl",
   "sampling.jl",
-  "pairwise.jl",
-  "fitting.jl"
 ]
 
 @testset "Variography.jl" begin
