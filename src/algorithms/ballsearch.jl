@@ -2,7 +2,26 @@
 # Licensed under the MIT License. See LICENSE in the project root.
 # ------------------------------------------------------------------
 
-function ball_search_accum(data, var₁, var₂, maxlag, nlags, distance, estimator)
+"""
+    BallSearchAccum(maxlag, nlags, distance, estimator)
+
+Accumulate pairs of points in geospatial data with
+nearest neighbors inside metric ball.
+"""
+struct BallSearchAccum{T,D,E} <: VariogramAccumAlgo
+  maxlag::T
+  nlags::Int
+  distance::D
+  estimator::E
+end
+
+function accumulate(data, var₁, var₂, algo::BallSearchAccum)
+  # retrieve algorithm parameters
+  maxlag = algo.maxlag
+  nlags = algo.nlags
+  distance = algo.distance
+  estimator = algo.estimator
+
   # retrieve table and point set
   𝒯 = values(data)
   𝒫 = domain(data)

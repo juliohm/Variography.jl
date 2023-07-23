@@ -18,6 +18,14 @@ An accumulation algorithm for estimating [`EmpiricalVariogram`](@ref).
 """
 abstract type VariogramAccumAlgo end
 
+"""
+    accumulate(data, var₁, var₂, algo)
+
+Accumulate pairs of points in `data` for variables
+`var₁` and `var₂` with accumulation algorithm `algo`.
+"""
+function accumulate end
+
 include("algorithms/fullsearch.jl")
 include("algorithms/ballsearch.jl")
 

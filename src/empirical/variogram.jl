@@ -86,11 +86,14 @@ function EmpiricalVariogram(
   𝒮 = georef(𝒯, 𝒫)
 
   # choose accumulation algorithm
-  if algo == :ball && isfloat && isminkowski
-    xsums, ysums, counts = ball_search_accum(𝒮, var₁, var₂, maxlag, nlags, distance, estimator)
+  accumalgo = if algo == :ball && isfloat && isminkowski
+    BallSearchAccum(maxlag, nlags, distance, estimator)
   else
-    xsums, ysums, counts = full_search_accum(𝒮, var₁, var₂, maxlag, nlags, distance, estimator)
+    FullSearchAccum(maxlag, nlags, distance, estimator)
   end
+
+  # accumulate data with chosen algorithm
+  xsums, ysums, counts = accumulate(𝒮, var₁, var₂, accumalgo)
 
   # bin (or lag) size
   δh = maxlag / nlags

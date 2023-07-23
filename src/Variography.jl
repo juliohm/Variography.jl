@@ -72,6 +72,9 @@ export
 
   # accumulation algorithms
   VariogramAccumAlgo,
+  FullSearchAccum,
+  BallSearchAccum,
+  accumulate,
 
   # fitting algorithms
   VariogramFitAlgo,
