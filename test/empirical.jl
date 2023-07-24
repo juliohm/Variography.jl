@@ -70,8 +70,8 @@
 
     # Matheron's vs Cressie's estimator
     data = geostatsimage("Gaussian30x10")
-    γ₁ = EmpiricalVariogram(data, :Z, maxlag=50., estimator=:matheron)
-    γ₂ = EmpiricalVariogram(data, :Z, maxlag=50., estimator=:cressie)
+    γ₁ = EmpiricalVariogram(data, :Z, maxlag=50.0, estimator=:matheron)
+    γ₂ = EmpiricalVariogram(data, :Z, maxlag=50.0, estimator=:cressie)
     x₁, y₁, n₁ = values(γ₁)
     x₂, y₂, n₂ = values(γ₂)
     @test x₁ == x₂
