@@ -67,6 +67,16 @@
     x, y, n = values(γ)
     @test all(≥(0), x)
     @test y == fill(0.0 * u"K^2", 20)
+
+    # Matheron's vs Cressie's estimator
+    data = geostatsimage("Gaussian30x10")
+    γ₁ = EmpiricalVariogram(data, :Z, maxlag=50., estimator=:matheron)
+    γ₂ = EmpiricalVariogram(data, :Z, maxlag=50., estimator=:cressie)
+    x₁, y₁, n₁ = values(γ₁)
+    x₂, y₂, n₂ = values(γ₂)
+    @test x₁ == x₂
+    @test all(isapprox.(y₁, y₂, atol=0.1))
+    @test n₁ == n₂
   end
 
   @testset "Varioplane" begin

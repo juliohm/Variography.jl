@@ -73,14 +73,11 @@ function EmpiricalVariogram(
   @assert nelem > 1 "variogram requires at least 2 elements"
   @assert nlags > 0 "number of lags must be positive"
   @assert maxlag > 0 "maximum lag distance must be positive"
-  @assert estimator ∈ (:matheron,) "invalid variogram estimator"
+  @assert estimator ∈ (:matheron, :cressie) "invalid variogram estimator"
   @assert algorithm ∈ (:full, :ball) "invalid accumulation algorithm"
 
-  estim = if estimator == :matheron
-    MatheronEstimator()
-  else
-    throw(AssertionError("invalid branch reached"))
-  end
+  # choose variogram estimator
+  estim = estimator == :matheron ? MatheronEstimator() : CressieEstimator()
 
   # ball search with NearestNeighbors.jl requires AbstractFloat and MinkowskiMetric
   # https://github.com/KristofferC/NearestNeighbors.jl/issues/13
