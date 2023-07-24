@@ -23,10 +23,11 @@ Algorithm for accumulating pairs of points in
 abstract type VariogramAccumAlgo end
 
 """
-    accumulate(data, var₁, var₂, algo)
+    accumulate(data, var₁, var₂, estim, algo)
 
 Accumulate pairs of points in `data` for variables
-`var₁` and `var₂` with accumulation algorithm `algo`.
+`var₁` and `var₂` with variogram estimator `estim`
+and accumulation algorithm `algo`.
 """
 function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::VariogramAccumAlgo)
   # retrieve algorithm parameters
