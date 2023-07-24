@@ -144,12 +144,17 @@ function merge(γα::EmpiricalVariogram{V,D,E}, γβ::EmpiricalVariogram{V,D,E})
   nα = γα.counts
   nβ = γβ.counts
 
+  # copy distance and estimator
   d = γα.distance
   e = γα.estimator
 
+  # merge function for estimator
+  mergefun(yα, nα, yβ, nβ) = combine(e, yα, nα, yβ, nβ)
+
+  # merge coordinates and bin counts
   n = nα + nβ
   x = @. (xα * nα + xβ * nβ) / n
-  y = @. (yα * nα + yβ * nβ) / n
+  y = @. mergefun(yα, nα, yβ, nβ)
 
   # adjust empty bins
   x[n .== 0] .= xα[n .== 0]
