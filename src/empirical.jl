@@ -47,15 +47,6 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
   z₁ = Tables.getcolumn(cols, var₁)
   z₂ = Tables.getcolumn(cols, var₂)
 
-  # neighbors function
-  neighbors = neighfun(algo, 𝒫)
-
-  # skip condition
-  skip = skipfun(algo)
-
-  # early exit condition
-  exit = exitfun(algo)
-
   # accumulation type
   V = result_type(estim, z₁, z₂)
 
@@ -69,9 +60,9 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
     pⱼ = 𝒫[j]
     z₁ⱼ = z₁[j]
     z₂ⱼ = z₂[j]
-    for i in neighbors(j)
+    for i in _neighbors(algo, 𝒫, j)
       # skip to avoid double counting
-      skip(i, j) && continue
+      _skip(algo, i, j) && continue
 
       pᵢ = 𝒫[i]
       z₁ᵢ = z₁[i]
@@ -81,7 +72,7 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
       h = evaluate(distance, coordinates(pᵢ), coordinates(pⱼ))
 
       # early exit if out of range
-      exit(h) && continue
+      _exit(algo, h) && continue
 
       # evaluate (cross-)variance
       v = formula(estim, z₁ᵢ, z₁ⱼ, z₂ᵢ, z₂ⱼ)

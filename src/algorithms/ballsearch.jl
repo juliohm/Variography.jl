@@ -14,12 +14,12 @@ struct BallSearchAccum{T,D} <: VariogramAccumAlgo
   distance::D
 end
 
-function neighfun(algo::BallSearchAccum, pset)
+function _neighbors(algo::BallSearchAccum, pset, j)
   ball = MetricBall(algo.maxlag, algo.distance)
   searcher = BallSearch(pset, ball)
-  j -> @inbounds(search(pset[j], searcher))
+  @inbounds(search(pset[j], searcher))
 end
 
-skipfun(::BallSearchAccum) = (i, j) -> i ≤ j
+_skip(::BallSearchAccum, i, j) = i ≤ j
 
-exitfun(::BallSearchAccum) = h -> false
+_exit(::BallSearchAccum, h) = false

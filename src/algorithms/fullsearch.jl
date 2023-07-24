@@ -14,8 +14,8 @@ struct FullSearchAccum{T,D} <: VariogramAccumAlgo
   distance::D
 end
 
-neighfun(::FullSearchAccum, pset) = j -> (j + 1):nelements(pset)
+_neighbors(::FullSearchAccum, pset, j) = (j + 1):nelements(pset)
 
-skipfun(::FullSearchAccum) = (i, j) -> false
+_skip(::FullSearchAccum, i, j) = false
 
-exitfun(algo::FullSearchAccum) = h -> h > algo.maxlag
+_exit(algo::FullSearchAccum, h) = h > algo.maxlag
