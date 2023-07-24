@@ -16,11 +16,11 @@ struct CressieEstimator <: VariogramEstimator end
 
 function k(n)
   a, b, c = 0.457, 0.494, 0.045
-  2*n*n*(n*(n*a + b) + c)
+  2 * n * n * (n * (n * a + b) + c)
 end
 
-formula(::CressieEstimator, z₁ᵢ, z₁ⱼ, z₂ᵢ, z₂ⱼ) = ((z₁ᵢ - z₁ⱼ) ⋅ (z₂ᵢ - z₂ⱼ)) ^ (1 / 4)
+formula(::CressieEstimator, z₁ᵢ, z₁ⱼ, z₂ᵢ, z₂ⱼ) = ((z₁ᵢ - z₁ⱼ) ⋅ (z₂ᵢ - z₂ⱼ))^(1 / 4)
 
-normsum(::CressieEstimator, Σy, n) = Σy ^ 4 / k(n)
+normsum(::CressieEstimator, Σy, n) = Σy^4 / k(n)
 
-combine(::CressieEstimator, yα, nα, yβ, nβ) = ((yα * k(nα)) ^ (1 / 4) + (yβ * k(nβ)) ^ (1 / 4)) ^ 4 / k(nα + nβ)
+combine(::CressieEstimator, yα, nα, yβ, nβ) = ((yα * k(nα))^(1 / 4) + (yβ * k(nβ))^(1 / 4))^4 / k(nα + nβ)
