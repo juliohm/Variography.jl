@@ -20,6 +20,7 @@ geospatial `data`.
 Available estimators:
 
   * `:matheron` - simple estimator based on squared differences
+  * `:cressie`  - robust estimator based on 4th power of differences
 
 Available algorithms:
 
@@ -131,7 +132,8 @@ estimator(γ::EmpiricalVariogram) = γ.estimator
     merge(γα, γβ)
 
 Merge the empirical variogram `γα` with the empirical variogram `γβ`
-assuming that both variograms have the same number of lags.
+assuming that both variograms have the same number of lags, distance
+and estimator.
 """
 function merge(γα::EmpiricalVariogram{V,D,E}, γβ::EmpiricalVariogram{V,D,E}) where {V,D,E}
   xα = γα.abscissa
