@@ -1,13 +1,13 @@
 @testset "Sampling" begin
   γ = GaussianVariogram()
   seg = Segment((0.0, 0.0), (1.0, 1.0))
-  ps = Variography._sample(γ, seg)
+  ps = Variography._sample(γ, seg) |> collect
   @test all(p -> Point(0.0, 0.0) ⪯ p ⪯ Point(1.0, 1.0), ps)
   @test length(ps) == 3
 
   γ = GaussianVariogram()
   quad = Quadrangle((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
-  ps = Variography._sample(γ, quad)
+  ps = Variography._sample(γ, quad) |> collect
   @test all(p -> Point(0.0, 0.0) ⪯ p ⪯ Point(1.0, 1.0), ps)
   @test length(ps) == 3 * 3
 
@@ -22,7 +22,7 @@
     (1.0, 1.0, 1.0),
     (0.0, 1.0, 1.0)
   )
-  ps = Variography._sample(γ, hex)
+  ps = Variography._sample(γ, hex) |> collect
   @test all(p -> Point(0.0, 0.0, 0.0) ⪯ p ⪯ Point(1.0, 1.0, 1.0), ps)
   @test length(ps) == 3 * 3 * 3
 

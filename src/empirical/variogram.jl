@@ -30,7 +30,7 @@ Available algorithms:
 All implemented algorithms produce the exact same result.
 The `:ball` algorithm is considerably faster when the
 maximum lag is much smaller than the bounding box of
-the data.
+the domain of the data.
 
 See also: [`DirectionalVariogram`](@ref), [`PlanarVariogram`](@ref),
 [`EmpiricalVarioplane`](@ref).
@@ -57,7 +57,7 @@ function EmpiricalVariogram(
   var₁,
   var₂=var₁;
   nlags=20,
-  maxlag=0.1diagonal(boundingbox(data)),
+  maxlag=0.1diagonal(boundingbox(domain(data))),
   distance=Euclidean(),
   estimator=:matheron,
   algorithm=:ball
