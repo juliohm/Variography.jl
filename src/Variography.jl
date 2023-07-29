@@ -63,8 +63,6 @@ export
   isstationary,
   isisotropic,
   structures,
-  pairwise,
-  pairwise!,
 
   # fitting algorithms
   VariogramFitAlgo,
