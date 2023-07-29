@@ -44,7 +44,7 @@ function EmpiricalVarioplane(
     u, v = Vec(1.0, 0.0), Vec(0.0, 1.0)
   elseif Dim == 3
     planes = partition(rng, data, PlanePartition(normal, tol=ptol))
-    u, v = planebasis(normal)
+    u, v = householderbasis(normal)
   else
     @error "varioplane only supported in 2D or 3D"
   end
