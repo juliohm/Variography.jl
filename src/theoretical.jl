@@ -49,7 +49,7 @@ end
 Evaluate the variogram at geometry `U` and point `v`.
 """
 function (γ::Variogram)(U::Geometry, v::Point)
-  us = _sample(γ, U)
+  us = variosample(γ, U)
   mean(γ(u, v) for u in us)
 end
 
@@ -66,8 +66,8 @@ Evaluate the variogram at point `u` and geometry `V`.
 Evaluate the variogram at geometries `U` and `V`.
 """
 function (γ::Variogram)(U::Geometry, V::Geometry)
-  us = _sample(γ, U)
-  vs = _sample(γ, V)
+  us = variosample(γ, U)
+  vs = variosample(γ, V)
   mean(γ(u, v) for u in us, v in vs)
 end
 
@@ -109,10 +109,10 @@ function pairwise!(Γ, γ::Variogram, domain)
   n = length(domain)
   @inbounds for j in 1:n
     vⱼ = domain[j]
-    sⱼ = _sample(γ, vⱼ)
+    sⱼ = variosample(γ, vⱼ)
     for i in (j + 1):n
       vᵢ = domain[i]
-      sᵢ = _sample(γ, vᵢ)
+      sᵢ = variosample(γ, vᵢ)
       Γ[i, j] = mean(γ(pᵢ, pⱼ) for pᵢ in sᵢ, pⱼ in sⱼ)
     end
     Γ[j, j] = mean(γ(pⱼ, pⱼ) for pⱼ in sⱼ, pⱼ in sⱼ)
@@ -143,10 +143,10 @@ function pairwise!(Γ, γ::Variogram, domain₁, domain₂)
   n = length(domain₂)
   @inbounds for j in 1:n
     vⱼ = domain₂[j]
-    sⱼ = _sample(γ, vⱼ)
+    sⱼ = variosample(γ, vⱼ)
     for i in 1:m
       vᵢ = domain₁[i]
-      sᵢ = _sample(γ, vᵢ)
+      sᵢ = variosample(γ, vᵢ)
       Γ[i, j] = mean(γ(pᵢ, pⱼ) for pᵢ in sᵢ, pⱼ in sⱼ)
     end
   end

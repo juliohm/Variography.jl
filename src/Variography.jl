@@ -63,6 +63,7 @@ export
   isstationary,
   isisotropic,
   structures,
+  variosample,
 
   # fitting algorithms
   VariogramFitAlgo,
