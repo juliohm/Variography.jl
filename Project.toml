@@ -1,7 +1,7 @@
 name = "Variography"
 uuid = "04a0146e-e6df-5636-8d7f-62fa9eb0b20c"
 author = "Júlio Hoffimann <julio.hoffimann@gmail.com>"
-version = "0.17.4"
+version = "0.17.5"
 
 [deps]
 Bessels = "0e736298-9ec6-45e8-9647-e4fc86a2fe38"
