@@ -44,8 +44,8 @@ function accumulate(data, var₁, var₂, estim::VariogramEstimator, algo::Vario
 
   # vectors for variables
   cols = Tables.columns(𝒯)
-  z₁ = Tables.getcolumn(cols, var₁)
-  z₂ = Tables.getcolumn(cols, var₂)
+  z₁ = Tables.getcolumn(cols, Symbol(var₁))
+  z₂ = Tables.getcolumn(cols, Symbol(var₂))
 
   # neighbors function
   neighbors = neighfun(algo, 𝒫)

@@ -77,6 +77,14 @@
     @test x₁ == x₂
     @test all(isapprox.(y₁, y₂, atol=0.1))
     @test n₁ == n₂
+
+    # specify variables as strings
+    data = geostatsimage("Gaussian30x10")
+    γ = EmpiricalVariogram(data, "Z", maxlag=50.0)
+    x, y, n = values(γ)
+    @test all(≥(0), x)
+    @test all(>(0.8), y[11:end])
+    @test all(≥(0), n)
   end
 
   @testset "Varioplane" begin
