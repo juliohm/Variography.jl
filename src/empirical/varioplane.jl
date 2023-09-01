@@ -21,7 +21,7 @@ struct EmpiricalVarioplane{T,V}
 end
 
 function EmpiricalVarioplane(
-  data::Data,
+  data::AbstractGeoTable,
   var₁,
   var₂=var₁;
   normal=spheredir(0, 0),

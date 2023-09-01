@@ -53,7 +53,7 @@ struct EmpiricalVariogram{V,D,E}
 end
 
 function EmpiricalVariogram(
-  data::Data,
+  data::AbstractGeoTable,
   var₁,
   var₂=var₁;
   nlags=20,

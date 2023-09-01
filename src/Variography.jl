@@ -5,6 +5,7 @@
 module Variography
 
 using Meshes
+using GeoTables
 using GeoStatsBase
 
 using Optim
