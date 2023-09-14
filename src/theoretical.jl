@@ -192,15 +192,15 @@ function Base.show(io::IO, ::MIME"text/plain", γ::Variogram)
     if val isa MetricBall
       if isisotropic(val)
         r = first(radii(val))
-        push!(params, "  └─range ⇨ $r")
+        push!(params, "└─range: $r")
       else
         r = Tuple(radii(val))
-        push!(params, "  └─ranges ⇨ $r")
+        push!(params, "└─ranges: $r")
       end
       m = nameof(typeof(metric(val)))
-      push!(params, "  └─metric ⇨ $m")
+      push!(params, "└─metric: $m")
     else
-      push!(params, "  └─$fn ⇨ $val")
+      push!(params, "└─$(fn): $val")
     end
   end
   println(O, header)
