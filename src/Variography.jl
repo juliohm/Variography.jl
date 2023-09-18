@@ -6,7 +6,6 @@ module Variography
 
 using Meshes
 using GeoTables
-using GeoStatsBase
 
 using Optim
 using Tables
@@ -16,13 +15,13 @@ using InteractiveUtils: subtypes
 using NearestNeighbors: MinkowskiMetric
 using Transducers: Map, foldxt
 using LinearAlgebra
+using Statistics
 using Setfield
 using Unitful
 using Random
 using Printf
 
 import Base: merge, +, *
-import GeoStatsBase: fit
 import Meshes: isisotropic
 
 include("utils.jl")

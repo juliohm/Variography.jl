@@ -111,8 +111,8 @@
     sdata = georef((z=img,))
     γhor = DirectionalVariogram((1.0, 0.0), sdata, :z, maxlag=50.0)
     γver = DirectionalVariogram((0.0, 1.0), sdata, :z, maxlag=50.0)
-    γₕ = fit(GaussianVariogram, γhor)
-    γᵥ = fit(GaussianVariogram, γver)
+    γₕ = Variography.fit(GaussianVariogram, γhor)
+    γᵥ = Variography.fit(GaussianVariogram, γver)
     @test range(γₕ) / range(γᵥ) ≈ 3.0 atol = 0.1
   end
 
@@ -138,8 +138,8 @@
     # planar variogram and known anisotropy ratio
     γhor = PlanarVariogram((0.0, 1.0), sdata, :z, maxlag=50.0)
     γver = PlanarVariogram((1.0, 0.0), sdata, :z, maxlag=50.0)
-    γₕ = fit(GaussianVariogram, γhor)
-    γᵥ = fit(GaussianVariogram, γver)
+    γₕ = Variography.fit(GaussianVariogram, γhor)
+    γᵥ = Variography.fit(GaussianVariogram, γver)
     @test range(γₕ) / range(γᵥ) ≈ 3.0 atol = 0.1
   end
 end
