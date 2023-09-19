@@ -23,6 +23,7 @@ using Printf
 
 import Base: merge, +, *
 import Meshes: isisotropic
+import StatsAPI: fit
 
 include("utils.jl")
 include("empirical.jl")
@@ -58,6 +59,7 @@ export
   SineHoleVariogram,
   CircularVariogram,
   NestedVariogram,
+  fit,
   sill,
   nugget,
   isstationary,
