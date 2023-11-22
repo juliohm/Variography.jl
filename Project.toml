@@ -1,7 +1,7 @@
 name = "Variography"
 uuid = "04a0146e-e6df-5636-8d7f-62fa9eb0b20c"
 author = "Júlio Hoffimann <julio.hoffimann@gmail.com>"
-version = "0.19.0"
+version = "0.19.1"
 
 [deps]
 Bessels = "0e736298-9ec6-45e8-9647-e4fc86a2fe38"
@@ -25,7 +25,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 Bessels = "0.2"
 Distances = "0.10"
 GeoTables = "1.7"
-Meshes = "0.35"
+Meshes = "0.36"
 NearestNeighbors = "0.4"
 Optim = "1.7"
 Setfield = "1.0"
