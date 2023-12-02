@@ -27,26 +27,33 @@ end
 WeightedLeastSquares() = WeightedLeastSquares(nothing)
 
 """
-    fit(V, g, [algo])
-    fit(V, g, [weightfun])
+    fit(V, g, algo=WeightedLeastSquares())
 
 Fit theoretical variogram type `V` to empirical variogram `g`
-using algorithm `algo`. Default algorithm is `WeightedLeastSquares`.
+using algorithm `algo`.
 
-Alternatively pass the weighting function `weightfun` directly
-to the fitting procedure.
+## Examples
+
+```julia
+julia> fit(SphericalVariogram, g)
+julia> fit(ExponentialVariogram, g)
+julia> fit(GaussianVariogram, g, WeightedLeastSquares())
+```
 """
 fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) = fit_impl(V, g, algo) |> first
 
 """
-    fit(Variogram, g, [algo])
-    fit(Variogram, g, [weightfun])
+    fit(Variogram, g, algo=WeightedLeastSquares())
 
 Fit all subtypes of `Variogram` to empirical variogram `g` and
 return the one with minimum error as defined by the algorithm `algo`.
 
-Alternatively pass the weighting function `weightfun` directly
-to the fitting procedure.
+## Examples
+
+```julia
+julia> fit(Variogram, g)
+julia> fit(Variogram, g, WeightedLeastSquares())
+```
 """
 function fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
   # fit each variogram type
@@ -56,6 +63,26 @@ function fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=We
   # return best candidate
   γs[argmin(ϵs)]
 end
+
+"""
+    fit(V, g, weightfun)
+    fit(Variogram, g, weightfun)
+
+Convenience method that forwards the weighting function `weightfun`
+to the `WeightedLeastSquares` algorithm.
+
+## Examples
+
+```julia
+fit(SphericalVariogram, g, h -> exp(-h))
+fit(Variogram, g, h -> exp(-h/100))
+```
+"""
+fit(V, g::EmpiricalVariogram, weightfun::Function) = fit(V, g, WeightedLeastSquares(weightfun))
+
+# ---------------
+# IMPLEMENTATION
+# ---------------
 
 function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLeastSquares)
   # values of empirical variogram
@@ -103,6 +130,3 @@ function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLea
 
   γ, ϵ
 end
-
-# convenient method with weighting function as third argument
-fit(V, g::EmpiricalVariogram, weightfun::Function) = fit(V, g, WeightedLeastSquares(weightfun))
