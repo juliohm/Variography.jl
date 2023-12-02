@@ -27,47 +27,42 @@ end
 WeightedLeastSquares() = WeightedLeastSquares(nothing)
 
 """
-    fit(V, γ, [algo])
-    fit(V, γ, [weightfun])
+    fit(V, g, [algo])
+    fit(V, g, [weightfun])
 
-Fit theoretical variogram type `V` to empirical variogram `γ`
+Fit theoretical variogram type `V` to empirical variogram `g`
 using algorithm `algo`. Default algorithm is `WeightedLeastSquares`.
 
 Alternatively pass the weighting function `weightfun` directly
 to the fitting procedure.
 """
-function fit(V::Type{<:Variogram}, γ::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
-  # dispatch appropriate implementation
-  vario, err = fit_impl(V, γ, algo)
-
-  vario
-end
+fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) = fit_impl(V, g, algo) |> first
 
 """
-    fit(Variogram, γ, [algo])
-    fit(Variogram, γ, [weightfun])
+    fit(Variogram, g, [algo])
+    fit(Variogram, g, [weightfun])
 
-Fit all subtypes of `Variogram` to empirical variogram `γ` and
+Fit all subtypes of `Variogram` to empirical variogram `g` and
 return the one with minimum error as defined by the algorithm `algo`.
 
 Alternatively pass the weighting function `weightfun` directly
 to the fitting procedure.
 """
-function fit(::Type{Variogram}, γ::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
+function fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
   # fit each variogram type
-  res = [fit_impl(V, γ, algo) for V in FITTABLE]
-  γs, es = first.(res), last.(res)
+  res = [fit_impl(V, g, algo) for V in FITTABLE]
+  γs, ϵs = first.(res), last.(res)
 
   # return best candidate
-  γs[argmin(es)]
+  γs[argmin(ϵs)]
 end
 
-function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram, algo::WeightedLeastSquares)
+function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLeastSquares)
   # values of empirical variogram
-  x, y, n = values(γ)
+  x, y, n = values(g)
 
   # custom ball of given radius
-  ball(r) = MetricBall(r, distance(γ))
+  ball(r) = MetricBall(r, distance(g))
 
   # discard invalid bins
   x = x[n .> 0]
@@ -83,31 +78,31 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram, algo::WeightedLe
 
   # evaluate weights
   f = algo.weightfun
-  w = f ≠ nothing ? map(f, x) : n / sum(n)
+  w = isnothing(f) ? n / sum(n) : map(f, x)
 
   # objective function
-  function J(p)
-    g = V(ball(p[1]), sill=p[2] + p[3], nugget=p[3])
-    sum(w[i] * (g(x[i]) - y[i])^2 for i in eachindex(x))
+  function J(θ)
+    γ = V(ball(θ[1]), sill=θ[2] + θ[3], nugget=θ[3])
+    sum(w[i] * (γ(x[i]) - y[i])^2 for i in eachindex(x))
   end
 
   # initial guess
-  pₒ = [xmax / 3, 0.95 * ymax, 1e-6]
+  θₒ = [xmax / 3, 0.95 * ymax, 1e-6]
 
   # box constraints
   l = [0.0, 0.0, 0.0]
   u = [xmax, ymax, ymax]
 
   # solve optimization problem
-  sol = Optim.optimize(J, l, u, pₒ)
-  err = Optim.minimum(sol)
-  p = Optim.minimizer(sol)
+  sol = Optim.optimize(J, l, u, θₒ)
+  ϵ = Optim.minimum(sol)
+  θ = Optim.minimizer(sol)
 
   # optimal variogram (with units)
-  vario = V(ball(p[1]), sill=(p[2] + p[3]) * 𝓊, nugget=p[3] * 𝓊)
+  γ = V(ball(θ[1]), sill=(θ[2] + θ[3]) * 𝓊, nugget=θ[3] * 𝓊)
 
-  vario, err
+  γ, ϵ
 end
 
 # convenient method with weighting function as third argument
-fit(V, γ::EmpiricalVariogram, weightfun::Function) = fit(V, γ, WeightedLeastSquares(weightfun))
+fit(V, g::EmpiricalVariogram, weightfun::Function) = fit(V, g, WeightedLeastSquares(weightfun))
