@@ -79,8 +79,7 @@ julia> fit(Variogram, g, WeightedLeastSquares())
 
 See also `Variography.fittable()`.
 """
-fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) =
-  fit(fittable(), g, algo)
+fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) = fit(fittable(), g, algo)
 
 """
     fit(V, g, weightfun)
