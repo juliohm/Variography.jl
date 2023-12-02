@@ -109,7 +109,5 @@ function fit_impl(V::Type{<:Variogram}, γ::EmpiricalVariogram, algo::WeightedLe
   vario, err
 end
 
-# convenient methods with weighting function as third argument
-fit(V::Type{<:Variogram}, γ::EmpiricalVariogram, weightfun::Function) = fit(V, γ, WeightedLeastSquares(weightfun))
-
-fit(V::Type{Variogram}, γ::EmpiricalVariogram, weightfun::Function) = fit(V, γ, WeightedLeastSquares(weightfun))
+# convenient method with weighting function as third argument
+fit(V, γ::EmpiricalVariogram, weightfun::Function) = fit(V, γ, WeightedLeastSquares(weightfun))
