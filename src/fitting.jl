@@ -40,7 +40,8 @@ julia> fit(ExponentialVariogram, g)
 julia> fit(GaussianVariogram, g, WeightedLeastSquares())
 ```
 """
-fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) = fit_impl(V, g, algo) |> first
+fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) =
+  fit_impl(V, g, algo) |> first
 
 """
     fit(Variogram, g, algo=WeightedLeastSquares())
