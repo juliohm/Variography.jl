@@ -18,6 +18,9 @@
   γ = Variography.fit(Variogram, g)
   @test γ isa GaussianVariogram
   @test isapprox(sill(γ), 0.054, atol=1e-3)
+  γ = Variography.fit([SphericalVariogram, GaussianVariogram], g)
+  @test γ isa GaussianVariogram
+  @test isapprox(sill(γ), 0.054, atol=1e-3)
 
   # make sure convenient methods work
   γ₁ = Variography.fit(GaussianVariogram, g, h -> 1 / h)

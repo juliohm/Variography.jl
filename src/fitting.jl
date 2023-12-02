@@ -3,7 +3,7 @@
 # ------------------------------------------------------------------
 
 # models that can be fitted currently
-const FITTABLE = filter(isstationary, setdiff(subtypes(Variogram), (NuggetEffect, NestedVariogram)))
+fittable() = filter(isstationary, setdiff(subtypes(Variogram), (NuggetEffect, NestedVariogram)))
 
 """
     VariogramFitAlgo
@@ -44,10 +44,31 @@ fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=Weighted
   fit_impl(V, g, algo) |> first
 
 """
+    fit(Vs, g, algo=WeightedLeastSquares())
+
+Fit theoretical variogram types `Vs` to empirical variogram `g`
+using algorithm `algo` and return the one with minimum error.
+
+## Examples
+
+```julia
+julia> fit([SphericalVariogram, ExponentialVariogram], g)
+```
+"""
+function fit(Vs, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
+  # fit each variogram type
+  res = [fit_impl(V, g, algo) for V in Vs]
+  γs, ϵs = first.(res), last.(res)
+
+  # return best candidate
+  γs[argmin(ϵs)]
+end
+
+"""
     fit(Variogram, g, algo=WeightedLeastSquares())
 
-Fit all subtypes of `Variogram` to empirical variogram `g` and
-return the one with minimum error as defined by the algorithm `algo`.
+Fit all "fittable" subtypes of `Variogram` to empirical variogram `g`
+using algorithm `algo` and return the one with minimum error.
 
 ## Examples
 
@@ -55,15 +76,11 @@ return the one with minimum error as defined by the algorithm `algo`.
 julia> fit(Variogram, g)
 julia> fit(Variogram, g, WeightedLeastSquares())
 ```
-"""
-function fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
-  # fit each variogram type
-  res = [fit_impl(V, g, algo) for V in FITTABLE]
-  γs, ϵs = first.(res), last.(res)
 
-  # return best candidate
-  γs[argmin(ϵs)]
-end
+See also `Variography.fittable()`.
+"""
+fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) =
+  fit(fittable(), g, algo)
 
 """
     fit(V, g, weightfun)
