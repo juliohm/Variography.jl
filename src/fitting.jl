@@ -27,24 +27,27 @@ end
 WeightedLeastSquares() = WeightedLeastSquares(nothing)
 
 """
-    fit(V, g, algo=WeightedLeastSquares())
+    fit(V, g, algo=WeightedLeastSquares(); range=nothing, sill=nothing, nugget=nothing)
 
 Fit theoretical variogram type `V` to empirical variogram `g`
 using algorithm `algo`.
+
+Optionally fix `range`, `sill` or `nugget` by passing them as keyword arguments.
 
 ## Examples
 
 ```julia
 julia> fit(SphericalVariogram, g)
 julia> fit(ExponentialVariogram, g)
+julia> fit(ExponentialVariogram, g, sill=0.5)
 julia> fit(GaussianVariogram, g, WeightedLeastSquares())
 ```
 """
-fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) =
-  fit_impl(V, g, algo) |> first
+fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares(); kwargs...) =
+  fit_impl(V, g, algo; kwargs...) |> first
 
 """
-    fit(Vs, g, algo=WeightedLeastSquares())
+    fit(Vs, g, algo=WeightedLeastSquares(); kwargs...)
 
 Fit theoretical variogram types `Vs` to empirical variogram `g`
 using algorithm `algo` and return the one with minimum error.
@@ -55,9 +58,9 @@ using algorithm `algo` and return the one with minimum error.
 julia> fit([SphericalVariogram, ExponentialVariogram], g)
 ```
 """
-function fit(Vs, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
+function fit(Vs, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares(); kwargs...)
   # fit each variogram type
-  res = [fit_impl(V, g, algo) for V in Vs]
+  res = [fit_impl(V, g, algo; kwargs...) for V in Vs]
   γs, ϵs = first.(res), last.(res)
 
   # return best candidate
@@ -65,7 +68,7 @@ function fit(Vs, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSqua
 end
 
 """
-    fit(Variogram, g, algo=WeightedLeastSquares())
+    fit(Variogram, g, algo=WeightedLeastSquares(); kwargs...)
 
 Fit all "fittable" subtypes of `Variogram` to empirical variogram `g`
 using algorithm `algo` and return the one with minimum error.
@@ -79,11 +82,12 @@ julia> fit(Variogram, g, WeightedLeastSquares())
 
 See also `Variography.fittable()`.
 """
-fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) = fit(fittable(), g, algo)
+fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares(); kwargs...) =
+  fit(fittable(), g, algo; kwargs...)
 
 """
-    fit(V, g, weightfun)
-    fit(Variogram, g, weightfun)
+    fit(V, g, weightfun; kwargs...)
+    fit(Variogram, g, weightfun; kwargs...)
 
 Convenience method that forwards the weighting function `weightfun`
 to the `WeightedLeastSquares` algorithm.
@@ -95,13 +99,20 @@ fit(SphericalVariogram, g, h -> exp(-h))
 fit(Variogram, g, h -> exp(-h/100))
 ```
 """
-fit(V, g::EmpiricalVariogram, weightfun::Function) = fit(V, g, WeightedLeastSquares(weightfun))
+fit(V, g::EmpiricalVariogram, weightfun::Function; kwargs...) = fit(V, g, WeightedLeastSquares(weightfun); kwargs...)
 
 # ---------------
 # IMPLEMENTATION
 # ---------------
 
-function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLeastSquares)
+function fit_impl(
+  V::Type{<:Variogram},
+  g::EmpiricalVariogram,
+  algo::WeightedLeastSquares;
+  range=nothing,
+  sill=nothing,
+  nugget=nothing
+)
   # values of empirical variogram
   x, y, n = values(g)
 
@@ -137,11 +148,18 @@ function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLea
   λ = sum(yᵢ -> yᵢ^2, y)
 
   # initial guess
-  θₒ = [xmax / 3, 0.95 * ymax, 1e-6]
+  rₒ = isnothing(range) ? xmax / 3 : range
+  sₒ = isnothing(sill) ? 0.95 * ymax : sill
+  nₒ = isnothing(nugget) ? 1e-6 : nugget
+  θₒ = [rₒ, sₒ, nₒ]
 
   # box constraints
-  l = [0.0, 0.0, 0.0]
-  u = [xmax, ymax, ymax]
+  δ = 1e-8
+  rₗ, rᵤ = isnothing(range) ? (0.0, xmax) : (range - δ, range + δ)
+  sₗ, sᵤ = isnothing(sill) ? (0.0, ymax) : (sill - δ, sill + δ)
+  nₗ, nᵤ = isnothing(nugget) ? (0.0, ymax) : (nugget - δ, nugget + δ)
+  l = [rₗ, sₗ, nₗ]
+  u = [rᵤ, sᵤ, nᵤ]
 
   # solve optimization problem
   sol = Optim.optimize(θ -> J(θ) + λ * L(θ), l, u, θₒ)
