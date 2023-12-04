@@ -40,8 +40,8 @@ julia> fit(ExponentialVariogram, g)
 julia> fit(GaussianVariogram, g, WeightedLeastSquares())
 ```
 """
-fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) =
-  fit_impl(V, g, algo) |> first
+fit(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares(); kwargs...) =
+  fit_impl(V, g, algo; kwargs...) |> first
 
 """
     fit(Vs, g, algo=WeightedLeastSquares())
@@ -55,9 +55,9 @@ using algorithm `algo` and return the one with minimum error.
 julia> fit([SphericalVariogram, ExponentialVariogram], g)
 ```
 """
-function fit(Vs, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares())
+function fit(Vs, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares(); kwargs...)
   # fit each variogram type
-  res = [fit_impl(V, g, algo) for V in Vs]
+  res = [fit_impl(V, g, algo; kwargs...) for V in Vs]
   γs, ϵs = first.(res), last.(res)
 
   # return best candidate
@@ -79,7 +79,8 @@ julia> fit(Variogram, g, WeightedLeastSquares())
 
 See also `Variography.fittable()`.
 """
-fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares()) = fit(fittable(), g, algo)
+fit(::Type{Variogram}, g::EmpiricalVariogram, algo::VariogramFitAlgo=WeightedLeastSquares(); kwargs...) =
+  fit(fittable(), g, algo; kwargs...)
 
 """
     fit(V, g, weightfun)
@@ -95,13 +96,20 @@ fit(SphericalVariogram, g, h -> exp(-h))
 fit(Variogram, g, h -> exp(-h/100))
 ```
 """
-fit(V, g::EmpiricalVariogram, weightfun::Function) = fit(V, g, WeightedLeastSquares(weightfun))
+fit(V, g::EmpiricalVariogram, weightfun::Function; kwargs...) = fit(V, g, WeightedLeastSquares(weightfun); kwargs...)
 
 # ---------------
 # IMPLEMENTATION
 # ---------------
 
-function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLeastSquares)
+function fit_impl(
+  V::Type{<:Variogram},
+  g::EmpiricalVariogram,
+  algo::WeightedLeastSquares;
+  range=nothing,
+  sill=nothing,
+  nugget=nothing
+)
   # values of empirical variogram
   x, y, n = values(g)
 
@@ -137,11 +145,18 @@ function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLea
   λ = sum(yᵢ -> yᵢ^2, y)
 
   # initial guess
-  θₒ = [xmax / 3, 0.95 * ymax, 1e-6]
+  ri = isnothing(range) ? xmax / 3 : range
+  si = isnothing(sill) ? 0.95 * ymax : sill
+  ni = isnothing(nugget) ? 1e-6 : nugget
+  θₒ = [ri, si, ni]
 
   # box constraints
-  l = [0.0, 0.0, 0.0]
-  u = [xmax, ymax, ymax]
+  δ = 1e-8
+  rl, ru = isnothing(range) ? (0.0, xmax) : (range - δ, range + δ)
+  sl, su = isnothing(sill) ? (0.0, ymax) : (sill - δ, sill + δ)
+  nl, nu = isnothing(nugget) ? (0.0, ymax) : (nugget - δ, nugget + δ)
+  l = [rl, sl, nl]
+  u = [ru, su, nu]
 
   # solve optimization problem
   sol = Optim.optimize(θ -> J(θ) + λ * L(θ), l, u, θₒ)
