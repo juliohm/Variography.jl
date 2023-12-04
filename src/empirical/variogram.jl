@@ -166,13 +166,45 @@ end
 # IO METHODS
 # -----------
 
-function Base.show(io::IO, ::EmpiricalVariogram)
-  print(io, "EmpiricalVariogram")
+function Base.show(io::IO, γ::EmpiricalVariogram)
+  ioctx = IOContext(io, :compact => true)
+  print(ioctx, "EmpiricalVariogram(")
+  print(ioctx, "abscissa: ")
+  _printvec(ioctx, γ.abscissa, 1)
+  print(ioctx, ", ordinate: ")
+  _printvec(ioctx, γ.ordinate, 1)
+  print(ioctx, ", distance: ", γ.distance)
+  print(ioctx, ", estimator: ", γ.estimator)
+  print(ioctx, ", npairs: ", sum(γ.counts))
+  print(ioctx, ")")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", γ::EmpiricalVariogram)
-  println(io, γ)
-  println(io, "  abscissa: ", extrema(γ.abscissa))
-  println(io, "  ordinate: ", extrema(γ.ordinate))
-  print(io, "  N° pairs: ", sum(γ.counts))
+  ioctx = IOContext(io, :compact => true, :limit => true)
+  println(ioctx, "EmpiricalVariogram")
+  print(ioctx, "├─ abscissa: ")
+  _printlnvec(ioctx, γ.abscissa, 3)
+  print(ioctx, "├─ ordinate: ")
+  _printlnvec(ioctx, γ.ordinate, 3)
+  println(ioctx, "├─ distance: ", γ.distance)
+  println(ioctx, "├─ estimator: ", γ.estimator)
+  print(ioctx, "└─ npairs: ", sum(γ.counts))
+end
+
+function _printlnvec(io, vec, n)
+  _printvec(io, vec, n)
+  println(io)
+end
+
+function _printvec(io, vec, n)
+  print(io, "[")
+  if length(vec) > 2n
+    k = n - 1
+    join(io, vec[begin:(begin + k)], ", ")
+    print(io, ", ..., ")
+    join(io, vec[(end - k):end], ", ")
+  else
+    join(io, vec, ", ")
+  end
+  print(io, "]")
 end

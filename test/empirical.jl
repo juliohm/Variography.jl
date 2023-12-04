@@ -49,9 +49,15 @@
     rng = MersenneTwister(123)
     d = georef((z=rand(rng, 100, 100),))
     γ = EmpiricalVariogram(d, :z)
-    @test sprint(show, γ) == "EmpiricalVariogram"
-    @test sprint(show, MIME"text/plain"(), γ) ==
-          "EmpiricalVariogram\n  abscissa: (0.3535533905932738, 13.84261778461484)\n  ordinate: (0.0, 0.08323850196902784)\n  N° pairs: 2790126"
+    @test sprint(show, γ) ==
+          "EmpiricalVariogram(abscissa: [0.353553, ..., 13.8426], ordinate: [0.0, ..., 0.0828886], distance: Euclidean(0.0), estimator: MatheronEstimator(), npairs: 2790126)"
+    @test sprint(show, MIME"text/plain"(), γ) == """
+    EmpiricalVariogram
+    ├─ abscissa: [0.353553, 1.20607, 2.0, ..., 12.2868, 13.1058, 13.8426]
+    ├─ ordinate: [0.0, 0.0830612, 0.0825728, ..., 0.083112, 0.0828741, 0.0828886]
+    ├─ distance: Euclidean(0.0)
+    ├─ estimator: MatheronEstimator()
+    └─ npairs: 2790126"""
 
     # test variography with compositional data
     data = georef((z=rand(Composition{3}, 100),), rand(2, 100))
