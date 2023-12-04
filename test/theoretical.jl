@@ -151,7 +151,7 @@
   ├─ nugget: 0.0
   ├─ range: 1.0
   └─ distance: Euclidean"""
-  
+
   γ = CubicVariogram()
   @test sprint(show, γ) == "CubicVariogram(sill: 1.0, nugget: 0.0, range: 1.0, distance: Euclidean)"
   @test sprint(show, MIME"text/plain"(), γ) == """
@@ -160,7 +160,7 @@
   ├─ nugget: 0.0
   ├─ range: 1.0
   └─ distance: Euclidean"""
-  
+
   γ = ExponentialVariogram()
   @test sprint(show, γ) == "ExponentialVariogram(sill: 1.0, nugget: 0.0, range: 1.0, distance: Euclidean)"
   @test sprint(show, MIME"text/plain"(), γ) == """
@@ -169,7 +169,7 @@
   ├─ nugget: 0.0
   ├─ range: 1.0
   └─ distance: Euclidean"""
-  
+
   γ = GaussianVariogram()
   @test sprint(show, γ) == "GaussianVariogram(sill: 1.0, nugget: 0.0, range: 1.0, distance: Euclidean)"
   @test sprint(show, MIME"text/plain"(), γ) == """
@@ -178,7 +178,7 @@
   ├─ nugget: 0.0
   ├─ range: 1.0
   └─ distance: Euclidean"""
-  
+
   γ = MaternVariogram()
   @test sprint(show, γ) == "MaternVariogram(sill: 1.0, nugget: 0.0, order: 1.0, range: 1.0, distance: Euclidean)"
   @test sprint(show, MIME"text/plain"(), γ) == """
@@ -188,13 +188,13 @@
   ├─ order: 1.0
   ├─ range: 1.0
   └─ distance: Euclidean"""
-  
+
   γ = NuggetEffect()
   @test sprint(show, γ) == "NuggetEffect(nugget: 1.0)"
   @test sprint(show, MIME"text/plain"(), γ) == """
   NuggetEffect
   └─ nugget: 1.0"""
-  
+
   γ = PentasphericalVariogram()
   @test sprint(show, γ) == "PentasphericalVariogram(sill: 1.0, nugget: 0.0, range: 1.0, distance: Euclidean)"
   @test sprint(show, MIME"text/plain"(), γ) == """
@@ -203,7 +203,7 @@
   ├─ nugget: 0.0
   ├─ range: 1.0
   └─ distance: Euclidean"""
-  
+
   γ = PowerVariogram()
   @test sprint(show, γ) == "PowerVariogram(scaling: 1.0, nugget: 0.0, exponent: 1.0)"
   @test sprint(show, MIME"text/plain"(), γ) == """
@@ -211,7 +211,7 @@
   ├─ scaling: 1.0
   ├─ nugget: 0.0
   └─ exponent: 1.0"""
-  
+
   γ = SineHoleVariogram()
   @test sprint(show, γ) == "SineHoleVariogram(sill: 1.0, nugget: 0.0, range: 1.0, distance: Euclidean)"
   @test sprint(show, MIME"text/plain"(), γ) == """
@@ -220,7 +220,7 @@
   ├─ nugget: 0.0
   ├─ range: 1.0
   └─ distance: Euclidean"""
-  
+
   γ = SphericalVariogram()
   @test sprint(show, γ) == "SphericalVariogram(sill: 1.0, nugget: 0.0, range: 1.0, distance: Euclidean)"
   @test sprint(show, MIME"text/plain"(), γ) == """
