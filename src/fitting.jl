@@ -148,18 +148,18 @@ function fit_impl(
   λ = sum(yᵢ -> yᵢ^2, y)
 
   # initial guess
-  ri = isnothing(range) ? xmax / 3 : range
-  si = isnothing(sill) ? 0.95 * ymax : sill
-  ni = isnothing(nugget) ? 1e-6 : nugget
-  θₒ = [ri, si, ni]
+  rₒ = isnothing(range) ? xmax / 3 : range
+  sₒ = isnothing(sill) ? 0.95 * ymax : sill
+  nₒ = isnothing(nugget) ? 1e-6 : nugget
+  θₒ = [rₒ, sₒ, nₒ]
 
   # box constraints
   δ = 1e-8
-  rl, ru = isnothing(range) ? (0.0, xmax) : (range - δ, range + δ)
-  sl, su = isnothing(sill) ? (0.0, ymax) : (sill - δ, sill + δ)
-  nl, nu = isnothing(nugget) ? (0.0, ymax) : (nugget - δ, nugget + δ)
-  l = [rl, sl, nl]
-  u = [ru, su, nu]
+  rₗ, rᵤ = isnothing(range) ? (0.0, xmax) : (range - δ, range + δ)
+  sₗ, sᵤ = isnothing(sill) ? (0.0, ymax) : (sill - δ, sill + δ)
+  nₗ, nᵤ = isnothing(nugget) ? (0.0, ymax) : (nugget - δ, nugget + δ)
+  l = [rₗ, sₗ, nₗ]
+  u = [rᵤ, sᵤ, nᵤ]
 
   # solve optimization problem
   sol = Optim.optimize(θ -> J(θ) + λ * L(θ), l, u, θₒ)
