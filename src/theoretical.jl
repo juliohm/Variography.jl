@@ -167,15 +167,15 @@ function Base.show(io::IO, γ::Variogram)
     if val isa MetricBall
       if isisotropic(val)
         r = first(radii(val))
-        push!(params, "range=$r")
+        push!(params, "range: $r")
       else
         r = Tuple(radii(val))
-        push!(params, "ranges=$r")
+        push!(params, "ranges: $r")
       end
-      m = nameof(typeof(metric(val)))
-      push!(params, "metric=$m")
+      d = nameof(typeof(metric(val)))
+      push!(params, "distance: $d")
     else
-      push!(params, "$fn=$val")
+      push!(params, "$fn: $val")
     end
   end
   print(O, name, "(", join(params, ", "), ")")
@@ -187,20 +187,23 @@ function Base.show(io::IO, ::MIME"text/plain", γ::Variogram)
   name = string(nameof(T))
   header = isisotropic(γ) ? name : name * " (anisotropic)"
   params = String[]
-  for fn in fieldnames(T)
+  fnames = fieldnames(T)
+  len = length(fnames)
+  for (i, fn) in enumerate(fnames)
+    div = i == len ? "└─" : "├─"
     val = getfield(γ, fn)
     if val isa MetricBall
       if isisotropic(val)
         r = first(radii(val))
-        push!(params, "└─range: $r")
+        push!(params, "├─ range: $r")
       else
         r = Tuple(radii(val))
-        push!(params, "└─ranges: $r")
+        push!(params, "└─ ranges: $r")
       end
       m = nameof(typeof(metric(val)))
-      push!(params, "└─metric: $m")
+      push!(params, "$div distance: $m")
     else
-      push!(params, "└─$(fn): $val")
+      push!(params, "$div $(fn): $val")
     end
   end
   println(O, header)
