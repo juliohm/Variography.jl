@@ -11,8 +11,8 @@
   γ₄ = Variography.fit(MaternVariogram, g)
   @test isapprox(sill(γ₁), 0.054, atol=1e-3)
   @test isapprox(sill(γ₂), 0.054, atol=1e-3)
-  @test isapprox(sill(γ₃), 0.058, atol=1e-3)
-  @test isapprox(sill(γ₄), 0.057, atol=1e-3)
+  @test isapprox(sill(γ₃), 0.054, atol=1e-3)
+  @test isapprox(sill(γ₄), 0.054, atol=1e-3)
 
   # best fit is a Gaussian variogram
   γ = Variography.fit(Variogram, g)

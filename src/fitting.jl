@@ -126,9 +126,15 @@ function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLea
 
   # objective function
   function J(θ)
-    γ = V(ball(θ[1]), sill=θ[2] + θ[3], nugget=θ[3])
+    γ = V(ball(θ[1]), sill=θ[2], nugget=θ[3])
     sum(w[i] * (γ(x[i]) - y[i])^2 for i in eachindex(x))
   end
+
+  # linear constraint (sill ≥ nugget)
+  L(θ) = θ[2] ≥ θ[3] ? 0.0 : θ[3] - θ[2]
+
+  # penalty for linear constraint (J + λL)
+  λ = sum(yᵢ -> yᵢ^2, y)
 
   # initial guess
   θₒ = [xmax / 3, 0.95 * ymax, 1e-6]
@@ -138,12 +144,12 @@ function fit_impl(V::Type{<:Variogram}, g::EmpiricalVariogram, algo::WeightedLea
   u = [xmax, ymax, ymax]
 
   # solve optimization problem
-  sol = Optim.optimize(J, l, u, θₒ)
+  sol = Optim.optimize(θ -> J(θ) + λ * L(θ), l, u, θₒ)
   ϵ = Optim.minimum(sol)
   θ = Optim.minimizer(sol)
 
   # optimal variogram (with units)
-  γ = V(ball(θ[1]), sill=(θ[2] + θ[3]) * 𝓊, nugget=θ[3] * 𝓊)
+  γ = V(ball(θ[1]), sill=θ[2] * 𝓊, nugget=θ[3] * 𝓊)
 
   γ, ϵ
 end
