@@ -64,7 +64,7 @@
   # practical ranges
   for γ in γs
     if !(γ isa NuggetEffect)
-      @test isapprox(γ(range(γ)), sill(γ), atol = 0.05)
+      @test isapprox(γ(range(γ)), sill(γ), atol=0.05)
     end
   end
 
