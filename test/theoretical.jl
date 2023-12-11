@@ -61,6 +61,13 @@
     @test !isnan(γ(0.0)) && !isinf(γ(0.0))
   end
 
+  # practical ranges
+  for γ in γs
+    if !(γ isa NuggetEffect)
+      @test isapprox(γ(range(γ)), sill(γ), atol = 0.05)
+    end
+  end
+
   # nugget effect
   γ = NuggetEffect(nugget=0.2)
   @test nugget(γ) == 0.2
@@ -100,7 +107,6 @@
     GaussianVariogram(sill=1.0u"K^2"),
     ExponentialVariogram(sill=1.0u"K^2"),
     MaternVariogram(sill=1.0u"K^2"),
-    SphericalVariogram(sill=1.0u"K^2"),
     SphericalVariogram(sill=1.0u"K^2"),
     CubicVariogram(sill=1.0u"K^2"),
     PentasphericalVariogram(sill=1.0u"K^2"),

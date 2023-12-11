@@ -30,11 +30,13 @@ function (γ::MaternVariogram)(h::T) where {T}
 
   # shift lag by machine precision to
   # avoid explosion at the origin
-  h′ = sqrt(2ν) * (h + eps(T)) / r
-  Β = besselk(ν, h′)
+  h′ = h + eps(T)
+
+  δ = √(2ν) * 3(h′ / r)
+  Β = besselk(ν, δ)
   Γ = gamma(ν)
 
-  (s - n) * (1 - 2^(1 - ν) / Γ * h′^ν * Β) + (h′ > 0) * n
+  (s - n) * (1 - 2^(1 - ν) / Γ * δ^ν * Β) + (h > 0) * n
 end
 
 isstationary(::Type{<:MaternVariogram}) = true
