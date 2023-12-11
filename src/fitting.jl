@@ -138,7 +138,7 @@ function fit_impl(
   # objective function
   function J(θ)
     γ = V(ball(θ[1]), sill=θ[2], nugget=θ[3])
-    sum(w[i] * (γ(x[i]) - y[i])^2 for i in eachindex(x))
+    sum(i -> w[i] * (γ(x[i]) - y[i])^2, eachindex(w, x, y))
   end
 
   # linear constraint (sill ≥ nugget)
