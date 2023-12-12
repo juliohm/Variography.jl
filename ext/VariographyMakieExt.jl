@@ -8,7 +8,7 @@ using Variography
 
 import Makie
 import Variography: varioplot, varioplot!
-  
+
 Makie.@recipe(VarioPlot, γ) do scene
   Makie.Attributes(
     # empirical variogram options
