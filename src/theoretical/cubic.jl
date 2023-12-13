@@ -34,4 +34,6 @@ function (γ::CubicVariogram)(h::T) where {T}
   (h < r) * (s - n) * s1 + (h ≥ r) * (s - n) * s2 + (h > 0) * n
 end
 
+variotype(::CubicVariogram) = CubicVariogram
+
 isstationary(::Type{<:CubicVariogram}) = true

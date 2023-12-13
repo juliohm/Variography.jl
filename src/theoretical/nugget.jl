@@ -27,6 +27,8 @@ Base.range(::NuggetEffect{T}) where {T} = zero(T)
 
 sill(γ::NuggetEffect) = γ.nugget
 
+variotype(::NuggetEffect) = NuggetEffect
+
 isstationary(::Type{<:NuggetEffect}) = true
 
 isisotropic(::NuggetEffect) = true

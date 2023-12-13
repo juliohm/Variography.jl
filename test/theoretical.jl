@@ -148,6 +148,22 @@
   @test size(Γ) == (3, 4)
   @test all(Γ .> 0)
 
+  # variotype
+  for γ in [
+    CircularVariogram(),
+    CubicVariogram(),
+    ExponentialVariogram(),
+    GaussianVariogram(),
+    MaternVariogram(),
+    NuggetEffect(),
+    PentasphericalVariogram(),
+    PowerVariogram(),
+    SineHoleVariogram(),
+    SphericalVariogram()
+  ]
+    @test variotype(γ)() == γ
+  end
+
   # shows
   γ = CircularVariogram()
   @test sprint(show, γ) == "CircularVariogram(sill: 1.0, nugget: 0.0, range: 1.0, distance: Euclidean)"

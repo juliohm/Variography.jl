@@ -31,6 +31,13 @@ Return the maximum range of the variogram `γ` when defined.
 Base.range(γ::Variogram) = maximum(radii(γ.ball))
 
 """
+    variotype(γ)
+
+Return the type constructor of the variogram `γ`.
+"""
+function variotype end
+
+"""
     γ(u, v)
 
 Evaluate the variogram at points `u` and `v`.

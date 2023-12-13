@@ -23,4 +23,6 @@ function (γ::CircularVariogram)(h)
   (s - n) * v + (h > zero(h)) * n
 end
 
+variotype(::CircularVariogram) = CircularVariogram
+
 isstationary(::Type{<:CircularVariogram}) = true
