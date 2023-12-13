@@ -27,4 +27,6 @@ function (γ::ExponentialVariogram)(h)
   (s - n) * (1 - exp(-3(h / r))) + (h > 0) * n
 end
 
+variotype(::ExponentialVariogram) = ExponentialVariogram
+
 isstationary(::Type{<:ExponentialVariogram}) = true

@@ -32,4 +32,6 @@ function (γ::SineHoleVariogram)(h::T) where {T}
   (s - n) * (1 - sin(c * h′ / r) / (c * h′ / r)) + (h′ > 0) * n
 end
 
+variotype(::SineHoleVariogram) = SineHoleVariogram
+
 isstationary(::Type{<:SineHoleVariogram}) = true

@@ -30,6 +30,8 @@ function (γ::PowerVariogram)(u::Point, v::Point)
   γ(h)
 end
 
+variotype(::PowerVariogram) = PowerVariogram
+
 isstationary(::Type{<:PowerVariogram}) = false
 
 isisotropic(::PowerVariogram) = true

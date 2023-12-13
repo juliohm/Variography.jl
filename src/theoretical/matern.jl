@@ -39,4 +39,6 @@ function (γ::MaternVariogram)(h::T) where {T}
   (s - n) * (1 - 2^(1 - ν) / Γ * δ^ν * Β) + (h > 0) * n
 end
 
+variotype(::MaternVariogram) = MaternVariogram
+
 isstationary(::Type{<:MaternVariogram}) = true

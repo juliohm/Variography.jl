@@ -34,4 +34,6 @@ function (γ::SphericalVariogram)(h::T) where {T}
   (h < r) * (s - n) * s1 + (h ≥ r) * (s - n) * s2 + (h > 0) * n
 end
 
+variotype(::SphericalVariogram) = SphericalVariogram
+
 isstationary(::Type{<:SphericalVariogram}) = true

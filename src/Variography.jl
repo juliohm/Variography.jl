@@ -61,6 +61,7 @@ export
   NestedVariogram,
   sill,
   nugget,
+  variotype,
   isstationary,
   isisotropic,
   structures,

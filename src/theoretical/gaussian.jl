@@ -28,4 +28,6 @@ function (γ::GaussianVariogram)(h)
   (s - n) * (1 - exp(-3(h / r)^2)) + (h > 0) * n
 end
 
+variotype(::GaussianVariogram) = GaussianVariogram
+
 isstationary(::Type{<:GaussianVariogram}) = true

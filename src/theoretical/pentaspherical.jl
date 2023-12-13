@@ -35,4 +35,6 @@ function (γ::PentasphericalVariogram)(h::T) where {T}
   (h < r) * (s - n) * s1 + (h ≥ r) * (s - n) * s2 + (h > 0) * n
 end
 
+variotype(::PentasphericalVariogram) = PentasphericalVariogram
+
 isstationary(::Type{<:PentasphericalVariogram}) = true
