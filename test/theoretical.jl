@@ -39,12 +39,20 @@
   @test all(isstationary, γs)
   @test all(!isstationary, γn)
 
-  # check isotropy
+  # check anisotropy
   @test all(isisotropic, γs)
   @test all(isisotropic, γn)
   @test all(isisotropic, γnd)
   @test isisotropic(sum(γs) + sum(γn) + sum(γnd))
   @test all(!isisotropic, γa)
+
+  # check metric ball
+  @test metricball(γa[1]) == MetricBall((2.0, 1.0))
+  @test metricball(γa[2]) == MetricBall((3.0, 2.0, 1.0))
+  @test metricball(GaussianVariogram(range=2.0)) == MetricBall(2.0)
+  @test metricball(SphericalVariogram(range=2.0)) == MetricBall(2.0)
+  @test metricball(ExponentialVariogram(range=2.0)) == MetricBall(2.0)
+  @test metricball(MaternVariogram(range=2.0)) == MetricBall(2.0)
 
   # variograms are symmetric under Euclidean distance
   for γ in (γs ∪ γn ∪ γnd ∪ [sum(γs) + sum(γn) + sum(γnd)])

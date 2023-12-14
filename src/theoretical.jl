@@ -12,21 +12,28 @@ abstract type Variogram end
 """
     sill(γ)
 
-Return the sill of the variogram `γ` when defined.
+Return the sill of the variogram `γ`.
 """
 sill(γ::Variogram) = γ.sill
 
 """
     nugget(γ)
 
-Return the nugget of the variogram `γ` when defined.
+Return the nugget of the variogram `γ`.
 """
 nugget(γ::Variogram) = γ.nugget
 
 """
+    metricball(γ)
+
+Return the metric ball of the variogram `γ`.
+"""
+metricball(γ::Variogram) = γ.ball
+
+"""
     range(γ)
 
-Return the maximum range of the variogram `γ` when defined.
+Return the maximum range of the variogram `γ`.
 """
 Base.range(γ::Variogram) = maximum(radii(γ.ball))
 
