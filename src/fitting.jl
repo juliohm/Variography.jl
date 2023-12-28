@@ -32,14 +32,16 @@ WeightedLeastSquares() = WeightedLeastSquares(nothing)
 Fit theoretical variogram type `V` to empirical variogram `g`
 using algorithm `algo`.
 
-Optionally fix `range`, `sill` or `nugget` by passing them as keyword arguments.
+Optionally fix `range`, `sill` or `nugget` by passing them as keyword arguments, or
+set their maximum value with `maxrange`, `maxsill` or `maxnugget`.
 
 ## Examples
 
 ```julia
 julia> fit(SphericalVariogram, g)
 julia> fit(ExponentialVariogram, g)
-julia> fit(ExponentialVariogram, g, sill=0.5)
+julia> fit(ExponentialVariogram, g, sill=1.0)
+julia> fit(ExponentialVariogram, g, maxsill=1.0)
 julia> fit(GaussianVariogram, g, WeightedLeastSquares())
 ```
 """
@@ -111,7 +113,10 @@ function fit_impl(
   algo::WeightedLeastSquares;
   range=nothing,
   sill=nothing,
-  nugget=nothing
+  nugget=nothing,
+  maxrange=nothing,
+  maxsill=nothing,
+  maxnugget=nothing
 )
   # values of empirical variogram
   x, y, n = values(g)
@@ -127,9 +132,6 @@ function fit_impl(
   # strip units if necessary
   𝓊 = unit(first(y))
   y = ustrip.(y)
-
-  # auxiliary variables
-  xmax, ymax = maximum(x), maximum(y)
 
   # evaluate weights
   f = algo.weightfun
@@ -147,17 +149,24 @@ function fit_impl(
   # penalty for linear constraint (J + λL)
   λ = sum(yᵢ -> yᵢ^2, y)
 
+  # maximum range, sill and nugget
+  xmax = maximum(x)
+  ymax = maximum(y)
+  rmax = isnothing(maxrange) ? xmax : maxrange
+  smax = isnothing(maxsill) ? ymax : maxsill
+  nmax = isnothing(maxnugget) ? ymax : maxnugget
+
   # initial guess
-  rₒ = isnothing(range) ? xmax / 3 : range
-  sₒ = isnothing(sill) ? 0.95 * ymax : sill
+  rₒ = isnothing(range) ? rmax / 3 : range
+  sₒ = isnothing(sill) ? 0.95 * smax : sill
   nₒ = isnothing(nugget) ? 1e-6 : nugget
   θₒ = [rₒ, sₒ, nₒ]
 
   # box constraints
   δ = 1e-8
-  rₗ, rᵤ = isnothing(range) ? (0.0, xmax) : (range - δ, range + δ)
-  sₗ, sᵤ = isnothing(sill) ? (0.0, ymax) : (sill - δ, sill + δ)
-  nₗ, nᵤ = isnothing(nugget) ? (0.0, ymax) : (nugget - δ, nugget + δ)
+  rₗ, rᵤ = isnothing(range) ? (0.0, rmax) : (range - δ, range + δ)
+  sₗ, sᵤ = isnothing(sill) ? (0.0, smax) : (sill - δ, sill + δ)
+  nₗ, nᵤ = isnothing(nugget) ? (0.0, nmax) : (nugget - δ, nugget + δ)
   l = [rₗ, sₗ, nₗ]
   u = [rᵤ, sᵤ, nᵤ]
 

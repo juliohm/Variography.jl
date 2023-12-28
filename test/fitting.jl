@@ -35,6 +35,14 @@
   @test isapprox(sill(γ), 0.07, atol=1e-3)
   @test isapprox(nugget(γ), 0.05, atol=1e-3)
 
+  # fix maximum parameters
+  γ = Variography.fit(GaussianVariogram, g, maxrange=5.0)
+  @test isapprox(range(γ), 5.0, atol=1e-3)
+  γ = Variography.fit(GaussianVariogram, g, maxsill=0.04)
+  @test isapprox(sill(γ), 0.04, atol=1e-3)
+  γ = Variography.fit(GaussianVariogram, g, maxnugget=0.004)
+  @test isapprox(nugget(γ), 0.004, atol=1e-3)
+
   # best fit is a Gaussian variogram
   γ = Variography.fit(Variogram, g)
   @test γ isa GaussianVariogram
