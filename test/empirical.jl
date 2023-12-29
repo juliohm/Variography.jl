@@ -75,7 +75,8 @@
     @test y == fill(0.0 * u"K^2", 20)
 
     # Matheron's vs Cressie's estimator
-    data = geostatsimage("Gaussian30x10")
+    img = readdlm(joinpath(datadir, "Gaussian30x10.txt"))
+    data = georef((; Z=img))
     γ₁ = EmpiricalVariogram(data, :Z, maxlag=50.0, estimator=:matheron)
     γ₂ = EmpiricalVariogram(data, :Z, maxlag=50.0, estimator=:cressie)
     x₁, y₁, n₁ = values(γ₁)
@@ -85,7 +86,8 @@
     @test n₁ == n₂
 
     # specify variables as strings
-    data = geostatsimage("Gaussian30x10")
+    img = readdlm(joinpath(datadir, "Gaussian30x10.txt"))
+    data = georef((; Z=img))
     γ = EmpiricalVariogram(data, "Z", maxlag=50.0)
     x, y, n = values(γ)
     @test all(≥(0), x)
