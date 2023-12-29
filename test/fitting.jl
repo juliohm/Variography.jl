@@ -1,8 +1,7 @@
 @testset "Fitting" begin
-  wl = geostatsimage("WalkerLake")
-  TI = asarray(wl, :Z)[1:20, 1:20]
-  d = georef((z=TI,))
-  g = EmpiricalVariogram(d, :z, maxlag=15.0)
+  img = readdlm(joinpath(datadir, "WalkerLake.txt"))
+  d = georef((; Z=img))
+  g = EmpiricalVariogram(d, :Z, maxlag=15.0)
 
   # all fits lead to similar sill
   γ₁ = Variography.fit(GaussianVariogram, g)
@@ -58,10 +57,9 @@
   @test sill(γ₂) > 0
 
   # unitful types
-  wl = geostatsimage("WalkerLake")
-  TI = asarray(wl, :Z)[1:20, 1:20]
-  d = georef((z=TI * u"K",))
-  g = EmpiricalVariogram(d, :z, maxlag=15.0)
+  img = readdlm(joinpath(datadir, "WalkerLake.txt"))
+  d = georef((; Z=img * u"K"))
+  g = EmpiricalVariogram(d, :Z, maxlag=15.0)
   γ = Variography.fit(Variogram, g)
   @test unit(sill(γ)) == u"K^2"
   @test unit(nugget(γ)) == u"K^2"

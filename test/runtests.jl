@@ -1,7 +1,6 @@
 using Variography
 using Meshes
 using GeoTables
-using GeoStatsImages
 using Unitful
 using Distances
 using LinearAlgebra
