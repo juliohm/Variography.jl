@@ -1,4 +1,4 @@
-@testset "Theoretical" begin
+@testset "Variogram" begin
   Random.seed!(123)
   h = range(0, stop=10, length=50)
   x, y = rand(Point3), rand(Point3)

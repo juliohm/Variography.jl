@@ -232,13 +232,13 @@ end
 # IMPLEMENTATIONS
 # ----------------
 
-include("theoretical/gaussian.jl")
-include("theoretical/exponential.jl")
-include("theoretical/spherical.jl")
-include("theoretical/matern.jl")
-include("theoretical/cubic.jl")
-include("theoretical/pentaspherical.jl")
-include("theoretical/sinehole.jl")
-include("theoretical/power.jl")
-include("theoretical/nugget.jl")
-include("theoretical/circular.jl")
+include("variogram/gaussian.jl")
+include("variogram/exponential.jl")
+include("variogram/spherical.jl")
+include("variogram/matern.jl")
+include("variogram/cubic.jl")
+include("variogram/pentaspherical.jl")
+include("variogram/sinehole.jl")
+include("variogram/power.jl")
+include("variogram/nugget.jl")
+include("variogram/circular.jl")

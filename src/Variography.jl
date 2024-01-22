@@ -26,7 +26,7 @@ import Meshes: isisotropic
 
 include("utils.jl")
 include("empirical.jl")
-include("theoretical.jl")
+include("variogram.jl")
 include("covariance.jl")
 include("nesting.jl")
 include("fitting.jl")
