@@ -171,10 +171,17 @@ end
 # IO METHODS
 # -----------
 
-function Base.show(io::IO, γ::Variogram)
-  T = typeof(γ)
-  O = IOContext(io, :compact => true)
+function Base.show(io::IO, γ::T) where {T<:Variogram}
   name = string(nameof(T))
+  _showcompact(io, name, γ)
+end
+
+function Base.show(io::IO, ::MIME"text/plain", γ::T) where {T<:Variogram}
+  name = string(nameof(T))
+  _showfull(io, name, γ)
+end
+
+function _showcompact(io, name, γ::T) where {T<:Variogram}
   params = String[]
   for fn in fieldnames(T)
     val = getfield(γ, fn)
@@ -192,13 +199,10 @@ function Base.show(io::IO, γ::Variogram)
       push!(params, "$fn: $val")
     end
   end
-  print(O, name, "(", join(params, ", "), ")")
+  print(io, name, "(", join(params, ", "), ")")
 end
 
-function Base.show(io::IO, ::MIME"text/plain", γ::Variogram)
-  T = typeof(γ)
-  O = IOContext(io, :compact => true)
-  name = string(nameof(T))
+function _showfull(io, name, γ::T) where {T<:Variogram}
   header = isisotropic(γ) ? name : name * " (anisotropic)"
   params = String[]
   fnames = fieldnames(T)
@@ -220,8 +224,8 @@ function Base.show(io::IO, ::MIME"text/plain", γ::Variogram)
       push!(params, "$div $(fn): $val")
     end
   end
-  println(O, header)
-  print(O, join(params, "\n"))
+  println(io, header)
+  print(io, join(params, "\n"))
 end
 
 # ----------------

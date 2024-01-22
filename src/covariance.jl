@@ -16,6 +16,20 @@ Evaluate the covariance at objects `x₁` and `x₁`.
 """
 (cov::Covariance)(x₁, x₂) = sill(cov.γ) - cov.γ(x₁, x₂)
 
+# -----------
+# IO METHODS
+# -----------
+
+function Base.show(io::IO, cov::T) where {T<:Covariance}
+  name = string(nameof(T))
+  _showcompact(io, name, cov.γ)
+end
+
+function Base.show(io::IO, ::MIME"text/plain", cov::T) where {T<:Covariance}
+  name = string(nameof(T))
+  _showfull(io, name, cov.γ)
+end
+
 # heper macro to define covariances
 macro defcov(CovType, VarioType)
   docstring = """
