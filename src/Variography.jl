@@ -75,7 +75,6 @@ export
   ExponentialCovariance,
   GaussianCovariance,
   MaternCovariance,
-  NuggetCovariance,
   PentasphericalCovariance,
   SineHoleCovariance,
   SphericalCovariance,

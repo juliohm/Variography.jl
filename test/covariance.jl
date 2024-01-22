@@ -6,7 +6,6 @@
     (ExponentialCovariance, ExponentialVariogram),
     (GaussianCovariance, GaussianVariogram),
     (MaternCovariance, MaternVariogram),
-    (NuggetCovariance, NuggetEffect),
     (PentasphericalCovariance, PentasphericalVariogram),
     (SineHoleCovariance, SineHoleVariogram),
     (SphericalCovariance, SphericalVariogram)
@@ -15,6 +14,31 @@
     cov = CovType(γ)
     @test cov(x, y) == sill(γ) - γ(x, y)
   end
+
+  for (CovType, VarioType) in [
+    (CircularCovariance, CircularVariogram),
+    (CubicCovariance, CubicVariogram),
+    (ExponentialCovariance, ExponentialVariogram),
+    (GaussianCovariance, GaussianVariogram),
+    (MaternCovariance, MaternVariogram),
+    (PentasphericalCovariance, PentasphericalVariogram),
+    (SineHoleCovariance, SineHoleVariogram),
+    (SphericalCovariance, SphericalVariogram)
+  ]
+    γ = VarioType(sill=1.5)
+    cov = CovType(γ)
+    @test cov(x, y) == 1.5 - γ(x, y)
+  end
+
+  𝒟 = PointSet(Matrix(1.0I, 3, 3))
+  Γ = Variography.pairwise(GaussianCovariance(), 𝒟)
+  @test eltype(Γ) == Float64
+  @test issymmetric(Γ)
+
+  𝒟 = PointSet(Matrix(1.0f0I, 3, 3))
+  Γ_f = Variography.pairwise(GaussianCovariance(range=1.0f0, sill=1.0f0, nugget=0.0f0), 𝒟)
+  @test eltype(Γ_f) == Float32
+  @test issymmetric(Γ_f)
 
   # shows
   cov = CircularCovariance()
@@ -62,12 +86,6 @@
   ├─ order: 1.0
   ├─ range: 1.0
   └─ distance: Euclidean"""
-
-  cov = NuggetCovariance()
-  @test sprint(show, cov) == "NuggetCovariance(nugget: 1.0)"
-  @test sprint(show, MIME"text/plain"(), cov) == """
-  NuggetCovariance
-  └─ nugget: 1.0"""
 
   cov = PentasphericalCovariance()
   @test sprint(show, cov) == "PentasphericalCovariance(sill: 1.0, nugget: 0.0, range: 1.0, distance: Euclidean)"

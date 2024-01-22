@@ -16,6 +16,17 @@ Evaluate the covariance at objects `x₁` and `x₁`.
 """
 (cov::Covariance)(x₁, x₂) = sill(cov.γ) - cov.γ(x₁, x₂)
 
+"""
+    pairwise(cov, domain)
+    
+Evaluate covariance `cov` between all elements in the `domain`.
+    
+    pairwise(cov, domain₁, domain₂)
+
+Evaluate covariance `cov` between all elements of `domain₁` and `domain₂`.
+"""
+pairwise(cov::Covariance, args...) = sill(cov.γ) .- pairwise(cov.γ, args...)
+
 # -----------
 # IO METHODS
 # -----------
@@ -58,8 +69,6 @@ end
 @defcov GaussianCovariance GaussianVariogram
 
 @defcov MaternCovariance MaternVariogram
-
-@defcov NuggetCovariance NuggetEffect
 
 @defcov PentasphericalCovariance PentasphericalVariogram
 
