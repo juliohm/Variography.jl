@@ -27,6 +27,7 @@ import Meshes: isisotropic
 include("utils.jl")
 include("empirical.jl")
 include("theoretical.jl")
+include("covariance.jl")
 include("nesting.jl")
 include("fitting.jl")
 include("sampling.jl")
@@ -67,6 +68,16 @@ export
   isisotropic,
   structures,
   variosample,
+
+  # theoretical covariance
+  CircularCovariance,
+  CubicCovariance,
+  ExponentialCovariance,
+  GaussianCovariance,
+  MaternCovariance,
+  PentasphericalCovariance,
+  SineHoleCovariance,
+  SphericalCovariance,
 
   # fitting algorithms
   VariogramFitAlgo,
