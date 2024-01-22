@@ -69,7 +69,7 @@ export
   structures,
   variosample,
 
-  # covariance
+  # theoretical covariance
   CircularCovariance,
   CubicCovariance,
   ExponentialCovariance,
