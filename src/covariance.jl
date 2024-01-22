@@ -40,8 +40,7 @@ macro defcov(CovType, VarioType)
   Please see [`$(VarioType)`](@ref) for available parameters.
   """
   expr = quote
-    @doc $docstring
-    struct $CovType{V<:$VarioType} <: Covariance
+    @doc $docstring struct $CovType{V<:$VarioType} <: Covariance
       γ::V
     end
 
@@ -50,20 +49,20 @@ macro defcov(CovType, VarioType)
   esc(expr)
 end
 
-@defcov CircularCovariance CircularVariogram 
+@defcov CircularCovariance CircularVariogram
 
-@defcov CubicCovariance CubicVariogram 
+@defcov CubicCovariance CubicVariogram
 
-@defcov ExponentialCovariance ExponentialVariogram 
+@defcov ExponentialCovariance ExponentialVariogram
 
-@defcov GaussianCovariance GaussianVariogram 
+@defcov GaussianCovariance GaussianVariogram
 
-@defcov MaternCovariance MaternVariogram 
+@defcov MaternCovariance MaternVariogram
 
-@defcov NuggetCovariance NuggetEffect 
+@defcov NuggetCovariance NuggetEffect
 
-@defcov PentasphericalCovariance PentasphericalVariogram 
+@defcov PentasphericalCovariance PentasphericalVariogram
 
-@defcov SineHoleCovariance SineHoleVariogram 
+@defcov SineHoleCovariance SineHoleVariogram
 
-@defcov SphericalCovariance SphericalVariogram 
+@defcov SphericalCovariance SphericalVariogram
